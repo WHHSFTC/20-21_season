@@ -1,20 +1,21 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import org.firstinspires.ftc.teamcode.module.delegate.Module
 
 class DriveTrain(val opmode: OpMode) {
-    inner class Position(
+    data class Position(
         var x: Double = .0,
         var y: Double = .0,
         var theta: Double = .0
     )
 
-    var position: Position by Module<Position> (getter = {position}, setter = {v ->
+    var position: Position by Module<Position> (getter = {position}, setter = { v ->
         // fancy shit
         position = v
     })
 
-    var powers: Powers by Module<Powers> (getter = {powers}, setter = {v ->
+    var powers: Powers by Module<Powers> (getter = {powers}, setter = { v ->
         lf.power = v.lf
         lb.power = v.lb
         rf.power = v.rf

@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import org.firstinspires.ftc.teamcode.module.DriveTrain
+import org.firstinspires.ftc.teamcode.module.OpMode
 import kotlin.math.*
 
 @TeleOp(name = "Summum", group = "Tele")

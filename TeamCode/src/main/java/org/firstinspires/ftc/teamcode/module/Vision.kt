@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.implementation
+package org.firstinspires.ftc.teamcode.module
 
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.opencv.core.*
@@ -7,7 +7,7 @@ import org.openftc.easyopencv.OpenCvPipeline
 
 
 class Vision(tl: Telemetry? = null): OpenCvPipeline() {
-    lateinit var height: Height
+    var height: Height
     var telemetry: Telemetry
     var mat: Mat
 

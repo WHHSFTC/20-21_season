@@ -19,30 +19,59 @@ class Robot(
 
     override var context: OpModeContext.Context = OpModeContext.Context.BASE
         set(value) {
-            opMode.telemetry.addData("$field", "Switching to $value context")
+            log.addData("$field", "Switching to $value context")
             field = value
         }
 
-    fun <T: Any> Telemetry.addData(value: T) {
+    fun <T: Any> Telemetry.logData(value: T) {
         this.addData("$context", value)
     }
 
-    fun <T: Any> Telemetry.addData(valueProducer: () -> T) {
+    fun <T: Any, E: Any> Telemetry.logData(caption: T, value: E) {
+        this.addData("$context", "$caption: $value")
+    }
+
+    fun <T: Any> Telemetry.logData(valueProducer: () -> T) {
         this.addData("$context", valueProducer)
     }
 }
 
 fun Robot.enter(initialKey: String) =
-    if (machine.isNotEmpty()) {
-        log.addData("State Machine: Running $initialKey")
-        var state: (Robot.() -> String)? = machine.map[initialKey]
-        var key: String = initialKey
-        while (state != null) {
-            key = state()
-            log.addData("State Machine: Running $key")
-            state = machine.map[key]
+        if (machine.map.isNotEmpty()) {
+            log.logData("State Machine", "Running $initialKey")
+            var state: (Robot.() -> String)? = machine.map[initialKey]
+            var key: String = initialKey
+            while (state != null) {
+                key = state()
+                log.logData("State Machine", "Running $key")
+                state = machine.map[key]
+            }
+            log.logData("State Machine", "Exited at $key")
+        } else {
+            log.logData("State Machine", "No states detected, machine is empty")
         }
-        log.addData("State Machine: Exited at $key")
-    } else {
-        log.addData("Machine is empty, no states detected")
+
+fun Robot.execute(taskName: String) =
+        if (machine.tasks.isNotEmpty()) {
+            log.logData("Task Manager", "Starting $taskName")
+            val task: (Robot.() -> Unit)? = machine.tasks[taskName]
+            if (task != null) {
+                this.task()
+            } else {
+                log.logData("Task Manager", "Task $taskName not found")
+            }
+        } else {
+            log.logData("Task Manager", "No tasks detected, manager is empty")
+        }
+
+fun Robot.execute(vararg taskNames: String) {
+    for(taskName in taskNames) {
+        this.execute(taskName)
     }
+}
+
+fun Robot.executeAllTasks() {
+    for (task in machine.tasks.keys) {
+        this.execute(task)
+    }
+}

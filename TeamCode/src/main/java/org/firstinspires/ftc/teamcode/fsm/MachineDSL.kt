@@ -8,9 +8,9 @@ import org.firstinspires.ftc.teamcode.module.Robot
 data class MachineDSL(
         val map: MutableMap<String, Robot.() -> String> =
                 emptyMap<String, Robot.() -> String>().toMutableMap()
-): OpModeContext(), MutableMap<String, Robot.() -> String> by map {
+): OpModeContext() {
     operator fun String.invoke(state: Robot.() -> String): MachineDSL {
-        put(this, state)
+        map[this] = state
         return this@MachineDSL
     }
 }

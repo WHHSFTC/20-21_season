@@ -9,10 +9,13 @@ abstract class OpMode : LinearOpMode() {
     override fun runOpMode() {
         bot = Robot(this, emptyMachine())
         onInit()
+        bot.log.update()
         waitForStart()
         onRun()
-        while (opModeIsActive()) onLoop()
+        bot.log.update()
+        while (opModeIsActive()) onLoop(); bot.log.update()
         onStop()
+        bot.log.update()
     }
 
     abstract fun onInit()

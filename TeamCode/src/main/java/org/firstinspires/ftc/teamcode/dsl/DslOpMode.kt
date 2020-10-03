@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.dsl
 
 import org.firstinspires.ftc.teamcode.fsm.Machine
+import org.firstinspires.ftc.teamcode.fsm.emptyMachine
 import org.firstinspires.ftc.teamcode.module.OpMode
 
-open class DslOpMode(private var machine: Machine): OpMode() {
+open class DslOpMode(protected var machine: Machine = emptyMachine()): OpMode() {
     init {
         this.bot.machine = machine
     }

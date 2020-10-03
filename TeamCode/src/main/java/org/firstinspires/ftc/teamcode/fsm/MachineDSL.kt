@@ -27,14 +27,14 @@ class MachineDSL(val map: MutableMap<String, State> = HashMap()): OpMode(), Muta
 
     fun enter(initkey: String) {
         //bot.telemetry.addLine("State Machine: Running $initkey")
-        bot.telem.addLine("State Machine: Running $initkey")
+        bot.log.addLine("State Machine: Running $initkey")
         var state: State? = map[initkey]
         var key: String = initkey
         while (state != null) {
             key = bot.state()
-            bot.telem.addLine("State Machine: Running $key")
+            bot.log.addLine("State Machine: Running $key")
             state = map[key]
         }
-        bot.telem.addLine("State Machine: Exited at $key")
+        bot.log.addLine("State Machine: Exited at $key")
     }
 }

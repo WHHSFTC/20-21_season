@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.DcMotor
 
-class DriveTrain(val opmode: OpMode) {
+class DriveTrain(val bot: Robot) {
     data class Position(
         var x: Double = .0,
         var y: Double = .0,
@@ -11,14 +11,14 @@ class DriveTrain(val opmode: OpMode) {
 
     var position: Position = Position()
         set(value) {
-            opmode.telemetry.addData("Position: ", value)
+            bot.log.addData("Position: ", value)
             field = value
         }
 
-    val lf: DcMotor = opmode.hardwareMap.dcMotor["motorLF"]
-    val lb: DcMotor = opmode.hardwareMap.dcMotor["motorLB"]
-    val rf: DcMotor = opmode.hardwareMap.dcMotor["motorRF"]
-    val rb: DcMotor = opmode.hardwareMap.dcMotor["motorRB"]
+    val lf: DcMotor = bot.hwmap.dcMotor["motorLF"]
+    val lb: DcMotor = bot.hwmap.dcMotor["motorLB"]
+    val rf: DcMotor = bot.hwmap.dcMotor["motorRF"]
+    val rb: DcMotor = bot.hwmap.dcMotor["motorRB"]
 
     var zeroPowerBehavior: DcMotor.ZeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         set(value) {
@@ -31,7 +31,7 @@ class DriveTrain(val opmode: OpMode) {
 
     var powers: Powers = Powers()
         set(v) {
-            opmode.telemetry.addData("Powers", "%f, %f, %f, %f", v.rf, v.lf, v.lb, v.rb)
+            bot.log.addData("Powers", "%f, %f, %f, %f", v.rf, v.lf, v.lb, v.rb)
             lf.power = v.lf
             lb.power = v.lb
             rf.power = v.rf

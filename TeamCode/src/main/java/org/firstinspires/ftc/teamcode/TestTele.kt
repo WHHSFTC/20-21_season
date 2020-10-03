@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.module.DriveTrain
+import org.firstinspires.ftc.teamcode.module.Intake
 import org.firstinspires.ftc.teamcode.module.OpMode
 import kotlin.math.*
 
@@ -27,6 +28,7 @@ class TestTele : OpMode() {
     }
     override fun onLoop() {
         runDriveTrain()
+        runIntake()
         telemetry.update()
     }
     override fun onRun() { }
@@ -67,6 +69,15 @@ class TestTele : OpMode() {
         telemetry.addData("zpow", zpow)
         telemetry.addData("ypow", ypow)
         telemetry.addData("theta", theta)
+    }
+
+    fun runIntake() {
+        if (gamepad1.y)
+            bot.ink.power = Intake.Power.OUT
+        else if (gamepad1.a)
+            bot.ink.power = Intake.Power.IN
+        else if (gamepad1.b)
+            bot.ink.power = Intake.Power.OFF
     }
 
     infix fun Double.max(other: Double): Double {

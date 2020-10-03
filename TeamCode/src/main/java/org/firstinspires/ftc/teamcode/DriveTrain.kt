@@ -15,6 +15,7 @@ class DriveTrain(val opmode: OpMode) {
     })
 
     var powers: Powers by Module<Powers> (getter = {powers}, setter = {v ->
+        opmode.telemetry.addData("Powers", "%d, %d, %d, %d", v.rf, v.lf, v.lb, v.rb)
         lf.power = v.lf
         lb.power = v.lb
         rf.power = v.rf

@@ -19,7 +19,12 @@ class TestTele : OpMode() {
         const val DEADZONE = 0.05
     }
 
-    override fun onInit() { }
+    override fun onInit() {
+        telemetry.addLine("Init")
+        telemetry.addLine("...")
+        telemetry.addLine("Done")
+        telemetry.update()
+    }
     override fun onLoop() {
         runDriveTrain()
         telemetry.update()

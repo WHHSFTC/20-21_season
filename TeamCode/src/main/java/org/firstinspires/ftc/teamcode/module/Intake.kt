@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.module
 
+import com.qualcomm.robotcore.hardware.DcMotor
+
 class Intake(bot: Robot) {
-    val motor = bot.hwmap.dcMotor["intake"]
-    var power: Intake.Power = Power.OFF
+    val motor: DcMotor = bot.hwmap.dcMotor["intake"]
+    var power: Power = Power.OFF
         set(value) {
             motor.power = value.pow
             field = value

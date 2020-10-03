@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.DcMotor
-import org.firstinspires.ftc.teamcode.module.delegate.Module
 
 class DriveTrain(val opmode: OpMode) {
     data class Position(
@@ -10,10 +9,11 @@ class DriveTrain(val opmode: OpMode) {
         var theta: Double = .0
     )
 
-    var position: Position by Module<Position> (getter = {position}, setter = { v ->
-        // fancy shit
-        position = v
-    })
+    var position: Position = Position()
+        set(value) {
+            opmode.telemetry.addData("Position: ", value)
+            field = value
+        }
 
     val lf: DcMotor = opmode.hardwareMap.dcMotor["motorLF"]
     val lb: DcMotor = opmode.hardwareMap.dcMotor["motorLB"]
@@ -28,15 +28,6 @@ class DriveTrain(val opmode: OpMode) {
             rb.zeroPowerBehavior = value
             field = value
         }
-
-    //var powers: Powers by Module<Powers> (getter = {powers}, setter = { v ->
-        //opmode.telemetry.addData("Powers", "%d, %d, %d, %d", v.rf, v.lf, v.lb, v.rb)
-        //lf.power = v.lf
-        //lb.power = v.lb
-        //rf.power = v.rf
-        //rb.power = v.rb
-        //powers = v
-    //})
 
     var powers: Powers = Powers()
         set(v) {

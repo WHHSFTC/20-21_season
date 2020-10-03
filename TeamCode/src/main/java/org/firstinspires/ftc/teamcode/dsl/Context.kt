@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.dsl
 
-interface Context {
-    val context: String
+interface Context<E: Any> {
+    var context: E
 }

@@ -1,25 +1,26 @@
 package org.firstinspires.ftc.teamcode.dsl
 
+import org.firstinspires.ftc.teamcode.fsm.Machine
 import org.firstinspires.ftc.teamcode.module.OpMode
 
-open class DslOpMode(private val command: OpModeContext): OpMode() {
+open class DslOpMode(private var machine: Machine): OpMode() {
     init {
-        command.telemetry = this.telemetry
+        this.bot.machine = machine
     }
 
     override fun onInit() {
-        command.fnInit(this.bot.apply { context = OpModeContext.Context.INIT })
+        machine.fnInit(this.bot.apply { context = OpModeContext.Context.INIT })
     }
 
     override fun onRun() {
-        command.fnRun(this.bot.apply { context = OpModeContext.Context.RUN })
+        machine.fnRun(this.bot.apply { context = OpModeContext.Context.RUN })
     }
 
     override fun onLoop() {
-        command.fnLoop(this.bot.apply { context = OpModeContext.Context.LOOP })
+        machine.fnLoop(this.bot.apply { context = OpModeContext.Context.LOOP })
     }
 
     override fun onStop() {
-        command.fnStop(this.bot.apply { context = OpModeContext.Context.STOP})
+        machine.fnStop(this.bot.apply { context = OpModeContext.Context.STOP})
     }
 }

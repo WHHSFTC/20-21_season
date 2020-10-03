@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.dsl
 
-import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.fsm.MachineDSL
 import org.firstinspires.ftc.teamcode.module.Robot
 
 @RobotDsl
-data class OpModeContext(
-        var telemetry: Telemetry? = null,
+open class OpModeContext(
         var fnInit: Robot.() -> Unit = {},
         var fnRun: Robot.() -> Unit = {},
         var fnLoop: Robot.() -> Unit = {},
@@ -22,25 +21,26 @@ data class OpModeContext(
     }
 }
 
-inline fun opMode(b: OpModeContext.() -> Unit): OpModeContext =
-        OpModeContext().apply { this.b() }
+object FSM
+inline fun FSM.fsm(b: MachineDSL.() -> Unit): MachineDSL =
+        MachineDSL().apply { this.b() }
 
-fun OpModeContext.onInit(init: Robot.() -> Unit): OpModeContext =
+fun MachineDSL.onInit(init: Robot.() -> Unit): MachineDSL =
         this.apply {
             this.fnInit = init
         }
 
-fun OpModeContext.onRun(run: Robot.() -> Unit): OpModeContext =
+fun MachineDSL.onRun(run: Robot.() -> Unit): MachineDSL =
         this.apply {
             this.fnRun = run
         }
 
-fun OpModeContext.onLoop(loop: Robot.() -> Unit): OpModeContext =
+fun MachineDSL.onLoop(loop: Robot.() -> Unit): MachineDSL =
         this.apply {
             this.fnLoop = loop
         }
 
-fun OpModeContext.onStop(stop: Robot.() -> Unit): OpModeContext =
+fun MachineDSL.onStop(stop: Robot.() -> Unit): MachineDSL =
         this.apply {
             this.fnStop = stop
         }

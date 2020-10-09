@@ -34,6 +34,10 @@ class Robot(
     fun <T: Any> Telemetry.logData(valueProducer: () -> T) {
         this.addData("$context", valueProducer)
     }
+
+    fun <T: Any> Telemetry.logError(errorMsg: T) {
+        this.addData("[ERROR]", "$errorMsg")
+    }
 }
 
 fun Robot.enter(initialKey: String) =
@@ -75,3 +79,6 @@ fun Robot.executeAllTasks() {
         this.execute(task)
     }
 }
+
+fun Robot.withContext(context_: OpModeContext.Context): Robot =
+        this.apply { context = context_ }

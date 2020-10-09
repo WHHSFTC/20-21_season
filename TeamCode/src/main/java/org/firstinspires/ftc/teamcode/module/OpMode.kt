@@ -11,15 +11,23 @@ abstract class OpMode : LinearOpMode() {
         onInit()
         bot.log.update()
         waitForStart()
-        onRun()
-        bot.log.update()
-        while (opModeIsActive()) onLoop(); bot.log.update()
+        do {
+            onPeriodic()
+            bot.log.update()
+        } while (
+                !Thread.currentThread().isInterrupted &&
+                opModeIsActive() &&
+                bot.machine.mode == Mode.TELE
+        )
         onStop()
         bot.log.update()
     }
 
     abstract fun onInit()
-    abstract fun onRun()
-    abstract fun onLoop()
+    abstract fun onPeriodic()
     abstract fun onStop()
+
+    enum class Mode {
+        NULL, AUTO, TELE,
+    }
 }

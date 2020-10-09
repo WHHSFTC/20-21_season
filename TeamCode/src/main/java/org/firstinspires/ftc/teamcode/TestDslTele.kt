@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.dsl.*
+import org.firstinspires.ftc.teamcode.fsm.Machine
 import org.firstinspires.ftc.teamcode.fsm.end
 import org.firstinspires.ftc.teamcode.fsm.state
 import org.firstinspires.ftc.teamcode.module.DriveTrain
@@ -12,7 +13,7 @@ import kotlin.math.*
 @TeleOp
 class TestDslTele: DslOpMode() {
     init {
-        machine = fsm {
+        machine = (fsm {
             var prevTurtle = false
             var turtle = false
 
@@ -96,6 +97,6 @@ class TestDslTele: DslOpMode() {
             onStop {
                 bot.dt.powers = DriveTrain.Powers(.0, .0, .0, .0)
             }
-        }
+        }) as Machine
     }
 }

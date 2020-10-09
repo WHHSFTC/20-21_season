@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.dsl
 
 import org.firstinspires.ftc.teamcode.fsm.Machine
+import org.firstinspires.ftc.teamcode.fsm.State
 import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.Robot
 

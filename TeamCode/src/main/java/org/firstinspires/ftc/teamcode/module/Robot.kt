@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.dsl.Context
 import org.firstinspires.ftc.teamcode.dsl.OpModeContext
 import org.firstinspires.ftc.teamcode.dsl.RobotDsl
 import org.firstinspires.ftc.teamcode.fsm.Machine
+import org.firstinspires.ftc.teamcode.fsm.State
 
 @RobotDsl
 class Robot(
@@ -38,13 +39,16 @@ class Robot(
     fun <T: Any> Telemetry.logError(errorMsg: T) {
         this.addData("[ERROR]", "$errorMsg")
     }
+
+    companion object {}
 }
 
-fun Robot.enter(initialKey: String) =
+fun Robot.enter(initialKey: State) =
         if (machine.map.isNotEmpty()) {
             log.logData("State Machine", "Running $initialKey")
-            var state: (Robot.() -> String)? = machine.map[initialKey]
-            var key: String = initialKey
+            initialKey(this)
+            var state: (Robot.() -> State)? = machine.map[initialKey]
+            var key: State = initialKey
             while (state != null) {
                 key = state()
                 log.logData("State Machine", "Running $key")

@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.dsl.*
+import org.firstinspires.ftc.teamcode.fsm.end
+import org.firstinspires.ftc.teamcode.fsm.state
 import org.firstinspires.ftc.teamcode.module.DriveTrain
 import org.firstinspires.ftc.teamcode.module.Intake
 import org.firstinspires.ftc.teamcode.module.execute
@@ -9,19 +11,35 @@ import kotlin.math.*
 
 @TeleOp
 class TestDslTele: DslOpMode() {
-    private var heightCounter: Int = 0
-    private var prevTurtle = false
-    private var turtle = false
-
     init {
         machine = fsm {
+            var prevTurtle = false
+            var turtle = false
+
             infix fun Double.max(other: Double): Double {
                 return this.coerceAtLeast(other)
             }
-            infix fun Int.clip(other: IntRange): Int {
-                return min(max(other.first, heightCounter), other.last)
-            }
+
             val DEADZONE = 0.05
+
+            val A = state {
+                log.logData("at A")
+            }
+
+            val B = state {
+                log.logData("at B")
+            }
+
+            A {
+                log.logData("transition from A to B")
+                B
+            }
+
+            B {
+                log.logData("ending")
+                end
+            }
+
             onInit {
                 log.logData("Init")
                 log.logData("...")
@@ -57,11 +75,12 @@ class TestDslTele: DslOpMode() {
                 )
 
                 // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
-                telemetry.addData("xpow", xpow)
-                telemetry.addData("zpow", zpow)
-                telemetry.addData("ypow", ypow)
-                telemetry.addData("theta", theta)
+                log.logData("xpow", xpow)
+                log.logData("zpow", zpow)
+                log.logData("ypow", ypow)
+                log.logData("theta", theta)
             }
+
             task("runIntake") {
                 when {
                     gamepad1.y -> bot.ink.power = Intake.Power.OUT

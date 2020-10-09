@@ -6,14 +6,17 @@ import org.firstinspires.ftc.teamcode.module.Robot
 
 @RobotDsl
 data class MachineDSL(
-        val map: MutableMap<String, Robot.() -> String> =
-                emptyMap<String, Robot.() -> String>().toMutableMap()
+        val map: MutableMap<State, Robot.() -> State> =
+                emptyMap<State, Robot.() -> State>().toMutableMap()
 ): OpModeContext() {
-    operator fun String.invoke(state: Robot.() -> String): MachineDSL {
+    operator fun <T: State, R: State> T.invoke(state: Robot.() -> R): Machine {
         map[this] = state
         return this@MachineDSL
     }
+
+    companion object
 }
+
 fun emptyMachine(): MachineDSL = MachineDSL()
 
 typealias Machine = MachineDSL

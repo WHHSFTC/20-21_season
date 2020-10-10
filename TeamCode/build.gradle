@@ -34,10 +34,6 @@ dependencies {
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
     implementation "androidx.core:core-ktx:+"
-
-    implementation "org.jetbrains.kotlin:kotlin-scripting-common:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-scripting-jvm:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-scripting-jvm-host-embeddable:1.3.72"
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

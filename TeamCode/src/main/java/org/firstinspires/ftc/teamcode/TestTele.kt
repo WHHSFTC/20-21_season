@@ -26,12 +26,13 @@ class TestTele : OpMode() {
         telemetry.addLine("Done")
         telemetry.update()
     }
-    override fun onLoop() {
+
+    override fun onPeriodic() {
         runDriveTrain()
         runIntake()
         telemetry.update()
     }
-    override fun onRun() { }
+    
     override fun onStop() {
         bot.dt.powers = DriveTrain.Powers(.0, .0, .0, .0)
     }

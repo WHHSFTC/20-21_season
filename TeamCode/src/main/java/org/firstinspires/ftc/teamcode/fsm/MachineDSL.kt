@@ -21,45 +21,12 @@ data class MachineDSL(
 
     override fun onRun(run: Robot.() -> Unit): IMachine =
             this.apply {
-                if (mode != OpMode.Mode.NULL && mode == OpMode.Mode.TELE) {
-                    val currentMode = mode
-                    val errorTask: Robot.() -> Unit = {
-                        log.logError("Current Mode $currentMode is not ${OpMode.Mode.AUTO}")
-                    }
-                    this.mode = OpMode.Mode.NULL
-                    this.fnPeriodic = errorTask
-                    this.fnStop = {
-                        while(true)
-                            errorTask()
-                    }
-                } else {
-                    this.mode = OpMode.Mode.AUTO
-                    this.fnPeriodic = run
-                }
+                this.fnRun = run
             }
 
     override fun onLoop(loop: Robot.() -> Unit): IMachine =
             this.apply {
-                if (mode != OpMode.Mode.NULL && mode == OpMode.Mode.AUTO) {
-                    val currentMode = mode
-                    val errorTask: Robot.() -> Unit = {
-                        log.logError("Current Mode $currentMode is not ${OpMode.Mode.TELE}")
-                    }
-                    this.mode = OpMode.Mode.NULL
-                    this.fnPeriodic = errorTask
-                    this.fnStop = {
-                        while(true)
-                            errorTask()
-                    }
-                } else {
-                    this.mode = OpMode.Mode.TELE
-                    this.fnPeriodic = loop
-                }
-            }
-
-    override fun onPeriodic(periodic: Robot.() -> Unit): IMachine =
-            this.apply {
-                this.fnPeriodic = periodic
+                this.fnLoop = loop
             }
 
     override fun onStop(stop: Robot.() -> Unit): IMachine =

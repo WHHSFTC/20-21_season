@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.tele
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.module.DriveTrain
@@ -27,7 +27,9 @@ class TestTele : OpMode() {
         telemetry.update()
     }
 
-    override fun onPeriodic() {
+    override fun onRun() {}
+
+    override fun onLoop() {
         runDriveTrain()
         runIntake()
         telemetry.update()

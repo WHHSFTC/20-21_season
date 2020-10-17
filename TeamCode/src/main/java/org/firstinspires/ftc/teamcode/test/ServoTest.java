@@ -66,7 +66,7 @@ public class ServoTest extends LinearOpMode {
             telemetry.addData("Stick" + name, stick);
             telemetry.addData("Offset" + name, offset);
             telemetry.addData("Precision" + name, precision);
-            telemetry.addData("Controller" + name, servo.getController().getDeviceName());
+            //telemetry.addData("Controller" + name, servo.getController().getDeviceName());
             telemetry.addData("Port" + name, servo.getPortNumber());
             telemetry.addData("Names" + name, hardwareMap.getNamesOf(servo));
             telemetry.addData("Position" + name, servo.getPosition());

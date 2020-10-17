@@ -11,7 +11,7 @@ data class Vector2d(
     val angle: Double = atan2(y, x)
     val norm: Double = hypot(x, y)
 
-    fun rotateBy(angle: Double): Vector2d {
+    infix fun rotateBy(angle: Double): Vector2d {
         val rad = Math.toRadians(angle)
         val cos = cos(rad)
         val sin = sin(rad)

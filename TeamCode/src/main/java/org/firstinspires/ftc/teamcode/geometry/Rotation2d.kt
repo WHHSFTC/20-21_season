@@ -32,7 +32,7 @@ data class Rotation2d(val value: Double, val cos: Double, val sin: Double) {
 
     operator fun times(scalar: Number) = Rotation2d(value = value * scalar.toDouble())
 
-    fun rotateBy(other: Rotation2d) =
+    infix fun rotateBy(other: Rotation2d) =
             Rotation2d(
                     x = cos * other.cos - sin * other.sin,
                     y = cos * other.sin + sin * other.cos

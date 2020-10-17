@@ -47,4 +47,10 @@ data class Translation2d(val x: Double, val y: Double) {
 
     private fun Double.decimalFormat(precision: Int) =
             "%${precision}f".format(this)
+
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        return result
+    }
 }

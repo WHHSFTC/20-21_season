@@ -16,14 +16,14 @@ class HolonomicOdometry(
     private var prevHorizontalEncoder = 0.0
     private var previousAngle: Rotation2d
 
-    private lateinit var left: Supplier<Double>
-    private lateinit var right: Supplier<Double>
-    private lateinit var horizontal: Supplier<Double>
+    private lateinit var left: Supplier<Int>
+    private lateinit var right: Supplier<Int>
+    private lateinit var horizontal: Supplier<Int>
 
     constructor(
-            leftEncoder: Supplier<Double>,
-            rightEncoder: Supplier<Double>,
-            horizontalEncoder: Supplier<Double>,
+            leftEncoder: Supplier<Int>,
+            rightEncoder: Supplier<Int>,
+            horizontalEncoder: Supplier<Int>,
             trackWidth: Number,
             centerWheelOffset: Number
     ): this(trackWidth = trackWidth.toDouble(), centerWheelOffset = centerWheelOffset.toDouble()) {
@@ -37,12 +37,19 @@ class HolonomicOdometry(
             centerWheelOffset: Number
     ) : this(Pose2d(), trackWidth.toDouble(), centerWheelOffset.toDouble())
 
+    constructor(enc: Encoders, trackWidth: Number, centerWheelOffset: Number) : this(
+            leftEncoder = enc.left::getCurrentPosition,
+            rightEncoder = enc.right::getCurrentPosition,
+            horizontalEncoder = enc.back::getCurrentPosition,
+            trackWidth, centerWheelOffset
+    )
+
     init {
         previousAngle = initialPosition.rotation
     }
 
     override fun updatePose() {
-        update(left(), right(), horizontal())
+        update(left().toDouble(), right().toDouble(), horizontal().toDouble())
     }
 
     override fun updatePose(newPose: Pose2d) {

@@ -91,6 +91,10 @@ class TestTele : OpMode() {
         }
     }
 
+    fun logOdo() {
+
+    }
+
     infix fun Double.max(other: Double): Double {
         return this.coerceAtLeast(other)
     }

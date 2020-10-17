@@ -18,6 +18,8 @@ class Robot(
     val dt: DriveTrain = DriveTrain(this)
     val ink: Intake = Intake(this)
     val wob: Wobble = Wobble(this)
+    val enc: Encoders = Encoders(this)
+    val odo: HolonomicOdometry = HolonomicOdometry(enc, TRACK_WIDTH, CENTER_OFFSET)
 
     override var context: OpModeContext.Context = OpModeContext.Context.BASE
         set(value) {
@@ -41,7 +43,10 @@ class Robot(
         this.addData("[ERROR]", "$errorMsg")
     }
 
-    companion object {}
+    companion object {
+        const val TRACK_WIDTH = 4 // TODO
+        const val CENTER_OFFSET = 4 // TODO
+    }
 }
 
 fun Robot.enter(initialKey: State) =

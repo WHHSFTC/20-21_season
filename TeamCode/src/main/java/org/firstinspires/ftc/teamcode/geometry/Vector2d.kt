@@ -11,8 +11,8 @@ data class Vector2d(
     val angle: Double = atan2(y, x)
     val norm: Double = hypot(x, y)
 
-    infix fun rotateBy(angle: Double): Vector2d {
-        val rad = Math.toRadians(angle)
+    fun rotateBy(angle: Double): Vector2d {
+        val rad = angle.toRadians()
         val cos = cos(rad)
         val sin = sin(rad)
         return Vector2d(x * cos - y * sin, x * sin + y * cos)
@@ -26,7 +26,7 @@ data class Vector2d(
         return Vector2d(-other.x + x, -other.y + y)
     }
 
-    infix fun dot(other: Vector2d): Double {
+    fun dot(other: Vector2d): Double {
         return other.x * x + other.y * y
     }
 
@@ -42,12 +42,12 @@ data class Vector2d(
         return Vector2d(scalar / x, scalar / y)
     }
 
-    infix fun scalarProject(other: Vector2d): Double {
-        return (this dot other) / other.norm;
+    fun scalarProject(other: Vector2d): Double {
+        return (this.dot(other)) / other.norm;
     }
 
-    infix fun project(other: Vector2d): Vector2d {
-        return other * ((this dot other) / (norm * other.norm))
+    fun project(other: Vector2d): Vector2d {
+        return other * ((this.dot(other)) / (norm * other.norm))
     }
 
     override fun equals(other: Any?): Boolean {
@@ -71,8 +71,8 @@ data class Vector2d(
     }
 }
 
-operator fun Number.times(v: Vector2d): Vector2d {
-    return v * this;
-}
+private fun Number.toRadians() =
+        Math.toRadians(this.toDouble())
 
-
+private fun Number.toDegrees() =
+        Math.toDegrees(this.toDouble())

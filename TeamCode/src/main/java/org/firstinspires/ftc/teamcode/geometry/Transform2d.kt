@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.geometry
 
 data class Transform2d(
-        val translation: Translation2d,
-        val rotation: Rotation2d
+        val translation: Translation2d = Translation2d(),
+        val rotation: Rotation2d = Rotation2d()
 ) {
     constructor(initial: Pose2d, last: Pose2d): this(
             translation = (last.translation - initial.translation) rotateBy (-initial.rotation),
@@ -29,5 +29,6 @@ data class Transform2d(
         return result
     }
 
-    val inverse: Transform2d get() = Transform2d(-translation rotateBy -rotation, -rotation)
+    val inverse: Transform2d
+        get() = Transform2d(translation = -translation rotateBy -rotation, rotation = -rotation)
 }

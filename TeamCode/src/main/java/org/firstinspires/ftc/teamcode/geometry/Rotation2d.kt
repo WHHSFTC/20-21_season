@@ -2,8 +2,12 @@ package org.firstinspires.ftc.teamcode.geometry
 
 import kotlin.math.*
 
-data class Rotation2d(val value: Double, val cos: Double, val sin: Double) {
-    constructor(value: Number): this(m_val = value.clipIntoDomain())
+data class Rotation2d(
+        val value: Double,
+        val cos: Double,
+        val sin: Double
+) {
+    constructor(angle: Number): this(m_val = angle.clipIntoDomain())
     constructor(x: Number, y: Number): this(cosSinPair = {
         val magnitude = hypot(x.toDouble(), y.toDouble())
         if (magnitude > 1.0e-6) {
@@ -12,27 +16,35 @@ data class Rotation2d(val value: Double, val cos: Double, val sin: Double) {
             1.0 to 0.0
         }
     }())
+    constructor(): this(0.0, 1.0, 0.0)
+
+    private constructor(m_val: Double):
+            this(value = m_val, cos = cos(m_val), sin = sin(m_val))
+    private constructor(cos: Double, sin: Double):
+            this(value = atan2(sin, cos), cos = cos, sin = sin)
+    private constructor(cosSinPair: Pair<Double, Double>):
+            this(cos = cosSinPair.first, sin = cosSinPair.second)
 
     val radians: Double
         get() = value
 
-    val degress: Double
+    val degrees: Double
         get() = value.toDegrees()
 
     val tan: Double
         get() = sin / cos
 
-    operator fun unaryPlus() = Rotation2d(value = +value)
+    operator fun unaryPlus() = Rotation2d(angle = +value)
 
-    operator fun unaryMinus() = Rotation2d(value = -value)
+    operator fun unaryMinus() = Rotation2d(angle = -value)
 
     operator fun plus(other: Rotation2d) = this.rotateBy(other)
 
     operator fun minus(other: Rotation2d) = this.rotateBy(-other)
 
-    operator fun times(scalar: Number) = Rotation2d(value = value * scalar.toDouble())
+    operator fun times(scalar: Number) = Rotation2d(angle = value * scalar.toDouble())
 
-    infix fun rotateBy(other: Rotation2d) =
+    fun rotateBy(other: Rotation2d) =
             Rotation2d(
                     x = cos * other.cos - sin * other.sin,
                     y = cos * other.sin + sin * other.cos
@@ -58,21 +70,12 @@ data class Rotation2d(val value: Double, val cos: Double, val sin: Double) {
         return result
     }
 
-    private constructor(m_val: Double):
-            this(value = m_val, cos = cos(m_val), sin = sin(m_val))
-    private constructor(cos: Double, sin: Double):
-            this(value = atan2(sin, cos), cos = cos, sin = sin)
-    private constructor(cosSinPair: Pair<Double, Double>):
-            this(cos = cosSinPair.first, sin = cosSinPair.second)
-
     companion object {
         @JvmStatic
         fun fromDegrees(degrees: Number): Rotation2d =
-                Rotation2d(value = degrees.toRadians())
+                Rotation2d(angle = degrees.toRadians())
     }
 }
-
-operator fun Number.times(other: Rotation2d) = other * this
 
 private fun <T: Number> T.clipIntoDomain(bottom: Double = -Math.PI, top: Double = Math.PI): Double {
     var ret = this.toDouble()

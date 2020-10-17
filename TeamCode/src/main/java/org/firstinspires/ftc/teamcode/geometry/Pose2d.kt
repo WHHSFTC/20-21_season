@@ -73,7 +73,7 @@ data class Pose2d(
     }
 
     override fun toString(): String =
-            "Pose2d($translation, $rotation)"
+            "($translation, $rotation)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

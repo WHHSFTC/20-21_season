@@ -51,7 +51,7 @@ data class Rotation2d(
             )
 
     override fun toString(): String =
-            "Rotation2d(Rads: ${value.decimalFormat(2)}, Deg: ${value.toDegrees().decimalFormat(2)})"
+            "(Rads: ${value.decimalFormat(2)}, Deg: ${value.toDegrees().decimalFormat(2)})"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

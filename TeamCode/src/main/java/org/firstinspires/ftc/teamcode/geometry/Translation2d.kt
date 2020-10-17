@@ -37,7 +37,7 @@ data class Translation2d(
             this.copy(x = x / scalar.toDouble(), y = y / scalar.toDouble())
 
     override fun toString(): String =
-            "Translation2d(X: ${x.decimalFormat(2)}, Y: ${y.decimalFormat(2)}"
+            "(${x.decimalFormat(2)}, ${y.decimalFormat(2)}"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -29,6 +29,8 @@ class TestTele : OpMode() {
         runDriveTrain()
         runIntake()
         runWobble()
+        bot.odo.updatePose()
+        logOdo()
         telemetry.update()
     }
     
@@ -92,7 +94,7 @@ class TestTele : OpMode() {
     }
 
     fun logOdo() {
-
+        bot.log.addData("Pose", bot.odo.position)
     }
 
     infix fun Double.max(other: Double): Double {

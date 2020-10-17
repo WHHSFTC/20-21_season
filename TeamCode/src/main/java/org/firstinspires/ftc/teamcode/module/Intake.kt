@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.DcMotor
 
-class Intake(bot: Robot) {
+class Intake(bot: Robot): Module<Intake.Power> {
     val motor: DcMotor = bot.hwmap.dcMotor["intake"]
-    var power: Power = Power.OFF
+    override var state: Power = Power.OFF
         set(value) {
             motor.power = value.pow
             field = value

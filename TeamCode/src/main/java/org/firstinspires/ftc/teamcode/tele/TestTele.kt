@@ -4,15 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.module.DriveTrain
 import org.firstinspires.ftc.teamcode.module.Intake
 import org.firstinspires.ftc.teamcode.module.OpMode
+import org.firstinspires.ftc.teamcode.module.Wobble
 import kotlin.math.*
 
 @TeleOp(name = "Summum", group = "Tele")
 class TestTele : OpMode() {
-    private var prevInc: Boolean = false
-    private var prevDec: Boolean = false
-    private var prevCap: Boolean = false
-    private var heightCounter: Int = 0
-    private var automatic: Boolean = true
     private var prevTurtle = false
     private var turtle = false
 
@@ -32,6 +28,7 @@ class TestTele : OpMode() {
     override fun onLoop() {
         runDriveTrain()
         runIntake()
+        runWobble()
         telemetry.update()
     }
     
@@ -74,20 +71,28 @@ class TestTele : OpMode() {
         telemetry.addData("theta", theta)
     }
 
+    fun runWobble() {
+        when {
+            gamepad1.right_bumper -> bot.wob.claw(Wobble.ClawState.CLOSED)
+            gamepad1.left_bumper -> bot.wob.claw(Wobble.ClawState.OPEN)
+
+            gamepad2.dpad_up -> bot.wob.elbow(Wobble.ElbowState.UP)
+            gamepad2.dpad_down -> bot.wob.elbow(Wobble.ElbowState.DOWN)
+        }
+        telemetry.addData("[wob] elbow:", bot.wob.elbow())
+        telemetry.addData("[wob] claw:", bot.wob.claw())
+    }
+
     fun runIntake() {
-        if (gamepad1.y)
-            bot.ink.power = Intake.Power.OUT
-        else if (gamepad1.a)
-            bot.ink.power = Intake.Power.IN
-        else if (gamepad1.b)
-            bot.ink.power = Intake.Power.OFF
+        when {
+            gamepad1.y -> bot.ink(Intake.Power.OUT)
+            gamepad1.a -> bot.ink(Intake.Power.IN)
+            gamepad1.b -> bot.ink(Intake.Power.OFF)
+        }
     }
 
     infix fun Double.max(other: Double): Double {
         return this.coerceAtLeast(other)
     }
-
-    infix fun Int.clip(other: IntRange): Int {
-        return min(max(other.first, heightCounter), other.last)
-    }
 }
+

@@ -17,6 +17,7 @@ class Robot(
     val hwmap: HardwareMap = opMode.hardwareMap
     val dt: DriveTrain = DriveTrain(this)
     val ink: Intake = Intake(this)
+    val wob: Wobble = Wobble(this)
 
     override var context: OpModeContext.Context = OpModeContext.Context.BASE
         set(value) {

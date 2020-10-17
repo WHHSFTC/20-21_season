@@ -61,6 +61,14 @@ data class Vector2d(
     override fun toString(): String {
         return "<$x, $y>"
     }
+
+    override fun hashCode(): Int {
+        var result = x.hashCode()
+        result = 31 * result + y.hashCode()
+        result = 31 * result + angle.hashCode()
+        result = 31 * result + norm.hashCode()
+        return result
+    }
 }
 
 operator fun Number.times(v: Vector2d): Vector2d {

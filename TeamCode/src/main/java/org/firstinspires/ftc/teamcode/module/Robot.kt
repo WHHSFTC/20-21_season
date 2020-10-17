@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.module
 
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.dsl.Context
@@ -20,6 +21,16 @@ class Robot(
     val wob: Wobble = Wobble(this)
     val enc: Encoders = Encoders(this)
     val odo: HolonomicOdometry = HolonomicOdometry(enc, TRACK_WIDTH, CENTER_OFFSET)
+    var vis: StackCounter? = null
+
+    init {
+        if (opMode.mode == OpMode.Mode.AUTO)
+            vis = StackCounter(this)
+        else
+            vis = null
+
+        //dt.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+    }
 
     override var context: OpModeContext.Context = OpModeContext.Context.BASE
         set(value) {
@@ -44,8 +55,8 @@ class Robot(
     }
 
     companion object {
-        const val TRACK_WIDTH = 4 // TODO
-        const val CENTER_OFFSET = 4 // TODO
+        const val TRACK_WIDTH = 14.5 // TODO
+        const val CENTER_OFFSET = 7 // TODO
     }
 }
 

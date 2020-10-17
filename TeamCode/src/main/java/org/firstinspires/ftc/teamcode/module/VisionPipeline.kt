@@ -6,10 +6,11 @@ import org.opencv.imgproc.Imgproc
 import org.openftc.easyopencv.OpenCvPipeline
 
 
-class Vision(tl: Telemetry? = null): OpenCvPipeline() {
+class VisionPipeline(tl: Telemetry? = null): OpenCvPipeline() {
     var height: Height
     var telemetry: Telemetry
     var mat: Mat
+    var ret: Mat
 
     enum class Height {
         ZERO, ONE, FOUR
@@ -18,6 +19,8 @@ class Vision(tl: Telemetry? = null): OpenCvPipeline() {
     companion object {
         val lowerOrange = Scalar(0.0, 141.0, 0.0)
         val upperOrange = Scalar(255.0, 230.0, 150.0)
+        const val MIN_WIDTH = 50
+        const val BOUND_RATIO = 0.7
     }
 
     /**
@@ -26,12 +29,17 @@ class Vision(tl: Telemetry? = null): OpenCvPipeline() {
     init {
         height = Height.ZERO
         telemetry = tl!!
+        ret = Mat()
         mat = Mat()
     }
 
+
     override fun processFrame(input: Mat?): Mat {
-        val ret = Mat()
+        ret.release()
+        ret = Mat()
         try {
+//            mat.release()
+
             /**converting from RGB color space to HSV color space**/
             Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2YCrCb)
 
@@ -53,7 +61,7 @@ class Vision(tl: Telemetry? = null): OpenCvPipeline() {
 
             /**finding widths of each contour**/
             //var widths: MutableList<Int> = ArrayList()
-            var maxC: MatOfPoint
+            //var maxC: MatOfPoint
             var maxW: Int = 0
             var maxR: Rect = Rect()
             for (c: MatOfPoint in contours) {
@@ -62,24 +70,32 @@ class Vision(tl: Telemetry? = null): OpenCvPipeline() {
 
                 val w = rect.width
                 if (w > maxW) {
-                    maxC = c;
+                    //maxC = c;
                     maxW = w;
                     maxR = rect;
                 }
+                c.release()
+                copy.release()
             }
+
+            //maxC.release()
 
             Imgproc.rectangle(ret, maxR, Scalar(0.0, 0.0, 255.0), 2)
 
-            height = if (maxW >= 200) {
-                val aspectRatio = maxR.height / maxR.width
+            telemetry.addData("Vision: maxW", maxW)
+            height = if (maxW >= MIN_WIDTH) {
+                val aspectRatio: Double = maxR.height.toDouble() / maxR.width.toDouble()
                 telemetry.addData("Vision: Aspect Ratio", aspectRatio)
-                if (aspectRatio > .5) Height.FOUR else Height.ONE
+                if (aspectRatio > BOUND_RATIO) Height.FOUR else Height.ONE
             } else {
                 Height.ZERO
             }
 
             telemetry.addData("Vision: Height", height)
 
+            mat.release()
+            mask.release()
+            hierarchy.release()
         } catch (e: Exception) {
             /**error handling, prints stack trace for specific debug**/
             telemetry.addData("[ERROR]", e)

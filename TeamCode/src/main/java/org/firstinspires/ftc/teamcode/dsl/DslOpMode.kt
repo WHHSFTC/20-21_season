@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.fsm.emptyMachine
 import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.withContext
 
-open class DslOpMode(protected var machine: Machine = emptyMachine()): OpMode() {
+open class DslOpMode(protected var machine: Machine = emptyMachine()): OpMode(Mode.TELE) {
     constructor(getter: Machine.() -> Unit): this(emptyMachine().apply(getter))
     constructor(context: OpModeContext): this(emptyMachine().apply {
         mode = context.mode

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.fsm.emptyMachine
 import org.firstinspires.ftc.teamcode.module.Robot
 
-abstract class OpMode : LinearOpMode() {
+abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Robot
     override fun runOpMode() {
         bot = Robot(this, emptyMachine())
@@ -12,7 +12,7 @@ abstract class OpMode : LinearOpMode() {
         bot.log.update()
         waitForStart()
         onRun()
-        while (!Thread.currentThread().isInterrupted && opModeIsActive()) {
+        while (!Thread.currentThread().isInterrupted && !isStopRequested) {
             onLoop()
             bot.log.update()
         }

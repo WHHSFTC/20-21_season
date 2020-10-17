@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.module.Wobble
 import kotlin.math.*
 
 @TeleOp(name = "Summum", group = "Tele")
-class TestTele : OpMode() {
+class TestTele : OpMode(Mode.TELE) {
     private var prevTurtle = false
     private var turtle = false
 

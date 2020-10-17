@@ -10,7 +10,7 @@ data class Translation2d(val x: Double, val y: Double) {
     val norm: Double
         get() = hypot(x, y)
 
-    fun rotateBy(other: Rotation2d): Translation2d =
+    infix fun rotateBy(other: Rotation2d): Translation2d =
             Translation2d(
                     x = x * other.cos - y * other.sin,
                     y = x * other.sin + y * other.cos
@@ -54,3 +54,9 @@ data class Translation2d(val x: Double, val y: Double) {
         return result
     }
 }
+
+operator fun Number.times(other: Translation2d) =
+        other * this.toDouble()
+
+operator fun Number.div(other: Translation2d) =
+        other * (1 / this.toDouble())

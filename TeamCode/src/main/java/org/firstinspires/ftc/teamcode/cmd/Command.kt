@@ -4,8 +4,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.dsl.RobotDsl
 import org.firstinspires.ftc.teamcode.module.Robot
+import org.firstinspires.ftc.teamcode.util.Time
+import org.firstinspires.ftc.teamcode.util.TimeUnit
+import org.firstinspires.ftc.teamcode.util.milliseconds
+import org.firstinspires.ftc.teamcode.util.seconds
 
-abstract class Command {
+sealed class Command {
     abstract fun execute(bot: Robot)
     operator fun invoke(bot: Robot) {
         execute(bot)
@@ -14,10 +18,12 @@ abstract class Command {
     enum class Context { BASE, INIT, RUN, LOOP, STOP; }
 }
 
-class EmptyCommand : Command() {
+object EmptyCommand : Command() {
     override fun execute(bot: Robot) {
 
     }
+
+    operator fun invoke() = EmptyCommand
 }
 
 class LambdaCommand(val f: Robot.() -> Unit) : Command() {
@@ -44,6 +50,12 @@ class ParallelCommand(private val commands: List<Command>) : Command() {
     }
 }
 
+class DelayCommand(val delay: Time): Command() {
+    override fun execute(bot: Robot) {
+        Thread.sleep(delay.milliSeconds)
+    }
+}
+
 @RobotDsl
 object CommandContext
 
@@ -54,6 +66,15 @@ fun CommandContext.seq(b: CommandListContext.() -> CommandListContext): Sequenti
 
 fun CommandContext.par(b: CommandListContext.() -> CommandListContext): ParallelCommand =
             ParallelCommand(CommandListContext().b().build())
+
+fun CommandContext.delay(value: Time) = DelayCommand(value)
+
+fun CommandContext.delay(millis: Long) = DelayCommand(millis.milliseconds)
+
+fun CommandContext.delay(time: Long, unit: TimeUnit) = DelayCommand(when(unit) {
+    TimeUnit.SECONDS -> time.seconds
+    TimeUnit.MILLISECONDS -> time.milliseconds
+})
 
 fun CommandContext.pass(): EmptyCommand = EmptyCommand()
 

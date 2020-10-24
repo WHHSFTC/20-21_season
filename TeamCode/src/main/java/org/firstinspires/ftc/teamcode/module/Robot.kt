@@ -20,6 +20,7 @@ class Robot(
     val wob: Wobble = Wobble(this)
     val enc: Encoders = Encoders(this)
     val odo: HolonomicOdometry = HolonomicOdometry(enc, TRACK_WIDTH, CENTER_OFFSET)
+    val loc: CustomLocalizer = CustomLocalizer(enc)
     var vis: StackCounter? = null
 
     init {

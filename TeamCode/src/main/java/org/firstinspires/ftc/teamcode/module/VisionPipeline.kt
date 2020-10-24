@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.module
 
+import com.acmerobotics.dashboard.config.Config
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
@@ -16,11 +17,21 @@ class VisionPipeline(tl: Telemetry? = null): OpenCvPipeline() {
         ZERO, ONE, FOUR
     }
 
+    @Config
+    object VisionConstants {
+        @JvmField var lY = 0.0
+        @JvmField var lR = 141.0
+        @JvmField var lB = 0.0
+        @JvmField var uY = 255.0
+        @JvmField var uR = 230.0
+        @JvmField var uB = 150.0
+        @JvmField var MIN_WIDTH = 50
+        @JvmField var BOUND_RATIO = 0.7
+    }
+
     companion object {
-        val lowerOrange = Scalar(0.0, 141.0, 0.0)
-        val upperOrange = Scalar(255.0, 230.0, 150.0)
-        const val MIN_WIDTH = 50
-        const val BOUND_RATIO = 0.7
+        val lowerOrange get() = Scalar(VisionConstants.lY, VisionConstants.lR, VisionConstants.lB)
+        val upperOrange get() = Scalar(VisionConstants.uY, VisionConstants.uR, VisionConstants.uB)
     }
 
     /**
@@ -83,10 +94,10 @@ class VisionPipeline(tl: Telemetry? = null): OpenCvPipeline() {
             Imgproc.rectangle(ret, maxR, Scalar(0.0, 0.0, 255.0), 2)
 
             telemetry.addData("Vision: maxW", maxW)
-            height = if (maxW >= MIN_WIDTH) {
+            height = if (maxW >= VisionConstants.MIN_WIDTH) {
                 val aspectRatio: Double = maxR.height.toDouble() / maxR.width.toDouble()
                 telemetry.addData("Vision: Aspect Ratio", aspectRatio)
-                if (aspectRatio > BOUND_RATIO) Height.FOUR else Height.ONE
+                if (aspectRatio > VisionConstants.BOUND_RATIO) Height.FOUR else Height.ONE
             } else {
                 Height.ZERO
             }

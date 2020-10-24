@@ -31,7 +31,7 @@ class DriveTrain(val bot: Robot) {
 
     var powers: Powers = Powers()
         set(v) {
-            bot.log.addData("Powers", "%f, %f, %f, %f", v.rf, v.lf, v.lb, v.rb)
+            bot.log.addData("Powers", "lf: %f, rf: %f, lb: %f, rb: %f", v.lf, v.rf, v.lb, v.rb)
             lf.power = v.lf
             lb.power = v.lb
             rf.power = v.rf

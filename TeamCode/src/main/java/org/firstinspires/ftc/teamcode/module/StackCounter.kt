@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.module
 
+import com.acmerobotics.dashboard.FtcDashboard
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraFactory
@@ -14,6 +15,7 @@ class StackCounter(val bot: Robot) {
         bot.log.addData("cam", cam)
         cam.setPipeline(pipeline)
         cam.openCameraDeviceAsync { cam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT) }
+        FtcDashboard.getInstance().startCameraStream(cam, 20.0);
         bot.log.addLine("Vision initialized")
         bot.log.update()
         bot.opMode.waitForStart()

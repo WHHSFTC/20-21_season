@@ -7,7 +7,7 @@ import org.opencv.imgproc.Imgproc
 import org.openftc.easyopencv.OpenCvPipeline
 
 
-class VisionPipeline(tl: Telemetry? = null): OpenCvPipeline() {
+class VisionPipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCvPipeline() {
     var height: Height
     var telemetry: Telemetry
     var mat: Mat
@@ -24,9 +24,10 @@ class VisionPipeline(tl: Telemetry? = null): OpenCvPipeline() {
         @JvmField var lB = 0.0
         @JvmField var uY = 255.0
         @JvmField var uR = 230.0
-        @JvmField var uB = 110.0
+        @JvmField var uB = 95.0
         @JvmField var MIN_WIDTH = 50
         @JvmField var BOUND_RATIO = 0.7
+        @JvmField var HORIZON = 0
     }
 
     companion object {
@@ -80,7 +81,7 @@ class VisionPipeline(tl: Telemetry? = null): OpenCvPipeline() {
                 val rect: Rect = Imgproc.boundingRect(copy)
 
                 val w = rect.width
-                if (w > maxW) {
+                if (w > maxW && rect.y + rect.height > VisionConstants.HORIZON) {
                     //maxC = c;
                     maxW = w;
                     maxR = rect;
@@ -92,6 +93,7 @@ class VisionPipeline(tl: Telemetry? = null): OpenCvPipeline() {
             //maxC.release()
 
             Imgproc.rectangle(ret, maxR, Scalar(0.0, 0.0, 255.0), 2)
+            Imgproc.line(ret, Point(.0, VisionConstants.HORIZON.toDouble()), Point(cwidth.toDouble(), VisionConstants.HORIZON.toDouble()), Scalar(255.0, .0, 255.0))
 
             telemetry.addData("Vision: maxW", maxW)
             height = if (maxW >= VisionConstants.MIN_WIDTH) {

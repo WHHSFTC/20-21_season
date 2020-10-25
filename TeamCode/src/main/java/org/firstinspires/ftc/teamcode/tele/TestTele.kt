@@ -79,7 +79,8 @@ class TestTele : OpMode(Mode.TELE) {
             gamepad1.left_bumper -> bot.wob.claw(Wobble.ClawState.OPEN)
 
             gamepad2.dpad_up -> bot.wob.elbow(Wobble.ElbowState.UP)
-            gamepad2.dpad_down -> bot.wob.elbow(Wobble.ElbowState.DOWN)
+            gamepad2.dpad_left || gamepad2.dpad_right -> bot.wob.elbow(Wobble.ElbowState.OUT)
+            gamepad2.dpad_down -> bot.wob.elbow(Wobble.ElbowState.INIT)
         }
         telemetry.addData("[wob] elbow:", bot.wob.elbow())
         telemetry.addData("[wob] claw:", bot.wob.claw())

@@ -60,7 +60,7 @@ class TimeAuto: DslOpMode() {
                 }
             }
 
-            onLoop {
+            onRun {
                 seq {
                     +moveRight(24.0)
                     +moveForward(66.0)

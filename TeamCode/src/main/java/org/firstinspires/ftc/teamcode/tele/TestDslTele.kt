@@ -70,7 +70,8 @@ class TestDslTele: DslOpMode() {
                     gamepad1.left_bumper -> bot.wob.claw(Wobble.ClawState.OPEN)
 
                     gamepad2.dpad_up -> bot.wob.elbow(Wobble.ElbowState.UP)
-                    gamepad2.dpad_down -> bot.wob.elbow(Wobble.ElbowState.DOWN)
+                    gamepad2.dpad_left || gamepad2.dpad_right -> bot.wob.elbow(Wobble.ElbowState.OUT)
+                    gamepad2.dpad_down -> bot.wob.elbow(Wobble.ElbowState.INIT)
                 }
                 log.logData("[wob] elbow:", bot.wob.elbow())
                 log.logData("[wob] claw:", bot.wob.claw())

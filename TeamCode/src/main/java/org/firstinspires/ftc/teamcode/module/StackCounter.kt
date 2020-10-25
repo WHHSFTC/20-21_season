@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.config.Config
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraFactory
@@ -9,7 +10,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation
 class StackCounter(val bot: Robot) {
     val camId: Int = bot.hwmap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", bot.hwmap.appContext.packageName)
     val cam: OpenCvCamera = OpenCvCameraFactory.getInstance().createWebcam(bot.hwmap.get(WebcamName::class.java, "Webcam 1"), camId)
-    val pipeline: VisionPipeline = VisionPipeline(bot.log)
+    val pipeline: VisionPipeline = VisionPipeline(bot.log, 320, 240)
     init {
         bot.log.addData("camId", camId)
         bot.log.addData("cam", cam)

@@ -23,10 +23,8 @@ import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
 import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.hardware.VoltageSensor
-import org.firstinspires.ftc.teamcode.acme.drive.DriveConstants
 import org.firstinspires.ftc.teamcode.acme.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.acme.util.LynxModuleUtil
 import java.util.*

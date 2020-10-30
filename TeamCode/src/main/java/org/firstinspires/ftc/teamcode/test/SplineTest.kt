@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.test
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.teamcode.acme.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 import org.firstinspires.ftc.teamcode.module.OpMode
 

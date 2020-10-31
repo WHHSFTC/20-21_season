@@ -85,11 +85,30 @@ class TestDslTele: DslOpMode() {
                 }
             }
 
+            val randomTask = task {
+                log.logData("Some random task")
+            }
+
             onLoop {
                 seq {
                     +runDriveTrain
                     +runIntake
                     +runWobble
+                    +(condition({turtle}) {
+                        +cmd {
+                            log.logData("Currently in turtle mode")
+                        }
+                    } orElse {
+                        +cmd {
+                            log.logData("Currently not in turtle mode")
+                        }
+                    })
+                    +onPress(gamepad1::a and gamepad1::b or !gamepad1::x) {
+                        +cmd {
+                            log.logData("In toggled command")
+                        }
+                        +randomTask
+                    }
                 }
             }
 

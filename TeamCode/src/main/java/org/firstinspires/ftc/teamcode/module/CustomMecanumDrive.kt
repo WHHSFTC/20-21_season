@@ -23,6 +23,7 @@ import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.PIDFCoefficients
 import com.qualcomm.robotcore.hardware.VoltageSensor
 import org.firstinspires.ftc.teamcode.acme.util.DashboardUtil
@@ -52,7 +53,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
     private val rightRear: DcMotorEx
     private val rightFront: DcMotorEx
     private val motors: List<DcMotorEx>
-    private val imu: BNO055IMU
+    //private val imu: BNO055IMU
     private val batteryVoltageSensor: VoltageSensor
     private var lastPoseOnTurn: Pose2d? = null
     fun trajectoryBuilder(startPose: Pose2d?): TrajectoryBuilder {
@@ -233,7 +234,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
     }
 
     override val rawExternalHeading: Double
-        get() = imu.angularOrientation.firstAngle.toDouble()
+        = 0.0
 
     companion object {
         var TRANSLATIONAL_PID = PIDCoefficients(.0, .0, .0)
@@ -262,10 +263,10 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
         }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = bot.hwmap.get(BNO055IMU::class.java, "imu")
-        val parameters = BNO055IMU.Parameters()
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS
-        imu.initialize(parameters)
+        //imu = bot.hwmap.get(BNO055IMU::class.java, "imu")
+        //val parameters = BNO055IMU.Parameters()
+        //parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS
+        //imu.initialize(parameters)
 
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
@@ -289,6 +290,8 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        rightRear.direction = DcMotorSimple.Direction.REVERSE
+        rightFront.direction = DcMotorSimple.Direction.REVERSE
 
         localizer = bot.loc
     }

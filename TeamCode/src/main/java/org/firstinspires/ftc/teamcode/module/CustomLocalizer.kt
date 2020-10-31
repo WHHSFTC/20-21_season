@@ -22,9 +22,9 @@ import java.util.*
 *
 */
 class CustomLocalizer(val encoders: Encoders) : ThreeTrackingWheelLocalizer(Arrays.asList(
-        Pose2d(0.0, LATERAL_DISTANCE / 2, 0.0),  // left
-        Pose2d(0.0 -LATERAL_DISTANCE / 2, 0.0),  // right
-        Pose2d(-BACK_OFFSET, LATERAL_OFFSET, Math.toRadians(90.0)) // front
+        Pose2d(FRONT_X, LATERAL_DISTANCE / 2, 0.0),  // left
+        Pose2d(FRONT_X, -LATERAL_DISTANCE / 2, Math.toRadians(180.0)),  // right
+        Pose2d(BACK_X, -LATERAL_DISTANCE / 2, Math.toRadians(90.0)) // back
 )) {
     private val leftEncoder: Encoder = Encoder(encoders.left)
     private val rightEncoder: Encoder = Encoder(encoders.right)
@@ -51,15 +51,16 @@ class CustomLocalizer(val encoders: Encoders) : ThreeTrackingWheelLocalizer(Arra
 
     @Config
     companion object {
-        // TODO: config
-        @JvmField var TICKS_PER_REV = 0.0
-        @JvmField var WHEEL_RADIUS = 2.0 // in
+        @JvmField var TICKS_PER_REV = 8192.0
+        @JvmField var WHEEL_RADIUS = 1.0 // in
         @JvmField var GEAR_RATIO = 1.0 // output (wheel) speed / input (encoder) speed
-        @JvmField var LATERAL_DISTANCE = 10.0 // in; distance between the left and right wheels
-        @JvmField var BACK_OFFSET = 4.0 // in; offset of the lateral wheel
-        @JvmField var LATERAL_OFFSET = 4.0 // in; offset of the lateral wheel
-        @JvmField var X_MULT = 4.0 // in; offset of the lateral wheel
-        @JvmField var Y_MULT = 4.0 // in; offset of the lateral wheel
+        @JvmField var LATERAL_DISTANCE = 14.75 // in; distance between the left and right wheels
+        @JvmField var BACK_X = -2.41 // in; x of the back
+        @JvmField var FRONT_X = 1.71 // in; x of the fronts
+        //@JvmField var X_MULT = 0.99642393
+        @JvmField var X_MULT = 0.99643
+        //@JvmField var Y_MULT = 1.00039887
+        @JvmField var Y_MULT = 1.00399
         fun encoderTicksToInches(ticks: Double): Double {
             return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV
         }

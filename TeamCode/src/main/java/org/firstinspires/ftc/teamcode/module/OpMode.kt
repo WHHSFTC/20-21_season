@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.module
 
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Robot
+    val dashboard = FtcDashboard.getInstance()
     override fun runOpMode() {
-        bot = Robot(this,/*emptyMachine()*/)
+        telemetry = MultipleTelemetry(telemetry, dashboard.telemetry)
+        bot = Robot(this/*emptyMachine()*/)
         onInit()
         bot.log.update()
         waitForStart()

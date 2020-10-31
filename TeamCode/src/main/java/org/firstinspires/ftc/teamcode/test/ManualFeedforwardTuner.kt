@@ -19,7 +19,6 @@ import java.util.*
 @Config
 @TeleOp(group = "tuning")
 class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
-    private val dashboard = FtcDashboard.getInstance()
     private lateinit var drive: CustomMecanumDrive
     private lateinit var clock: NanoClock
     private var movingForwards: Boolean = false
@@ -37,7 +36,6 @@ class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
             RobotLog.setGlobalErrorMsg("Feedforward constants usually don't need to be tuned " +
                     "when using the built-in drive motor velocity PID.")
         }
-        telemetry = MultipleTelemetry(telemetry, dashboard.telemetry)
         drive = CustomMecanumDrive(bot)
         mode_ = Mode.TUNING_MODE
         clock = NanoClock.system()
@@ -53,7 +51,7 @@ class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
     }
 
     override fun onLoop() {
-        telemetry.addData("mode", mode)
+        telemetry.addData("mode", mode_)
         when (mode_) {
             Mode.TUNING_MODE -> {
                 if (gamepad1.x) {
@@ -100,7 +98,7 @@ class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
     override fun onStop() {}
 
     companion object {
-        var DISTANCE = 72.0 // in
+        @JvmField var DISTANCE = 72.0 // in
         private fun generateProfile(movingForward: Boolean): MotionProfile {
             val start = MotionState(if (movingForward) 0.0 else DISTANCE, 0.0, 0.0, 0.0)
             val goal = MotionState(if (movingForward) DISTANCE else 0.0, 0.0, 0.0, 0.0)

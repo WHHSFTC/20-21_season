@@ -9,8 +9,8 @@ object DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    const val TICKS_PER_REV = 1.0
-    const val MAX_RPM = 1.0
+    @JvmField var TICKS_PER_REV = 1.0
+    @JvmField var MAX_RPM = 1.0
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -20,8 +20,8 @@ object DriveConstants {
      * If using the built-in motor velocity PID, update MOTOR_VELO_PID with the tuned coefficients
      * from DriveVelocityPIDTuner.
      */
-    const val RUN_USING_ENCODER = true
-    var MOTOR_VELO_PID = PIDFCoefficients(0.0, 0.0, 0.0, getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV))
+    @JvmField var RUN_USING_ENCODER = false
+    @JvmField var MOTOR_VELO_PID = PIDFCoefficients(0.0, 0.0, 0.0, getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV))
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -31,9 +31,9 @@ object DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    var WHEEL_RADIUS = 2.0 // in
-    var GEAR_RATIO = 1.0 // output (wheel) speed / input (motor) speed
-    var TRACK_WIDTH = 1.0 // in
+    @JvmField var WHEEL_RADIUS = 2.0 // in
+    @JvmField var GEAR_RATIO = 1.0 // output (wheel) speed / input (motor) speed
+    @JvmField var TRACK_WIDTH = 1.0 // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -41,9 +41,9 @@ object DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    var kV = 1.0 / rpmToVelocity(MAX_RPM)
-    var kA = 0.0
-    var kStatic = 0.0
+    @JvmField var kV = 0.0166
+    @JvmField var kA = 0.0017
+    @JvmField var kStatic = 0.0
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -53,7 +53,7 @@ object DriveConstants {
      * acceleration values are required, and the jerk values are optional (setting a jerk of 0.0
      * forces acceleration-limited profiling). All distance units are inches.
      */
-    var BASE_CONSTRAINTS = DriveConstraints(
+    @JvmField var BASE_CONSTRAINTS = DriveConstraints(
             30.0, 30.0, 0.0,
             Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     )

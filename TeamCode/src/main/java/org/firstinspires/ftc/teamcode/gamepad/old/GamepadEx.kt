@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tele
+package org.firstinspires.ftc.teamcode.gamepad.old
 
 class GamepadEx(val g: com.qualcomm.robotcore.hardware.Gamepad): Gamepad {
     override val left: Joystick = object : Joystick {

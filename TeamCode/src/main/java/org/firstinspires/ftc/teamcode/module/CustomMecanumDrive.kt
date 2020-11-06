@@ -124,7 +124,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
             DriveMode.IDLE -> { }
             DriveMode.TURN -> {
                 val t = clock.seconds() - turnStart
-                val targetState = turnProfile!![t]
+                val targetState = turnProfile[t]
                 turnController.targetPosition = targetState.x
                 val correction = turnController.update(currentPose.heading)
                 val targetOmega = targetState.v
@@ -137,7 +137,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
                 val newPose = lastPoseOnTurn!!.copy(lastPoseOnTurn!!.x, lastPoseOnTurn!!.y, targetState.x)
                 fieldOverlay.setStroke("#4CAF50")
                 DashboardUtil.drawRobot(fieldOverlay, newPose)
-                if (t >= turnProfile!!.duration()) {
+                if (t >= turnProfile.duration()) {
                     mode = DriveMode.IDLE
                     setDriveSignal(DriveSignal())
                 }
@@ -225,11 +225,11 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
         return wheelVelocities
     }
 
-    override fun setMotorPowers(v: Double, v1: Double, v2: Double, v3: Double) {
-        leftFront.power = v
-        leftRear.power = v1
-        rightRear.power = v2
-        rightFront.power = v3
+    override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
+        leftFront.power = frontLeft
+        leftRear.power = rearLeft
+        rightRear.power = rearRight
+        rightFront.power = frontRight
     }
 
     override val rawExternalHeading: Double
@@ -284,7 +284,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
             setMode(RunMode.RUN_USING_ENCODER)
         }
         setZeroPowerBehavior(ZeroPowerBehavior.BRAKE)
-        if (DriveConstants.RUN_USING_ENCODER && DriveConstants.MOTOR_VELO_PID != null) {
+        if (DriveConstants.RUN_USING_ENCODER) {
             setPIDFCoefficients(RunMode.RUN_USING_ENCODER, DriveConstants.MOTOR_VELO_PID)
         }
 

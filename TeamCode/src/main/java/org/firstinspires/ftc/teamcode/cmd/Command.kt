@@ -26,7 +26,7 @@ object EmptyCommand : Command() {
     operator fun invoke() = EmptyCommand
 }
 
-class LambdaCommand(val f: Robot.() -> Unit) : Command() {
+open class LambdaCommand(val f: Robot.() -> Unit) : Command() {
     override fun execute(bot: Robot) {
         bot.f()
     }
@@ -56,7 +56,7 @@ class DelayCommand(val delay: Time): Command() {
     }
 }
 
-data class ConditionalCommand(
+class ConditionalCommand(
         val condition: Condition,
         val sequential: Boolean,
         val onTrue: Command,
@@ -71,7 +71,7 @@ data class ConditionalCommand(
     }
 }
 
-data class ToggleCommand(
+class ToggleCommand(
         val condition: Condition,
         val sequential: Boolean,
         val command: Command,
@@ -88,6 +88,7 @@ data class ToggleCommand(
         previous = current
     }
 }
+
 
 @RobotDsl
 open class DSLContext
@@ -122,7 +123,7 @@ fun DSLContext.condition(
 infix fun ConditionalCommand.orElse(
         elseC: CommandListContext.() -> CommandListContext,
 ): ConditionalCommand =
-        this.copy(
+        ConditionalCommand(
                 condition = condition,
                 sequential = sequential,
                 onTrue = onTrue,
@@ -136,25 +137,26 @@ fun DSLContext.onPress(
         c: Condition,
         sequential: Boolean = true,
         commandBlock: CommandListContext.() -> CommandListContext
-): ToggleCommand = ToggleCommand(
-        c,
-        sequential,
-        if (sequential)
-            SequentialCommand(CommandListContext().commandBlock().build())
-        else
-            ParallelCommand(CommandListContext().commandBlock().build())
-)
+): ToggleCommand =
+        ToggleCommand(
+                c,
+                sequential,
+                if (sequential)
+                    SequentialCommand(CommandListContext().commandBlock().build())
+                else
+                    ParallelCommand(CommandListContext().commandBlock().build())
+        )
 
-fun CommandContext.delay(value: Time) = DelayCommand(value)
+fun DSLContext.delay(value: Time) = DelayCommand(value)
 
-fun CommandContext.delay(millis: Long) = DelayCommand(millis.milliseconds)
+fun DSLContext.delay(millis: Long) = DelayCommand(millis.milliseconds)
 
-fun CommandContext.delay(time: Long, unit: TimeUnit) = DelayCommand(when (unit) {
+fun DSLContext.delay(time: Long, unit: TimeUnit) = DelayCommand(when (unit) {
     TimeUnit.SECONDS -> time.seconds
     TimeUnit.MILLISECONDS -> time.milliseconds
 })
 
-fun CommandContext.pass(): EmptyCommand = EmptyCommand()
+fun DSLContext.pass(): EmptyCommand = EmptyCommand()
 
 @RobotDsl
 class CommandListContext: DSLContext() {

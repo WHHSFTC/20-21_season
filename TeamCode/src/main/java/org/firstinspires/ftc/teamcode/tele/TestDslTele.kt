@@ -23,9 +23,11 @@ class TestDslTele: DslOpMode() {
 
             onInit {
                 cmd {
-                    log.logData("Init")
-                    log.logData("...")
-                    log.logData("Done")
+                    log.logData {
+                        appendLine("Init")
+                        appendLine("...")
+                        appendLine("Done")
+                    }
                 }
             }
 
@@ -115,6 +117,7 @@ class TestDslTele: DslOpMode() {
             onStop {
                 cmd {
                     bot.dt.powers = DriveTrain.Powers(.0, .0, .0, .0)
+                    log.logData(bot.dt::powers)
                 }
             }
         }

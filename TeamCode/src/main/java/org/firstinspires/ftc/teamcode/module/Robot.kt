@@ -50,6 +50,10 @@ class Robot(
         this.addData("$context", valueProducer)
     }
 
+    fun Telemetry.logData(builder: StringBuilder.() -> StringBuilder) {
+        this.addData("$context", StringBuilder("").builder().toString())
+    }
+
     fun <T: Any> Telemetry.logError(errorMsg: T) {
         this.addData("[ERROR]", "$errorMsg")
     }

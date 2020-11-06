@@ -34,6 +34,6 @@ class StraightTest : OpMode(Mode.TELE) {
     override fun onStop() {}
 
     companion object {
-        var DISTANCE = 60.0 // in
+        @JvmField var DISTANCE = 60.0 // in
     }
 }

@@ -18,7 +18,6 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.util.NanoClock
-import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
@@ -35,15 +34,15 @@ import java.util.*
 */
 @Config
 class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, DriveConstants.TRACK_WIDTH, DriveConstants.TRACK_WIDTH, LATERAL_MULTIPLIER) {
-    enum class Mode {
+    enum class DriveMode {
         IDLE, TURN, FOLLOW_TRAJECTORY
     }
 
     private val dashboard: FtcDashboard = FtcDashboard.getInstance()
     private val clock: NanoClock
-    private var mode: Mode
+    private var mode: DriveMode
     private val turnController: PIDFController
-    private var turnProfile: MotionProfile? = null
+    private lateinit var turnProfile: MotionProfile
     private var turnStart = 0.0
     private val constraints: DriveConstraints
     private val follower: TrajectoryFollower
@@ -79,7 +78,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
                 constraints.maxAngJerk
         )
         turnStart = clock.seconds()
-        mode = Mode.TURN
+        mode = DriveMode.TURN
     }
 
     fun turn(angle: Double) {
@@ -89,7 +88,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
 
     fun followTrajectoryAsync(trajectory: Trajectory?) {
         follower.followTrajectory(trajectory!!)
-        mode = Mode.FOLLOW_TRAJECTORY
+        mode = DriveMode.FOLLOW_TRAJECTORY
     }
 
     fun followTrajectory(trajectory: Trajectory?) {
@@ -99,9 +98,9 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
 
     val lastError: Pose2d
         get() = when (mode) {
-                    Mode.FOLLOW_TRAJECTORY -> follower.lastError
-                    Mode.TURN -> Pose2d(.0, .0, turnController.lastError)
-                    Mode.IDLE -> Pose2d()
+                    DriveMode.FOLLOW_TRAJECTORY -> follower.lastError
+                    DriveMode.TURN -> Pose2d(.0, .0, turnController.lastError)
+                    DriveMode.IDLE -> Pose2d()
                 }
 
     fun update() {
@@ -122,8 +121,8 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
         packet.put("yError", lastError.y)
         packet.put("headingError", lastError.heading)
         when (mode) {
-            Mode.IDLE -> { }
-            Mode.TURN -> {
+            DriveMode.IDLE -> { }
+            DriveMode.TURN -> {
                 val t = clock.seconds() - turnStart
                 val targetState = turnProfile!![t]
                 turnController.targetPosition = targetState.x
@@ -139,11 +138,11 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
                 fieldOverlay.setStroke("#4CAF50")
                 DashboardUtil.drawRobot(fieldOverlay, newPose)
                 if (t >= turnProfile!!.duration()) {
-                    mode = Mode.IDLE
+                    mode = DriveMode.IDLE
                     setDriveSignal(DriveSignal())
                 }
             }
-            Mode.FOLLOW_TRAJECTORY -> {
+            DriveMode.FOLLOW_TRAJECTORY -> {
                 setDriveSignal(follower.update(currentPose))
                 val trajectory = follower.trajectory
                 fieldOverlay.setStrokeWidth(1)
@@ -154,7 +153,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
                 fieldOverlay.setStroke("#3F51B5")
                 DashboardUtil.drawPoseHistory(fieldOverlay, poseHistory)
                 if (!follower.isFollowing()) {
-                    mode = Mode.IDLE
+                    mode = DriveMode.IDLE
                     setDriveSignal(DriveSignal())
                 }
             }
@@ -171,7 +170,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
     }
 
     val isBusy: Boolean
-        get() = mode != Mode.IDLE
+        get() = mode != DriveMode.IDLE
 
     fun setMode(runMode: RunMode?) {
         for (motor in motors) {
@@ -249,7 +248,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
     init {
         dashboard.telemetryTransmissionInterval = 25
         clock = NanoClock.system()
-        mode = Mode.IDLE
+        mode = DriveMode.IDLE
         turnController = PIDFController(HEADING_PID)
         turnController.setInputBounds(0.0, 2 * Math.PI)
         constraints = MecanumConstraints(DriveConstants.BASE_CONSTRAINTS, DriveConstants.TRACK_WIDTH)

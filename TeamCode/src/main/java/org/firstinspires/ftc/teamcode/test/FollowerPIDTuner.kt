@@ -31,6 +31,6 @@ class FollowerPIDTuner : OpMode(Mode.TELE) {
     override fun onStop() {}
 
     companion object {
-        var DISTANCE = 48.0 // in
+        @JvmField var DISTANCE = 48.0 // in
     }
 }

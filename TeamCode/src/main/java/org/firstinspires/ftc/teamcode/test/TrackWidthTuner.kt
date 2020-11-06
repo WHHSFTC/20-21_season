@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.test
 
 import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.util.Angle.norm
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.module.DriveConstants
 import org.firstinspires.ftc.teamcode.module.OpMode
 import kotlin.math.sqrt
 
+@Config
 @TeleOp(group = "drive")
 class TrackWidthTuner : OpMode(Mode.TELE) {
     private lateinit var drive: CustomMecanumDrive
@@ -61,8 +63,8 @@ class TrackWidthTuner : OpMode(Mode.TELE) {
     override fun onStop() {}
 
     companion object {
-        var ANGLE = 180.0 // deg
-        var NUM_TRIALS = 5
-        var DELAY = 1000 // ms
+        @JvmField var ANGLE = 180.0 // deg
+        @JvmField var NUM_TRIALS = 5
+        @JvmField var DELAY = 1000 // ms
     }
 }

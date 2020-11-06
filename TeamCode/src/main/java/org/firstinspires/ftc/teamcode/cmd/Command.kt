@@ -56,10 +56,46 @@ class DelayCommand(val delay: Time): Command() {
     }
 }
 
-@RobotDsl
-object CommandContext
+data class ConditionalCommand(
+        val condition: Condition,
+        val sequential: Boolean,
+        val onTrue: Command,
+        val onFalse: Command,
+): Command() {
+    override fun execute(bot: Robot) {
+        if (condition()) {
+            onTrue.execute(bot)
+        } else {
+            onFalse.execute(bot)
+        }
+    }
+}
 
-fun CommandContext.cmd(exec: Robot.() -> Unit): LambdaCommand = LambdaCommand(exec)
+data class ToggleCommand(
+        val condition: Condition,
+        val sequential: Boolean,
+        val command: Command,
+): Command() {
+    private var previous: Boolean = false
+
+    override fun execute(bot: Robot) {
+        val current = condition()
+
+        if (!previous && current) {
+            command.execute(bot)
+        }
+
+        previous = current
+    }
+}
+
+@RobotDsl
+open class DSLContext
+
+@RobotDsl
+object CommandContext: DSLContext()
+
+fun DSLContext.cmd(exec: Robot.() -> Unit): LambdaCommand = LambdaCommand(exec)
 
 fun CommandContext.seq(b: CommandListContext.() -> CommandListContext): SequentialCommand =
             SequentialCommand(CommandListContext().b().build())
@@ -67,11 +103,53 @@ fun CommandContext.seq(b: CommandListContext.() -> CommandListContext): Sequenti
 fun CommandContext.par(b: CommandListContext.() -> CommandListContext): ParallelCommand =
             ParallelCommand(CommandListContext().b().build())
 
+typealias Condition = () -> Boolean
+
+fun DSLContext.condition(
+        c: Condition,
+        sequential: Boolean = true,
+        ifC: CommandListContext.() -> CommandListContext,
+): ConditionalCommand = ConditionalCommand(
+        c,
+        sequential,
+        if (sequential)
+            SequentialCommand(CommandListContext().ifC().build())
+        else
+            ParallelCommand(CommandListContext().ifC().build()),
+        EmptyCommand()
+)
+
+infix fun ConditionalCommand.orElse(
+        elseC: CommandListContext.() -> CommandListContext,
+): ConditionalCommand =
+        this.copy(
+                condition = condition,
+                sequential = sequential,
+                onTrue = onTrue,
+                onFalse = if(sequential)
+                    SequentialCommand(CommandListContext().elseC().build())
+                else
+                    ParallelCommand(CommandListContext().elseC().build())
+        )
+
+fun DSLContext.onPress(
+        c: Condition,
+        sequential: Boolean = true,
+        commandBlock: CommandListContext.() -> CommandListContext
+): ToggleCommand = ToggleCommand(
+        c,
+        sequential,
+        if (sequential)
+            SequentialCommand(CommandListContext().commandBlock().build())
+        else
+            ParallelCommand(CommandListContext().commandBlock().build())
+)
+
 fun CommandContext.delay(value: Time) = DelayCommand(value)
 
 fun CommandContext.delay(millis: Long) = DelayCommand(millis.milliseconds)
 
-fun CommandContext.delay(time: Long, unit: TimeUnit) = DelayCommand(when(unit) {
+fun CommandContext.delay(time: Long, unit: TimeUnit) = DelayCommand(when (unit) {
     TimeUnit.SECONDS -> time.seconds
     TimeUnit.MILLISECONDS -> time.milliseconds
 })
@@ -79,7 +157,7 @@ fun CommandContext.delay(time: Long, unit: TimeUnit) = DelayCommand(when(unit) {
 fun CommandContext.pass(): EmptyCommand = EmptyCommand()
 
 @RobotDsl
-class CommandListContext {
+class CommandListContext: DSLContext() {
     private val commands: MutableList<Command> = mutableListOf()
     fun build(): List<Command> {
         return commands
@@ -93,7 +171,7 @@ class CommandListContext {
 @RobotDsl
 data class CommandScheduler(
         var fnInit: Command = EmptyCommand(),
-        var fnRun:  Command = EmptyCommand(),
+        var fnRun: Command = EmptyCommand(),
         var fnLoop: Command = EmptyCommand(),
         var fnStop: Command = EmptyCommand(),
 )
@@ -120,3 +198,11 @@ fun CommandScheduler.onStop(stop: CommandContext.() -> Command): CommandSchedule
 
 fun CommandScheduler.dsl(build: CommandScheduler.() -> CommandScheduler): CommandScheduler =
         this.build()
+
+infix fun Condition.and(other: Condition): Condition = { this() && other() }
+
+infix fun Condition.or(other: Condition): Condition = { this() || other() }
+
+infix fun Condition.xor(other: Condition): Condition = { this() xor other() }
+
+operator fun Condition.not(): Condition = { !this() }

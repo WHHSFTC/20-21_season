@@ -235,14 +235,15 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
     override val rawExternalHeading: Double
         = 0.0
 
+    @Config
     companion object {
-        var TRANSLATIONAL_PID = PIDCoefficients(.0, .0, .0)
-        var HEADING_PID = PIDCoefficients(.0, .0, .0)
-        var LATERAL_MULTIPLIER = 1.0
-        var VX_WEIGHT = 1.0
-        var VY_WEIGHT = 1.0
-        var OMEGA_WEIGHT = 1.0
-        var POSE_HISTORY_LIMIT = 100
+        @JvmField var TRANSLATIONAL_PID = PIDCoefficients(4.0, .0, .0)
+        @JvmField var HEADING_PID = PIDCoefficients(8.0, .0, .0)
+        @JvmField var LATERAL_MULTIPLIER = 1.0
+        @JvmField var VX_WEIGHT = 1.0
+        @JvmField var VY_WEIGHT = 1.0
+        @JvmField var OMEGA_WEIGHT = 1.0
+        @JvmField var POSE_HISTORY_LIMIT = 100
     }
 
     init {

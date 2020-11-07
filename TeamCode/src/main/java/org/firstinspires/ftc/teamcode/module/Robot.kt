@@ -16,8 +16,10 @@ class Robot(
     val log: Telemetry = opMode.telemetry
     val hwmap: HardwareMap = opMode.hardwareMap
     val dt: DriveTrain = DriveTrain(this)
-    val ink: Intake = Intake(this)
-    val wob: Wobble = Wobble(this)
+    //val ink: Intake = Intake(this)
+    lateinit var ink: Intake
+    //val wob: Wobble = Wobble(this)
+    lateinit var wob: Wobble
     val enc: Encoders = Encoders(this)
     val odo: HolonomicOdometry = HolonomicOdometry(enc, TRACK_WIDTH, CENTER_OFFSET)
     val loc: CustomLocalizer = CustomLocalizer(enc)

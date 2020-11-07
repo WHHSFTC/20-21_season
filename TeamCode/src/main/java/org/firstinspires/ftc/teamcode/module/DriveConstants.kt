@@ -10,7 +10,7 @@ object DriveConstants {
      * These are motor constants that should be listed online for your motors.
      */
     @JvmField var TICKS_PER_REV = 1.0
-    @JvmField var MAX_RPM = 1.0
+    @JvmField var MAX_RPM = 340.0
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -31,9 +31,9 @@ object DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    @JvmField var WHEEL_RADIUS = 2.0 // in
+    @JvmField var WHEEL_RADIUS = 1.9685039 // in
     @JvmField var GEAR_RATIO = 1.0 // output (wheel) speed / input (motor) speed
-    @JvmField var TRACK_WIDTH = 1.0 // in
+    @JvmField var TRACK_WIDTH =  15.15 // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using

@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
-import org.firstinspires.ftc.teamcode.module.DriveTrain
 import org.firstinspires.ftc.teamcode.module.Intake
 import org.firstinspires.ftc.teamcode.module.Wobble
 import kotlin.math.*
@@ -21,8 +20,6 @@ class TestDslTele: DslOpMode() {
                 return this.coerceAtLeast(other)
             }
 
-            val DEADZONE = 0.05
-
             onInit {
                 cmd {
                     log.logData {
@@ -36,30 +33,6 @@ class TestDslTele: DslOpMode() {
             val runDriveTrain: Command = task {
                 if (gamepad1.x && !prevTurtle) turtle = !turtle
                 prevTurtle = gamepad1.x
-//                var xpow = gamepad1.left_stick_x.toDouble()
-//                var ypow = -gamepad1.left_stick_y.toDouble()
-//                var zpow = gamepad1.right_stick_x.toDouble()
-//
-//                val theta = atan2(ypow, xpow) //angle of joystick
-//
-//                val power = (abs(xpow) max abs(ypow)).pow(2.0) //logarithmic drive
-//
-//                // ternaries for dead-zone logic
-//                xpow = if (abs(xpow) > TestTele.DEADZONE) xpow else 0.0
-//                ypow = if (abs(ypow) > TestTele.DEADZONE) ypow else 0.0
-//                zpow = if (abs(zpow) > TestTele.DEADZONE) zpow else 0.0
-//
-//                val zpower = abs(zpow).pow(2.0) / (if (turtle) 3.0 else 1.0)
-//                val x = cos(theta) / (if (turtle) 3.0 else 1.0)
-//                val y = sin(theta) / (if (turtle) 3.0 else 1.0)
-//                val z = sign(zpow)
-
-//                bot.dt.powers = DriveTrain.Powers(
-//                        rf = power * -(y - x) + zpower * z,
-//                        lf = power * -(-y - x) + zpower * z,
-//                        lb = power * -(-y + x) + zpower * z,
-//                        rb = power * -(y + x) + zpower * z
-//                )
                 val x = (-gamepad1.left_stick_y).toDouble()
                 val y = (-gamepad1.left_stick_x).toDouble()
                 val omega = (-gamepad1.right_stick_x).toDouble()

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tele
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -30,47 +31,58 @@ class TestDslTele: DslOpMode() {
                 }
             }
 
+            val goHome: Command = task {
+                val traj = dt.trajectoryBuilder(loc.poseEstimate)
+                        .splineTo(Vector2d(0.0, 0.0), 0.0)
+                        .build()
+                dt.followTrajectory(traj)
+            }
+
             val runDriveTrain: Command = task {
-                if (gamepad1.x && !prevTurtle) turtle = !turtle
-                prevTurtle = gamepad1.x
-                val x = (-gamepad1.left_stick_y).toDouble()
-                val y = (-gamepad1.left_stick_x).toDouble()
-                val omega = (-gamepad1.right_stick_x).toDouble()
+                if (gamepad1.a) {
+                    goHome(this)
+                } else {
+                    if (gamepad1.x && !prevTurtle) turtle = !turtle
+                    prevTurtle = gamepad1.x
+                    val x = (-gamepad1.left_stick_y).toDouble()
+                    val y = (-gamepad1.left_stick_x).toDouble()
+                    val omega = (-gamepad1.right_stick_x).toDouble()
 
-                val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
-                val turtleScalar = if (turtle) 3.0 else 1.0
+                    val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
+                    val turtleScalar = if (turtle) 3.0 else 1.0
 
-                bot.dt.twist = Pose2d(
-                        x = linearScalar * x,
-                        y = linearScalar * y,
-                        omega
-                ) / turtleScalar
+                    bot.dt.twist = Pose2d(
+                            x = linearScalar * x,
+                            y = linearScalar * y,
+                            omega
+                    ) / turtleScalar
 
-                // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
-                val (x_, y_, omega_) = bot.dt.twist
-                log.logData("x power: $x_")
-                log.logData("y power: $y_")
-                log.logData("omega power: $omega_")
+                    // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
+                    val (x_, y_, omega_) = bot.dt.twist
+                    log.logData("x power: $x_")
+                    log.logData("y power: $y_")
+                    log.logData("omega power: $omega_")
+                }
             }
 
             val runWobble = task {
                 when {
-                    gamepad1.right_bumper -> bot.wob.claw(Wobble.ClawState.CLOSED)
-                    gamepad1.left_bumper -> bot.wob.claw(Wobble.ClawState.OPEN)
+                    //gamepad1.right_bumper -> bot.wob.claw(Wobble.ClawState.CLOSED)
+                    //gamepad1.left_bumper -> bot.wob.claw(Wobble.ClawState.OPEN)
 
-                    gamepad2.dpad_up -> bot.wob.elbow(Wobble.ElbowState.UP)
-                    gamepad2.dpad_left || gamepad2.dpad_right -> bot.wob.elbow(Wobble.ElbowState.OUT)
-                    gamepad2.dpad_down -> bot.wob.elbow(Wobble.ElbowState.INIT)
+                    //gamepad2.dpad_up -> bot.wob.elbow(Wobble.ElbowState.UP)
+                    //gamepad2.dpad_left || gamepad2.dpad_right -> bot.wob.elbow(Wobble.ElbowState.OUT)
+                    //gamepad2.dpad_down -> bot.wob.elbow(Wobble.ElbowState.INIT)
                 }
-                log.logData("[wob] elbow:", bot.wob.elbow())
-                log.logData("[wob] claw:", bot.wob.claw())
+                //log.logData("[wob] elbow:", bot.wob.elbow())
+                //log.logData("[wob] claw:", bot.wob.claw())
             }
 
             val runIntake = task {
                 when {
-                    gamepad1.y -> bot.ink(Intake.Power.OUT)
-                    gamepad1.a -> bot.ink(Intake.Power.IN)
-                    gamepad1.b -> bot.ink(Intake.Power.OFF)
+                    //gamepad1.y -> bot.ink(Intake.Power.OUT)
+                    //gamepad1.a -> bot.ink(Intake.Power.IN)
+                    //gamepad1.b -> bot.ink(Intake.Power.OFF)
                 }
             }
 
@@ -83,21 +95,12 @@ class TestDslTele: DslOpMode() {
                     +runDriveTrain
                     +runIntake
                     +runWobble
-                    +(condition({turtle}) {
-                        +cmd {
-                            log.logData("Currently in turtle mode")
-                        }
-                    } orElse {
-                        +cmd {
-                            log.logData("Currently not in turtle mode")
-                        }
-                    })
-                    +onPress(gamepad1::a and gamepad1::b or !gamepad1::x) {
-                        +cmd {
-                            log.logData("In toggled command")
-                        }
-                        +randomTask
-                    }
+                    //+onPress(gamepad1::a and gamepad1::b or !gamepad1::x) {
+                        //+cmd {
+                            //log.logData("In toggled command")
+                        //}
+                        //+randomTask
+                    //}
                 }
             }
 

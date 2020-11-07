@@ -11,7 +11,7 @@ class TurnTest : OpMode(Mode.TELE) {
     private lateinit var drive: CustomMecanumDrive
 
     override fun onInit() {
-        drive = CustomMecanumDrive(bot)
+        drive = bot.dt
     }
 
     override fun onRun() {

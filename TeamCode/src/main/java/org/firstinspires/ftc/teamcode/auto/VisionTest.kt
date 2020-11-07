@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 import org.firstinspires.ftc.teamcode.module.DriveTrain
 import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.VisionPipeline
@@ -19,28 +20,11 @@ class VisionTest: OpMode(Mode.AUTO) {
         bot.vis!!.halt()
         bot.log.addData("[vis] height", bot.vis!!.height)
         bot.log.update()
-//        when (bot.vis!!.height) {
-//            VisionPipeline.Height.ZERO -> zero()
-//            VisionPipeline.Height.ONE -> one()
-//            VisionPipeline.Height.FOUR -> four()
-//        }
     }
 
     override fun onLoop() {}
 
     override fun onStop() {
-        bot.dt.powers = DriveTrain.Powers()
-    }
-
-    fun zero() {
-        bot.dt.powers = DriveTrain.Powers(-1.0, 1.0, -1.0, 1.0)
-    }
-
-    fun one() {
-        bot.dt.powers = DriveTrain.Powers(1.0, 1.0, 1.0, 1.0)
-    }
-
-    fun four() {
-        bot.dt.powers = DriveTrain.Powers(-1.0, -1.0, -1.0, -1.0)
+        bot.dt.powers = CustomMecanumDrive.Powers()
     }
 }

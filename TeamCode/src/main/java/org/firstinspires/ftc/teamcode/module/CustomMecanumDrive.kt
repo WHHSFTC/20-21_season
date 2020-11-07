@@ -19,21 +19,19 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.qualcomm.hardware.lynx.LynxModule
+import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.PIDFCoefficients
-import com.qualcomm.robotcore.hardware.VoltageSensor
 import org.firstinspires.ftc.teamcode.acme.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.acme.util.LynxModuleUtil
 import java.util.*
+import kotlin.math.abs
 
 /*
 * Simple mecanum drive hardware implementation for REV hardware.
 */
 @Config
-class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, DriveConstants.TRACK_WIDTH, DriveConstants.TRACK_WIDTH, LATERAL_MULTIPLIER) {
+class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, DriveConstants.TRACK_WIDTH, DriveConstants.TRACK_WIDTH, LATERAL_MULTIPLIER) {
     enum class DriveMode {
         IDLE, TURN, FOLLOW_TRAJECTORY
     }
@@ -178,12 +176,6 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
         }
     }
 
-    fun setZeroPowerBehavior(zeroPowerBehavior: ZeroPowerBehavior?) {
-        for (motor in motors) {
-            motor.zeroPowerBehavior = zeroPowerBehavior
-        }
-    }
-
     fun setPIDFCoefficients(runMode: RunMode?, coefficients: PIDFCoefficients) {
         val compensatedCoefficients = PIDFCoefficients(
                 coefficients.p, coefficients.i, coefficients.d,
@@ -196,15 +188,15 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
 
     fun setWeightedDrivePower(drivePower: Pose2d) {
         var vel = drivePower
-        if ((Math.abs(drivePower.x) + Math.abs(drivePower.y)
-                        + Math.abs(drivePower.heading)) > 1) {
+        if ((abs(drivePower.x) + abs(drivePower.y)
+                        + abs(drivePower.heading)) > 1) {
             // re-normalize the powers according to the weights
-            val denom = VX_WEIGHT * Math.abs(drivePower.x) + VY_WEIGHT * Math.abs(drivePower.y) + OMEGA_WEIGHT * Math.abs(drivePower.heading)
+            val denom = VX_WEIGHT * abs(drivePower.x) + VY_WEIGHT * abs(drivePower.y) + OMEGA_WEIGHT * abs(drivePower.heading)
             vel = Pose2d(
                     VX_WEIGHT * drivePower.x,
                     VY_WEIGHT * drivePower.y,
                     OMEGA_WEIGHT * drivePower.heading
-            ).div(denom)
+            ) / denom
         }
         setDrivePower(vel)
     }
@@ -234,6 +226,35 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
 
     override val rawExternalHeading: Double
         = 0.0
+
+    var powers: Powers = Powers()
+        set(value) {
+            val (frontLeft, rearLeft, rearRight, frontRight) = value
+            bot.log.addData("Powers", "fl: %f, bl: %f, br: %f, fr: %f", frontLeft, rearLeft, rearRight, frontRight)
+            this.setMotorPowers(frontLeft = frontLeft, rearLeft = rearLeft, rearRight = rearRight, frontRight = frontRight)
+            field = value
+        }
+
+    var zeroPowerBehavior: ZeroPowerBehavior = ZeroPowerBehavior.BRAKE
+        set(value) {
+            for (motor in motors) {
+                motor.zeroPowerBehavior = value
+            }
+            field = value
+        }
+
+    var twist: Pose2d = Pose2d()
+        set(value) {
+            this.setWeightedDrivePower(value)
+            field = value
+        }
+
+    data class Powers(
+            var frontLeft: Double = .0,
+            var rearLeft: Double = .0,
+            var rearRight: Double = .0,
+            var frontRight: Double = .0
+    )
 
     @Config
     companion object {
@@ -284,7 +305,7 @@ class CustomMecanumDrive(bot: Robot) : MecanumDrive(DriveConstants.kV, DriveCons
         if (DriveConstants.RUN_USING_ENCODER) {
             setMode(RunMode.RUN_USING_ENCODER)
         }
-        setZeroPowerBehavior(ZeroPowerBehavior.BRAKE)
+        zeroPowerBehavior = ZeroPowerBehavior.BRAKE
         if (DriveConstants.RUN_USING_ENCODER) {
             setPIDFCoefficients(RunMode.RUN_USING_ENCODER, DriveConstants.MOTOR_VELO_PID)
         }

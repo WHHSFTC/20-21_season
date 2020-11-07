@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.tele
 
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
+import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 import org.firstinspires.ftc.teamcode.module.DriveTrain
 import org.firstinspires.ftc.teamcode.module.Intake
 import org.firstinspires.ftc.teamcode.module.Wobble
@@ -34,36 +36,48 @@ class TestDslTele: DslOpMode() {
             val runDriveTrain: Command = task {
                 if (gamepad1.x && !prevTurtle) turtle = !turtle
                 prevTurtle = gamepad1.x
-                var xpow = gamepad1.left_stick_x.toDouble()
-                var ypow = -gamepad1.left_stick_y.toDouble()
-                var zpow = gamepad1.right_stick_x.toDouble()
+//                var xpow = gamepad1.left_stick_x.toDouble()
+//                var ypow = -gamepad1.left_stick_y.toDouble()
+//                var zpow = gamepad1.right_stick_x.toDouble()
+//
+//                val theta = atan2(ypow, xpow) //angle of joystick
+//
+//                val power = (abs(xpow) max abs(ypow)).pow(2.0) //logarithmic drive
+//
+//                // ternaries for dead-zone logic
+//                xpow = if (abs(xpow) > TestTele.DEADZONE) xpow else 0.0
+//                ypow = if (abs(ypow) > TestTele.DEADZONE) ypow else 0.0
+//                zpow = if (abs(zpow) > TestTele.DEADZONE) zpow else 0.0
+//
+//                val zpower = abs(zpow).pow(2.0) / (if (turtle) 3.0 else 1.0)
+//                val x = cos(theta) / (if (turtle) 3.0 else 1.0)
+//                val y = sin(theta) / (if (turtle) 3.0 else 1.0)
+//                val z = sign(zpow)
 
-                val theta = atan2(ypow, xpow) //angle of joystick
+//                bot.dt.powers = DriveTrain.Powers(
+//                        rf = power * -(y - x) + zpower * z,
+//                        lf = power * -(-y - x) + zpower * z,
+//                        lb = power * -(-y + x) + zpower * z,
+//                        rb = power * -(y + x) + zpower * z
+//                )
+                val x = (-gamepad1.left_stick_y).toDouble()
+                val y = (-gamepad1.left_stick_x).toDouble()
+                val omega = (-gamepad1.right_stick_x).toDouble()
 
-                val power = (abs(xpow) max abs(ypow)).pow(2.0) //logarithmic drive
+                val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
+                val turtleScalar = if (turtle) 3.0 else 1.0
 
-                // ternaries for dead-zone logic
-                xpow = if (abs(xpow) > TestTele.DEADZONE) xpow else 0.0
-                ypow = if (abs(ypow) > TestTele.DEADZONE) ypow else 0.0
-                zpow = if (abs(zpow) > TestTele.DEADZONE) zpow else 0.0
-
-                val zpower = abs(zpow).pow(2.0) / (if (turtle) 3.0 else 1.0)
-                val x = cos(theta) / (if (turtle) 3.0 else 1.0)
-                val y = sin(theta) / (if (turtle) 3.0 else 1.0)
-                val z = sign(zpow)
-
-                bot.dt.powers = DriveTrain.Powers(
-                        rf = power * -(y - x) + zpower * z,
-                        lf = power * -(-y - x) + zpower * z,
-                        lb = power * -(-y + x) + zpower * z,
-                        rb = power * -(y + x) + zpower * z
-                )
+                bot.dt.twist = Pose2d(
+                        x = linearScalar * x,
+                        y = linearScalar * y,
+                        omega
+                ) / turtleScalar
 
                 // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
-                log.logData("xpow", xpow)
-                log.logData("zpow", zpow)
-                log.logData("ypow", ypow)
-                log.logData("theta", theta)
+                val (x_, y_, omega_) = bot.dt.twist
+                log.logData("x power: $x_")
+                log.logData("y power: $y_")
+                log.logData("omega power: $omega_")
             }
 
             val runWobble = task {
@@ -116,7 +130,7 @@ class TestDslTele: DslOpMode() {
 
             onStop {
                 cmd {
-                    bot.dt.powers = DriveTrain.Powers(.0, .0, .0, .0)
+                    bot.dt.powers = CustomMecanumDrive.Powers(.0, .0, .0, .0)
                     log.logData(bot.dt::powers)
                 }
             }

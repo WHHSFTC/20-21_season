@@ -6,10 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Robot
-    val dashboard = FtcDashboard.getInstance()
     override fun runOpMode() {
-        telemetry = MultipleTelemetry(telemetry, dashboard.telemetry)
-        bot = Robot(this/*emptyMachine()*/)
+        telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
+        bot = Robot(this)
         onInit()
         bot.log.update()
         waitForStart()

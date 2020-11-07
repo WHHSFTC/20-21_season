@@ -22,11 +22,13 @@ class TestDslTele: DslOpMode() {
             }
 
             onInit {
-                cmd {
-                    log.logData {
-                        appendLine("Init")
-                        appendLine("...")
-                        appendLine("Done")
+                seq {
+                    +cmd {
+                        log.logData {
+                            appendLine("Init")
+                            appendLine("...")
+                            appendLine("Done")
+                        }
                     }
                 }
             }

@@ -23,7 +23,7 @@ import java.util.*
 */
 class CustomLocalizer(val encoders: Encoders) : ThreeTrackingWheelLocalizer(Arrays.asList(
         Pose2d(FRONT_X, LATERAL_DISTANCE / 2, 0.0),  // left
-        Pose2d(FRONT_X, -LATERAL_DISTANCE / 2, Math.toRadians(180.0)),  // right
+        Pose2d(FRONT_X, -LATERAL_DISTANCE / 2, 0.0),  // right
         Pose2d(BACK_X, -LATERAL_DISTANCE / 2, Math.toRadians(90.0)) // back
 )) {
     private val leftEncoder: Encoder = Encoder(encoders.left)

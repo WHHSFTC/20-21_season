@@ -7,15 +7,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Robot
     override fun runOpMode() {
-        telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
+        //telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         bot = Robot(this)
         onInit()
         bot.log.update()
         waitForStart()
         onRun()
-        while (!Thread.currentThread().isInterrupted && !isStopRequested) {
-            onLoop()
-            bot.log.update()
+        if (mode == Mode.TELE) {
+            while (!Thread.currentThread().isInterrupted && !isStopRequested) {
+                onLoop()
+                bot.log.update()
+            }
         }
         onStop()
         bot.log.update()

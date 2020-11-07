@@ -27,7 +27,7 @@ class VisionPipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): 
         @JvmField var uB = 95.0
         @JvmField var MIN_WIDTH = 50
         @JvmField var BOUND_RATIO = 0.7
-        @JvmField var HORIZON = 0
+        @JvmField var HORIZON = 100
     }
 
     companion object {

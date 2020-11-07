@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.cmd
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.dsl.RobotDsl
@@ -44,13 +45,18 @@ class ParallelCommand(private val commands: List<Command>) : Command() {
     override fun execute(bot: Robot) {
         runBlocking {
             for (c: Command in commands) {
-                launch { c.execute(bot) }
+                launch {
+                    when {
+                        c is DelayCommand && !c.blockCoroutine -> delay(c.delay.milliSeconds)
+                        else -> c.execute(bot)
+                    }
+                }
             }
         }
     }
 }
 
-class DelayCommand(val delay: Time): Command() {
+class DelayCommand(val delay: Time, val blockCoroutine: Boolean = false): Command() {
     override fun execute(bot: Robot) {
         Thread.sleep(delay.milliSeconds)
     }
@@ -147,14 +153,14 @@ fun DSLContext.onPress(
                     ParallelCommand(CommandListContext().commandBlock().build())
         )
 
-fun DSLContext.delay(value: Time) = DelayCommand(value)
+fun DSLContext.delay(value: Time, block: Boolean = false) = DelayCommand(value, blockCoroutine = block)
 
-fun DSLContext.delay(millis: Long) = DelayCommand(millis.milliseconds)
+fun DSLContext.delay(millis: Long, block: Boolean = false) = DelayCommand(millis.milliseconds, blockCoroutine = block)
 
-fun DSLContext.delay(time: Long, unit: TimeUnit) = DelayCommand(when (unit) {
+fun DSLContext.delay(time: Long, unit: TimeUnit, block: Boolean = false) = DelayCommand(when (unit) {
     TimeUnit.SECONDS -> time.seconds
     TimeUnit.MILLISECONDS -> time.milliseconds
-})
+}, blockCoroutine = block)
 
 fun DSLContext.pass(): EmptyCommand = EmptyCommand()
 

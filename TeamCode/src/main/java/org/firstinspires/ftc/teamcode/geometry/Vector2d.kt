@@ -43,11 +43,11 @@ data class Vector2d(
     }
 
     fun scalarProject(other: Vector2d): Double {
-        return (this.dot(other)) / other.norm;
+        return (this.dot(other)) / (other.dot(other))
     }
 
     fun project(other: Vector2d): Vector2d {
-        return other * ((this.dot(other)) / (norm * other.norm))
+        return other * ((this.dot(other)) / (other.dot(other)))
     }
 
     override fun equals(other: Any?): Boolean {

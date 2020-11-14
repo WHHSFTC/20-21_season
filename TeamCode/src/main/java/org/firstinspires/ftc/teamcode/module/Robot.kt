@@ -21,7 +21,9 @@ class Robot(
     val loc: CustomLocalizer = CustomLocalizer(enc)
     //    val dt: DriveTrain = DriveTrain(this)
     val dt: CustomMecanumDrive = CustomMecanumDrive(this)
+    val aim: HeightController = HeightController(this)
     var vis: StackCounter? = null
+    var out: Shooter = Shooter(this)
 
     init {
         if (opMode.mode == OpMode.Mode.AUTO)

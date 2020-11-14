@@ -5,9 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
-import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
-import org.firstinspires.ftc.teamcode.module.Intake
-import org.firstinspires.ftc.teamcode.module.Wobble
+import org.firstinspires.ftc.teamcode.module.*
 import kotlin.math.*
 
 @TeleOp
@@ -88,6 +86,16 @@ class TestDslTele: DslOpMode() {
                 }
             }
 
+            val runOutput = task {
+                when {
+                    gamepad2.dpad_up -> aim(HeightController.State.POWER)
+                    gamepad2.dpad_down -> aim(HeightController.State.HIGH)
+                    gamepad2.y -> out(Shooter.State.FULL)
+                    gamepad2.a -> out(Shooter.State.OFF)
+                }
+                log.logData("aim: ${aim.motor.currentPosition}")
+            }
+
             val randomTask = task {
                 log.logData("Some random task")
             }
@@ -97,6 +105,7 @@ class TestDslTele: DslOpMode() {
                     +runDriveTrain
                     +runIntake
                     +runWobble
+                    +runOutput
                     //+onPress(gamepad1::a and gamepad1::b or !gamepad1::x) {
                         //+cmd {
                             //log.logData("In toggled command")

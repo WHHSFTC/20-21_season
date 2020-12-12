@@ -41,8 +41,8 @@ object DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    @JvmField var kV = 0.0166
-    @JvmField var kA = 0.0017
+    @JvmField var kV = 0.0146
+    @JvmField var kA = 0.0025
     @JvmField var kStatic = 0.0
 
     /*

@@ -14,6 +14,8 @@ class TestDslTele: DslOpMode() {
         dsl {
             var prevTurtle = false
             var turtle = false
+            var prevHeightMode = false
+            var heightMode = false
 
             infix fun Double.max(other: Double): Double {
                 return this.coerceAtLeast(other)
@@ -40,7 +42,7 @@ class TestDslTele: DslOpMode() {
 
             val runDriveTrain: Command = task {
                 if (gamepad1.a) {
-                    goHome(this)
+goHome(this)
                 } else {
                     if (gamepad1.x && !prevTurtle) turtle = !turtle
                     prevTurtle = gamepad1.x
@@ -87,17 +89,24 @@ class TestDslTele: DslOpMode() {
             }
 
             val runOutput = task {
+                if (gamepad2.x && !prevHeightMode) heightMode = !heightMode
+                heightMode = gamepad2.x
+
+                if (heightMode) {
+                    when {
+                        gamepad2.dpad_up -> aim.height(HeightController.Height.POWER)
+                        gamepad2.dpad_down -> aim.height(HeightController.Height.HIGH)
+                    }
+                } else {
+                    aim.power(-gamepad2.right_stick_y.toDouble())
+                }
+
                 when {
-                    gamepad2.dpad_up -> aim(HeightController.State.POWER)
-                    gamepad2.dpad_down -> aim(HeightController.State.HIGH)
                     gamepad2.y -> out(Shooter.State.FULL)
                     gamepad2.a -> out(Shooter.State.OFF)
                 }
-                log.logData("aim: ${aim.motor.currentPosition}")
-            }
 
-            val randomTask = task {
-                log.logData("Some random task")
+                log.logData("aim: ${aim.motor.currentPosition}")
             }
 
             onLoop {

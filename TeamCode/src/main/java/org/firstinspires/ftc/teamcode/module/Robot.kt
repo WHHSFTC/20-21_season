@@ -12,8 +12,8 @@ class Robot(
 ): Context<Command.Context> {
     val log: Telemetry = opMode.telemetry
     val hwmap: HardwareMap = opMode.hardwareMap
-    //val ink: Intake = Intake(this)
-    //lateinit var ink: Intake
+    val ink: Intake = Intake(this)
+    val feed: Indexer = Indexer(this)
     //val wob: Wobble = Wobble(this)
     //lateinit var wob: Wobble
     val enc: Encoders = Encoders(this)

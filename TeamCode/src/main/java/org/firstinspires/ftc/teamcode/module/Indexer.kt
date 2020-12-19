@@ -41,6 +41,7 @@ class Indexer(val bot: Robot) {
         feed(Shoot.POST)
         sleep(150)
         feed(Shoot.PRE)
+        sleep(150)
         bot.out(Shooter.State.OFF)
         height(Height.IN)
     }

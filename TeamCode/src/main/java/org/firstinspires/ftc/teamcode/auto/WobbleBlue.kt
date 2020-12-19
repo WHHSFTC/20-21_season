@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import java.lang.Math.toRadians
+import kotlin.math.PI
 
 @Autonomous
 class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
@@ -53,11 +55,11 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                         wob.elbow(Wobble.ElbowState.DROP)
                         sleep(1000)
                         wob.claw(Wobble.ClawState.OPEN)
-                        sleep(1000)
+                        sleep(500)
                         wob.elbow(Wobble.ElbowState.STORE)
 
                         traj = dt.trajectoryBuilder(traj.end(), true)
-                                .lineTo(Vector2d(0.0, 30.0))
+                                .lineTo(Vector2d(-3.0, 28.0))
                                 .build()
                         dt.followTrajectory(traj)
                         aim.height(HeightController.Height.HIGH)
@@ -70,8 +72,56 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                         out(Shooter.State.OFF)
                         feed.height(Indexer.Height.IN)
                         aim.height(HeightController.Height.ZERO)
+                        wob.elbow(Wobble.ElbowState.INTAKE)
+                        wob.claw(Wobble.ClawState.OPEN)
+                        traj = dt.trajectoryBuilder(traj.end().plus(Pose2d(0.0, 0.0, Math.toRadians(180.0))))
+                                .splineToConstantHeading(Vector2d(-12.0, 24.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                .splineToConstantHeading(Vector2d(-36.0, 24.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                .splineToConstantHeading(Vector2d(-37.0, 26.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                .splineToConstantHeading(Vector2d(-37.0, 31.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                .build()
+                        dt.followTrajectory(traj)
+                        dt.waitForIdle()
+                        sleep(1000)
+                        wob.claw(Wobble.ClawState.CLOSED)
+                        sleep(1000)
+                        wob.elbow(Wobble.ElbowState.CARRY)
+
                         traj = dt.trajectoryBuilder(traj.end())
-                                .lineTo(Vector2d(9.0, 30.0))
+                                .splineToConstantHeading(Vector2d(-39.0, 26.0), 0.0)
+                                .splineToConstantHeading(Vector2d(-36.0, 24.0), 0.0)
+                                .splineToConstantHeading(Vector2d(-12.0, 24.0), 0.0)
+                                .build()
+                        dt.followTrajectory(traj)
+                        dt.waitForIdle()
+
+                        val pose: Pose2d =
+                            when (vis!!.pipeline.height) {
+                                VisionPipeline.Height.ZERO -> {
+                                        Pose2d(12.0, 50.0, toRadians(90.0))
+                                }
+                                VisionPipeline.Height.ONE -> {
+                                        Pose2d(36.0, 26.0, toRadians(90.0))
+                            }
+                                VisionPipeline.Height.FOUR -> {
+                                        Pose2d(60.0, 50.0, toRadians(90.0))
+                                }
+                            }
+
+                        traj = dt.trajectoryBuilder(traj.end())
+                                .lineToLinearHeading(pose)
+                                .build()
+                        dt.followTrajectory(traj)
+                        dt.waitForIdle()
+                        wob.elbow(Wobble.ElbowState.DROP)
+                        sleep(1000)
+                        wob.claw(Wobble.ClawState.OPEN)
+                        sleep(500)
+                        wob.elbow(Wobble.ElbowState.STORE)
+                        wob.claw(Wobble.ClawState.CLOSED)
+
+                        traj = dt.trajectoryBuilder(traj.end())
+                                .lineToLinearHeading(Pose2d(12.0, 26.0, 0.0))
                                 .build()
                         dt.followTrajectory(traj)
                     }

@@ -3,9 +3,17 @@ package org.firstinspires.ftc.teamcode.module
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.teamcode.gamepad.GamepadEx
 
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Robot
+    val gamepadEx1: GamepadEx by lazy {
+        GamepadEx(gamepad1)
+    }
+    val gamepadEx2: GamepadEx by lazy {
+        GamepadEx(gamepad2)
+    }
+
     override fun runOpMode() {
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         bot = Robot(this)
@@ -15,6 +23,8 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
         onRun()
         if (mode == Mode.TELE) {
             while (!Thread.currentThread().isInterrupted && !isStopRequested) {
+                gamepadEx1.readButtons()
+                gamepadEx2.readButtons()
                 onLoop()
                 bot.log.update()
             }

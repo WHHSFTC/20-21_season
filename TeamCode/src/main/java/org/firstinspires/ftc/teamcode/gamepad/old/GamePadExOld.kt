@@ -1,8 +1,11 @@
-package org.firstinspires.ftc.teamcode.gamepad
+package org.firstinspires.ftc.teamcode.gamepad.old
 
 import com.qualcomm.robotcore.hardware.Gamepad
+import org.firstinspires.ftc.teamcode.gamepad.*
+import org.firstinspires.ftc.teamcode.gamepad.DPad
+import org.firstinspires.ftc.teamcode.gamepad.Keys
 
-class GamePadEx(private val gamepad: Gamepad): GamePad {
+class GamePadExOld(private val gamepad: Gamepad): GamePad {
     override val left: JoyStick = object : JoyStick {
         override val x: Double
             get() = gamepad.left_stick_x.toDouble()
@@ -18,7 +21,7 @@ class GamePadEx(private val gamepad: Gamepad): GamePad {
     }
 
     override val keys: Keys
-        get() = GamePadKeys(gamepad)
+        get() = GamePadKeysOld(gamepad)
 
     override val dpad: DPad = object : DPad {
         override val left: Boolean

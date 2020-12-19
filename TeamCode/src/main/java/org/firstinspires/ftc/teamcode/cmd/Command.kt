@@ -20,9 +20,7 @@ sealed class Command {
 }
 
 object EmptyCommand : Command() {
-    override fun execute(bot: Robot) {
-
-    }
+    override fun execute(bot: Robot) {}
 
     operator fun invoke() = EmptyCommand
 }
@@ -77,7 +75,7 @@ class ConditionalCommand(
     }
 }
 
-class ToggleCommand(
+class DebounceCommand(
         val condition: Condition,
         val sequential: Boolean,
         val command: Command,
@@ -95,6 +93,53 @@ class ToggleCommand(
     }
 }
 
+class HeldCommand(
+        val condition: Condition,
+        val sequential: Boolean,
+        val heldCommand: Command,
+        var exitCommand: Command,
+): Command() {
+    private var previous: Boolean = false
+
+    override fun execute(bot: Robot) {
+        val current = condition()
+
+        if (current) {
+            heldCommand.execute(bot)
+        } else if (previous) {
+            exitCommand.execute(bot)
+        }
+
+        previous = current
+    }
+}
+
+infix fun HeldCommand.onExit(block: CommandListContext.() -> CommandListContext) = this.apply {
+    exitCommand = if (sequential)
+        SequentialCommand(CommandListContext().block().build())
+    else
+        ParallelCommand(CommandListContext().block().build())
+}
+
+class ToggleCommand(
+        val condition: Condition,
+        val sequential: Boolean,
+        val toggleCommand: Command,
+): Command() {
+    private var previous: Boolean = false
+    private var toggleState: Boolean = false
+
+    override fun execute(bot: Robot) {
+        val current = condition()
+        toggleState = if(!previous && current) !toggleState else toggleState
+
+        if(toggleState) {
+            toggleCommand.execute(bot)
+        }
+
+        previous = current
+    }
+}
 
 @RobotDsl
 open class DSLContext
@@ -143,14 +188,43 @@ fun DSLContext.onPress(
         c: Condition,
         sequential: Boolean = true,
         commandBlock: CommandListContext.() -> CommandListContext
-): ToggleCommand =
-        ToggleCommand(
+): DebounceCommand =
+        DebounceCommand(
                 c,
                 sequential,
                 if (sequential)
                     SequentialCommand(CommandListContext().commandBlock().build())
                 else
                     ParallelCommand(CommandListContext().commandBlock().build())
+        )
+
+fun DSLContext.onRelease(
+        c: Condition,
+        sequential: Boolean = true,
+        commandBlock: CommandListContext.() -> CommandListContext
+): DebounceCommand =
+        DebounceCommand(
+                {!c()},
+                sequential,
+                if(sequential)
+                    SequentialCommand(CommandListContext().commandBlock().build())
+                else
+                    ParallelCommand(CommandListContext().commandBlock().build())
+        )
+
+fun DSLContext.whileHeld(
+        c: Condition,
+        sequential: Boolean = true,
+        heldCommandBlock: CommandListContext.() -> CommandListContext,
+): HeldCommand =
+        HeldCommand(
+                c,
+                sequential,
+                if(sequential)
+                    SequentialCommand(CommandListContext().heldCommandBlock().build())
+                else
+                    ParallelCommand(CommandListContext().heldCommandBlock().build()),
+                EmptyCommand(),
         )
 
 fun DSLContext.delay(value: Time, block: Boolean = false) = DelayCommand(value, blockCoroutine = block)

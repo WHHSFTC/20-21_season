@@ -124,6 +124,11 @@ class TestDslTele: DslOpMode() {
                         //}
                         //+randomTask
                     //}
+//                    +whileHeld(gamepad1::a) {
+//                        +EmptyCommand()
+//                    }.onExit {
+//                        +EmptyCommand()
+//                    }
                 }
             }
 

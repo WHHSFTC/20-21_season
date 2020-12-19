@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.util.milliseconds
 import org.firstinspires.ftc.teamcode.util.seconds
 
 sealed class Command {
-    abstract fun execute(bot: Robot)
-    operator fun invoke(bot: Robot) {
+    abstract suspend fun execute(bot: Robot)
+    suspend operator fun invoke(bot: Robot) {
         execute(bot)
     }
 
@@ -20,19 +20,19 @@ sealed class Command {
 }
 
 object EmptyCommand : Command() {
-    override fun execute(bot: Robot) {}
+    override suspend fun execute(bot: Robot) {}
 
     operator fun invoke() = EmptyCommand
 }
 
-open class LambdaCommand(val f: Robot.() -> Unit) : Command() {
-    override fun execute(bot: Robot) {
+open class LambdaCommand(val f: suspend Robot.() -> Unit) : Command() {
+    override suspend fun execute(bot: Robot) {
         bot.f()
     }
 }
 
 class SequentialCommand(private val commands: List<Command>) : Command() {
-    override fun execute(bot: Robot) {
+    override suspend fun execute(bot: Robot) {
         for (c: Command in commands) {
             c.execute(bot)
         }
@@ -40,14 +40,11 @@ class SequentialCommand(private val commands: List<Command>) : Command() {
 }
 
 class ParallelCommand(private val commands: List<Command>) : Command() {
-    override fun execute(bot: Robot) {
+    override suspend fun execute(bot: Robot) {
         runBlocking {
             for (c: Command in commands) {
                 launch {
-                    when {
-                        c is DelayCommand && !c.blockCoroutine -> delay(c.delay.milliSeconds)
-                        else -> c.execute(bot)
-                    }
+                    c.execute(bot)
                 }
             }
         }
@@ -55,8 +52,8 @@ class ParallelCommand(private val commands: List<Command>) : Command() {
 }
 
 class DelayCommand(val delay: Time, val blockCoroutine: Boolean = false): Command() {
-    override fun execute(bot: Robot) {
-        Thread.sleep(delay.milliSeconds)
+    override suspend fun execute(bot: Robot) {
+        delay(delay.milliSeconds)
     }
 }
 
@@ -66,7 +63,7 @@ class ConditionalCommand(
         val onTrue: Command,
         val onFalse: Command,
 ): Command() {
-    override fun execute(bot: Robot) {
+    override suspend fun execute(bot: Robot) {
         if (condition()) {
             onTrue.execute(bot)
         } else {
@@ -82,7 +79,7 @@ class DebounceCommand(
 ): Command() {
     private var previous: Boolean = false
 
-    override fun execute(bot: Robot) {
+    override suspend fun execute(bot: Robot) {
         val current = condition()
 
         if (!previous && current) {
@@ -101,7 +98,7 @@ class HeldCommand(
 ): Command() {
     private var previous: Boolean = false
 
-    override fun execute(bot: Robot) {
+    override suspend fun execute(bot: Robot) {
         val current = condition()
 
         if (current) {
@@ -114,7 +111,7 @@ class HeldCommand(
     }
 }
 
-infix fun HeldCommand.onExit(block: CommandListContext.() -> CommandListContext) = this.apply {
+suspend infix fun HeldCommand.onExit(block: suspend CommandListContext.() -> CommandListContext) = this.apply {
     exitCommand = if (sequential)
         SequentialCommand(CommandListContext().block().build())
     else
@@ -129,7 +126,7 @@ class ToggleCommand(
     private var previous: Boolean = false
     private var toggleState: Boolean = false
 
-    override fun execute(bot: Robot) {
+    override suspend fun execute(bot: Robot) {
         val current = condition()
         toggleState = if(!previous && current) !toggleState else toggleState
 
@@ -147,20 +144,20 @@ open class DSLContext
 @RobotDsl
 object CommandContext: DSLContext()
 
-fun DSLContext.cmd(exec: Robot.() -> Unit): LambdaCommand = LambdaCommand(exec)
+fun DSLContext.cmd(exec: suspend Robot.() -> Unit): LambdaCommand = LambdaCommand(exec)
 
-fun CommandContext.seq(b: CommandListContext.() -> CommandListContext): SequentialCommand =
+suspend fun CommandContext.seq(b: suspend CommandListContext.() -> CommandListContext): SequentialCommand =
             SequentialCommand(CommandListContext().b().build())
 
-fun CommandContext.par(b: CommandListContext.() -> CommandListContext): ParallelCommand =
+suspend fun CommandContext.par(b: suspend CommandListContext.() -> CommandListContext): ParallelCommand =
             ParallelCommand(CommandListContext().b().build())
 
 typealias Condition = () -> Boolean
 
-fun DSLContext.condition(
+suspend fun DSLContext.condition(
         c: Condition,
         sequential: Boolean = true,
-        ifC: CommandListContext.() -> CommandListContext,
+        ifC: suspend CommandListContext.() -> CommandListContext,
 ): ConditionalCommand = ConditionalCommand(
         c,
         sequential,
@@ -171,8 +168,8 @@ fun DSLContext.condition(
         EmptyCommand()
 )
 
-infix fun ConditionalCommand.orElse(
-        elseC: CommandListContext.() -> CommandListContext,
+suspend infix fun ConditionalCommand.orElse(
+        elseC: suspend CommandListContext.() -> CommandListContext,
 ): ConditionalCommand =
         ConditionalCommand(
                 condition = condition,
@@ -184,10 +181,10 @@ infix fun ConditionalCommand.orElse(
                     ParallelCommand(CommandListContext().elseC().build())
         )
 
-fun DSLContext.onPress(
+suspend fun DSLContext.onPress(
         c: Condition,
         sequential: Boolean = true,
-        commandBlock: CommandListContext.() -> CommandListContext
+        commandBlock: suspend CommandListContext.() -> CommandListContext
 ): DebounceCommand =
         DebounceCommand(
                 c,
@@ -198,10 +195,10 @@ fun DSLContext.onPress(
                     ParallelCommand(CommandListContext().commandBlock().build())
         )
 
-fun DSLContext.onRelease(
+suspend fun DSLContext.onRelease(
         c: Condition,
         sequential: Boolean = true,
-        commandBlock: CommandListContext.() -> CommandListContext
+        commandBlock: suspend CommandListContext.() -> CommandListContext
 ): DebounceCommand =
         DebounceCommand(
                 {!c()},
@@ -212,10 +209,10 @@ fun DSLContext.onRelease(
                     ParallelCommand(CommandListContext().commandBlock().build())
         )
 
-fun DSLContext.whileHeld(
+suspend fun DSLContext.whileHeld(
         c: Condition,
         sequential: Boolean = true,
-        heldCommandBlock: CommandListContext.() -> CommandListContext,
+        heldCommandBlock: suspend CommandListContext.() -> CommandListContext,
 ): HeldCommand =
         HeldCommand(
                 c,
@@ -258,27 +255,27 @@ data class CommandScheduler(
         var fnStop: Command = EmptyCommand(),
 )
 
-fun CommandScheduler.onInit(init: CommandContext.() -> Command): CommandScheduler =
+suspend fun CommandScheduler.onInit(init: suspend CommandContext.() -> Command): CommandScheduler =
         this.apply {
             fnInit = CommandContext.init()
         }
 
-fun CommandScheduler.onRun(run: CommandContext.() -> Command): CommandScheduler =
+suspend fun CommandScheduler.onRun(run: suspend CommandContext.() -> Command): CommandScheduler =
         this.apply {
             fnRun = CommandContext.run()
         }
 
-fun CommandScheduler.onLoop(loop: CommandContext.() -> Command): CommandScheduler =
+suspend fun CommandScheduler.onLoop(loop: suspend CommandContext.() -> Command): CommandScheduler =
         this.apply {
             fnLoop = CommandContext.loop()
         }
 
-fun CommandScheduler.onStop(stop: CommandContext.() -> Command): CommandScheduler =
+suspend fun CommandScheduler.onStop(stop: suspend CommandContext.() -> Command): CommandScheduler =
         this.apply {
             fnStop = CommandContext.stop()
         }
 
-fun CommandScheduler.dsl(build: CommandScheduler.() -> CommandScheduler): CommandScheduler =
+suspend fun CommandScheduler.dsl(build: suspend CommandScheduler.() -> CommandScheduler): CommandScheduler =
         this.build()
 
 infix fun Condition.and(other: Condition): Condition = { this() && other() }

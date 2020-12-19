@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.module.OpMode
 class LocalizationTest : OpMode(Mode.TELE) {
     lateinit var drive: CustomMecanumDrive
 
-    override fun onInit() {
+    override suspend fun onInit() {
         drive = CustomMecanumDrive(bot)
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
     }
 
-    override fun onRun() {}
+    override suspend fun onRun() {}
 
-    override fun onLoop() {
+    override suspend fun onLoop() {
         drive.setWeightedDrivePower(
                 Pose2d(
                         (-gamepad1.left_stick_y).toDouble(),
@@ -34,5 +34,5 @@ class LocalizationTest : OpMode(Mode.TELE) {
         telemetry.addData("heading", poseEstimate.heading)
     }
 
-    override fun onStop() {}
+    override suspend fun onStop() {}
 }

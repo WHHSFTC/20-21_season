@@ -1,33 +1,62 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import kotlinx.coroutines.delay
+import java.lang.Thread.sleep
 
-class Indexer(bot: Robot) {
-    val feedServo = bot.hwmap.servo["indexer"]
-    val heightServo = bot.hwmap.servo["indexerHeight"]
+class Indexer(val bot: Robot) {
+    val feedServo = bot.hwmap.servo["feeder"]
+    val heightServo = bot.hwmap.servo["setter"]
 
     enum class Height(val pos: Double) {
-        IN(.96), OUT(.8)
+        IN(1.0), POWER(.87), HIGH(.86)
     }
 
     enum class Shoot(val pos: Double) {
-        PRE(0.0), ONE(.33), TWO(.67), THREE(1.0)
+        PRE(0.33), POST(.55)
     }
 
-    fun shootStep() {
-        if (height.state == Height.IN) {
-            height.state = Height.OUT
-        } else {
-            prime.state = when (prime.state) {
-                Shoot.PRE -> Shoot.ONE
-                Shoot.ONE -> Shoot.TWO
-                Shoot.TWO -> Shoot.THREE
-                Shoot.THREE -> Shoot.PRE
-            }
-        }
+    fun shoot() {
+        feed(Shoot.POST)
+        sleep(150)
+        feed(Shoot.PRE)
     }
 
-    val prime = object : Module<Indexer.Shoot> {
+    fun burst() {
+        feed(Shoot.POST)
+        sleep(150)
+        feed(Shoot.PRE)
+        sleep(150)
+
+        feed(Shoot.POST)
+        sleep(150)
+        feed(Shoot.PRE)
+        sleep(150)
+
+        feed(Shoot.POST)
+        sleep(150)
+        feed(Shoot.PRE)
+        sleep(150)
+
+        feed(Shoot.POST)
+        sleep(150)
+        feed(Shoot.PRE)
+        bot.out(Shooter.State.OFF)
+        height(Height.IN)
+    }
+
+    fun shake() {
+        height(Height.POWER)
+        sleep(250)
+        height(Height.IN)
+        sleep(250)
+
+        height(Height.POWER)
+        sleep(250)
+        height(Height.IN)
+    }
+
+    val feed = object : Module<Indexer.Shoot> {
         override var state: Shoot = Shoot.PRE
             set(value) {
                 feedServo.position = value.pos

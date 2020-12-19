@@ -19,7 +19,7 @@ class StackCounter(val bot: Robot) {
         FtcDashboard.getInstance().startCameraStream(cam, 20.0);
         bot.log.addLine("Vision initialized")
         bot.log.update()
-        bot.opMode.waitForStart()
+        //bot.opMode.waitForStart()
     }
     val height: VisionPipeline.Height
         get() {

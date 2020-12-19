@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.DcMotor
 
+const val coef = 1.0
+
 class Intake(bot: Robot): Module<Intake.Power> {
     val motor: DcMotor = bot.hwmap.dcMotor["intake"]
     override var state: Power = Power.OFF
@@ -10,6 +12,6 @@ class Intake(bot: Robot): Module<Intake.Power> {
             field = value
         }
     enum class Power(val pow: Double) {
-        OUT(-1.0), IN(1.0), OFF(.0)
+        OUT(coef), IN(-coef), OFF(.0)
     }
 }

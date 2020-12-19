@@ -57,10 +57,8 @@ class CustomLocalizer(val encoders: Encoders) : ThreeTrackingWheelLocalizer(Arra
         @JvmField var LATERAL_DISTANCE = 14.75 // in; distance between the left and right wheels
         @JvmField var BACK_X = -2.41 // in; x of the back
         @JvmField var FRONT_X = 1.71 // in; x of the fronts
-        //@JvmField var X_MULT = 0.99642393
         @JvmField var X_MULT = 1.0
-        //@JvmField var Y_MULT = 1.00039887
-        @JvmField var Y_MULT = 1.1398961500256717
+        @JvmField var Y_MULT = 0.8933
         fun encoderTicksToInches(ticks: Double): Double {
             return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV
         }

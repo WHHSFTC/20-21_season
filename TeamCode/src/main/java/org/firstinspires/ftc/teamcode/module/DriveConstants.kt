@@ -33,7 +33,7 @@ object DriveConstants {
      */
     @JvmField var WHEEL_RADIUS = 1.9685039 // in
     @JvmField var GEAR_RATIO = 1.0 // output (wheel) speed / input (motor) speed
-    @JvmField var TRACK_WIDTH =  15.15 // in
+    @JvmField var TRACK_WIDTH =  15.51 // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -41,8 +41,8 @@ object DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    @JvmField var kV = 0.0146
-    @JvmField var kA = 0.0025
+    @JvmField var kV = 0.0159
+    @JvmField var kA = 0.0024
     @JvmField var kStatic = 0.0
 
     /*

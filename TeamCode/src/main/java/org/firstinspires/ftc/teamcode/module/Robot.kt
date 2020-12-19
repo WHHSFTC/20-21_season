@@ -14,7 +14,7 @@ class Robot(
     val hwmap: HardwareMap = opMode.hardwareMap
     val ink: Intake = Intake(this)
     val feed: Indexer = Indexer(this)
-    //val wob: Wobble = Wobble(this)
+    val wob: Wobble = Wobble(this)
     //lateinit var wob: Wobble
     val enc: Encoders = Encoders(this)
     val odo: HolonomicOdometry = HolonomicOdometry(enc, TRACK_WIDTH, CENTER_OFFSET)

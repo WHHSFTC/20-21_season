@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode.gamepad
+package org.firstinspires.ftc.teamcode.gamepad.old
 
 import com.qualcomm.robotcore.hardware.Gamepad
+import org.firstinspires.ftc.teamcode.gamepad.Keys
 
-sealed class GamePadKeys(protected val gamepad: Gamepad): Keys {
-    class XBoxKeys(gamepad: Gamepad): GamePadKeys(gamepad) {
+sealed class GamePadKeysOld(protected val gamepad: Gamepad): Keys {
+    class XBoxKeys(gamepad: Gamepad): GamePadKeysOld(gamepad) {
         override val a: Boolean
             get() = gamepad.a
         override val b: Boolean
@@ -14,7 +15,7 @@ sealed class GamePadKeys(protected val gamepad: Gamepad): Keys {
             get() = gamepad.y
     }
 
-    class PS4Keys(gamepad: Gamepad): GamePadKeys(gamepad) {
+    class PS4Keys(gamepad: Gamepad): GamePadKeysOld(gamepad) {
         override val a: Boolean
             get() = gamepad.cross
         override val b: Boolean
@@ -26,7 +27,7 @@ sealed class GamePadKeys(protected val gamepad: Gamepad): Keys {
     }
 
     companion object {
-        operator fun invoke(gamepad: Gamepad): GamePadKeys =
+        operator fun invoke(gamepad: Gamepad): GamePadKeysOld =
                 if (gamepad.type() == Gamepad.Type.SONY_PS4)
             PS4Keys(gamepad)
         else

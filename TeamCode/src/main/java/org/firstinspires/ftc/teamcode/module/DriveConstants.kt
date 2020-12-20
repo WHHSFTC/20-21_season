@@ -58,6 +58,8 @@ object DriveConstants {
             Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     )
 
+    val SLOW_CONSTRAINTS = DriveConstants.BASE_CONSTRAINTS.copy().apply { maxVel /= 3.0 }
+
     fun encoderTicksToInches(ticks: Double): Double {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV
     }
@@ -71,3 +73,12 @@ object DriveConstants {
         return 32767 / ticksPerSecond
     }
 }
+
+fun DriveConstraints.copy() = DriveConstraints(
+        maxVel = maxVel,
+        maxAccel = maxAccel,
+        maxJerk = maxJerk,
+        maxAngVel = maxAngVel,
+        maxAngAccel = maxAngAccel,
+        maxAngJerk = maxAngJerk
+)

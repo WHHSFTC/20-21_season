@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.module
 
 class Wobble(val bot: Robot) {
     enum class ElbowState(override val pos: Double): StatefulServo.ServoPosition {
-        STORE(.82), DROP(.26), CARRY(.64), INTAKE(.12)
+        STORE(.02), DROP(.6), CARRY(.15), INTAKE(.8)
     }
 
     enum class ClawState(override val pos: Double): StatefulServo.ServoPosition {
-        OPEN(.95), CLOSED(.4)
+        OPEN(.49), CLOSED(.18)
     }
 
     var elbow = StatefulServo<ElbowState>(bot.hwmap.servo["elbow"], ElbowState.STORE)

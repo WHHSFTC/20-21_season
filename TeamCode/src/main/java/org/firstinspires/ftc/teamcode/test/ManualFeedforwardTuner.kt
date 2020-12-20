@@ -31,7 +31,7 @@ class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
 
     private var mode_: Mode? = null
 
-    override fun onInit() {
+    override suspend fun onInit() {
         if (DriveConstants.RUN_USING_ENCODER) {
             RobotLog.setGlobalErrorMsg("Feedforward constants usually don't need to be tuned " +
                     "when using the built-in drive motor velocity PID.")
@@ -42,7 +42,7 @@ class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
         telemetry.addLine("Ready!")
     }
 
-    override fun onRun() {
+    override suspend fun onRun() {
         telemetry.clearAll()
         if (isStopRequested) return
         movingForwards = true
@@ -50,7 +50,7 @@ class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
         profileStart = clock.seconds()
     }
 
-    override fun onLoop() {
+    override suspend fun onLoop() {
         telemetry.addData("mode", mode_)
         when (mode_) {
             Mode.TUNING_MODE -> {
@@ -95,7 +95,7 @@ class ManualFeedforwardTuner: OpMode(OpMode.Mode.TELE) {
         }
     }
 
-    override fun onStop() {}
+    override suspend fun onStop() {}
 
     companion object {
         @JvmField var DISTANCE = 72.0 // in

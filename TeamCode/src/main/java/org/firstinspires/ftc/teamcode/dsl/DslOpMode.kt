@@ -8,31 +8,35 @@ import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.Robot
 import org.firstinspires.ftc.teamcode.module.withContext
 
-open class DslOpMode(protected var commands: CommandScheduler = CommandScheduler(), mode: OpMode.Mode = Mode.TELE): OpMode(mode) { // TODO (Mode)
-    constructor(commandScheduler: CommandScheduler, build: CommandScheduler.() -> CommandScheduler):
-            this(commandScheduler.dsl(build))
-    constructor(build: CommandScheduler.() -> CommandScheduler): this(CommandScheduler(), build)
+open class DslOpMode(protected var commands: CommandScheduler = CommandScheduler(), mode: Mode = Mode.TELE): OpMode(mode) { // TODO (Mode)
+    constructor(commandScheduler: CommandScheduler, mode: Mode, build: suspend CommandScheduler.() -> CommandScheduler):
+            this(CommandScheduler(), mode = mode) {
+                suspend {
+                    commands = commandScheduler.dsl(build)
+                }
+            }
+    constructor(mode: Mode, build: suspend CommandScheduler.() -> CommandScheduler): this(CommandScheduler(), mode, build)
 
-    override fun onInit() {
+    override suspend fun onInit() {
         commands.fnInit(this.bot.withContext(Command.Context.INIT))
     }
 
-    override fun onRun() {
+    override suspend fun onRun() {
         commands.fnRun(this.bot.withContext(Command.Context.RUN))
     }
-    override fun onLoop() {
+    override suspend fun onLoop() {
         commands.fnLoop(this.bot.withContext(Command.Context.LOOP))
     }
 
-    override fun onStop() {
+    override suspend fun onStop() {
         commands.fnStop(this.bot.withContext(Command.Context.STOP))
     }
 
     companion object {
-        fun DslOpMode.dsl(commandScheduler: CommandScheduler = CommandScheduler(), build: CommandScheduler.() -> CommandScheduler) {
+        suspend fun DslOpMode.dsl(commandScheduler: CommandScheduler = CommandScheduler(), build: suspend CommandScheduler.() -> CommandScheduler) {
             this.commands = commandScheduler.dsl(build)
         }
 
-        fun DslOpMode.task(task: Robot.() -> Unit): Command = LambdaCommand(task)
+        fun DslOpMode.task(task: suspend Robot.() -> Unit): Command = LambdaCommand(task)
     }
 }

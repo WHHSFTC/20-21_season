@@ -10,11 +10,11 @@ import org.firstinspires.ftc.teamcode.module.OpMode
 class SplineTest : OpMode(Mode.TELE) {
     private lateinit var drive: CustomMecanumDrive
 
-    override fun onInit() {
+    override suspend fun onInit() {
         drive = CustomMecanumDrive(bot)
     }
 
-    override fun onRun() {
+    override suspend fun onRun() {
         val traj = drive.trajectoryBuilder(Pose2d())
                 .splineTo(Vector2d(30.0, 30.0), 0.0)
                 .build()
@@ -27,9 +27,9 @@ class SplineTest : OpMode(Mode.TELE) {
         )
     }
 
-    override fun onLoop() {
+    override suspend fun onLoop() {
     }
 
-    override fun onStop() {
+    override suspend fun onStop() {
     }
 }

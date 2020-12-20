@@ -31,7 +31,7 @@ class BackAndForth : OpMode(Mode.TELE) {
     private lateinit var drive: CustomMecanumDrive
     private lateinit var trajectoryForward: Trajectory
     private lateinit var trajectoryBackward: Trajectory
-    override fun onInit() {
+    override suspend fun onInit() {
         drive = CustomMecanumDrive(bot)
         trajectoryForward = drive.trajectoryBuilder(Pose2d())
                 .forward(BackAndForth.Companion.DISTANCE)
@@ -41,13 +41,13 @@ class BackAndForth : OpMode(Mode.TELE) {
                 .build()
     }
 
-    override fun onLoop() {
+    override suspend fun onLoop() {
         drive.followTrajectory(trajectoryForward)
         drive.followTrajectory(trajectoryBackward)
     }
 
-    override fun onRun() {}
-    override fun onStop() {}
+    override suspend fun onRun() {}
+    override suspend fun onStop() {}
 
     companion object {
         @JvmField var DISTANCE = 50.0

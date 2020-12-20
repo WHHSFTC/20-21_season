@@ -13,14 +13,14 @@ class StraightTest : OpMode(Mode.TELE) {
     private lateinit var drive: CustomMecanumDrive
     private lateinit var trajectory: Trajectory
 
-    override fun onInit() {
+    override suspend fun onInit() {
         drive = CustomMecanumDrive(bot)
         trajectory = drive.trajectoryBuilder(Pose2d())
                 .forward(DISTANCE)
                 .build()
     }
 
-    override fun onRun() {
+    override suspend fun onRun() {
         if (isStopRequested) return
         drive.followTrajectory(trajectory)
         val poseEstimate = drive.poseEstimate
@@ -29,9 +29,9 @@ class StraightTest : OpMode(Mode.TELE) {
         telemetry.addData("finalHeading", poseEstimate.heading)
     }
 
-    override fun onLoop() {}
+    override suspend fun onLoop() {}
 
-    override fun onStop() {}
+    override suspend fun onStop() {}
 
     companion object {
         @JvmField var DISTANCE = 60.0 // in

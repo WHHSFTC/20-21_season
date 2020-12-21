@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
@@ -124,13 +123,38 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                         dt.followTrajectory(traj)
                     }
                 }
-            }
+                dt.waitForIdle()
+                wob.elbow(Wobble.ElbowState.DROP)
+                sleep(1000)
+                wob.claw(Wobble.ClawState.OPEN)
+                sleep(1000)
+                wob.elbow(Wobble.ElbowState.STORE)
 
-            onStop {
-                cmd {
-                    dt.powers = CustomMecanumDrive.Powers()
-                }
+                traj = dt.trajectoryBuilder(traj.end(), true)
+                        .lineTo(Vector2d(0.0, 30.0))
+                        .build()
+                dt.followTrajectory(traj)
+                aim.height(HeightController.Height.HIGH)
+                feed.height(Indexer.Height.HIGH)
+                dt.waitForIdle()
+                out(Shooter.State.FULL)
+                sleep(1000)
+                feed.burst()
+                sleep(150)
+                out(Shooter.State.OFF)
+                feed.height(Indexer.Height.IN)
+                aim.height(HeightController.Height.ZERO)
+                traj = dt.trajectoryBuilder(traj.end())
+                        .lineTo(Vector2d(9.0, 30.0))
+                        .build()
+                dt.followTrajectory(traj)
             }
         }
     }
-}
+
+    onStop {
+        cmd {
+            dt.powers = CustomMecanumDrive.Powers()
+        }
+    }
+})

@@ -19,7 +19,7 @@ class TrackWidthTuner : OpMode(Mode.TELE) {
     private lateinit var drive: CustomMecanumDrive
     private lateinit var trackWidthStats: MovingStatistics
 
-    override fun onInit() {
+    override suspend fun onInit() {
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         drive = CustomMecanumDrive(bot)
         // TODO: if you haven't already, set the localizer to something that doesn't depend on
@@ -28,7 +28,7 @@ class TrackWidthTuner : OpMode(Mode.TELE) {
         telemetry.addLine("Make sure your robot has enough clearance to turn smoothly")
     }
 
-    override fun onRun() {
+    override suspend fun onRun() {
         telemetry.clearAll()
         telemetry.addLine("Running...")
         trackWidthStats = MovingStatistics(NUM_TRIALS)
@@ -56,11 +56,11 @@ class TrackWidthTuner : OpMode(Mode.TELE) {
                 trackWidthStats.standardDeviation / sqrt(NUM_TRIALS.toDouble())))
     }
 
-    override fun onLoop() {
+    override suspend fun onLoop() {
         idle()
     }
 
-    override fun onStop() {}
+    override suspend fun onStop() {}
 
     companion object {
         @JvmField var ANGLE = 180.0 // deg

@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.module.VisionPipeline
 
 @Autonomous
 class VisionTest: OpMode(Mode.AUTO) {
-    override fun onInit() {
+    override suspend fun onInit() {
         bot.log.addLine("VisionTest Auto")
         bot.log.addLine("Setup with rings in the middle of frame")
         // ...
@@ -16,15 +16,15 @@ class VisionTest: OpMode(Mode.AUTO) {
         bot.log.update()
     }
 
-    override fun onRun() {
+    override suspend fun onRun() {
         bot.vis!!.halt()
         bot.log.addData("[vis] height", bot.vis!!.height)
         bot.log.update()
     }
 
-    override fun onLoop() {}
+    override suspend fun onLoop() {}
 
-    override fun onStop() {
+    override suspend fun onStop() {
         bot.dt.powers = CustomMecanumDrive.Powers()
     }
 }

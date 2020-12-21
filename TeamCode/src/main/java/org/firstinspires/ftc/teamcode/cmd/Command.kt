@@ -77,6 +77,18 @@ class ConditionalCommand(
     }
 }
 
+class SwitchCommand(
+        val cases: List<SwitchCommand.Case>,
+): Command() {
+    data class Case(val cond: Condition, val com: Command)
+    override fun execute(bot: Robot) {
+        for (c in cases) {
+            if (c.cond())
+                return c.com.execute(bot)
+        }
+    }
+}
+
 class ToggleCommand(
         val condition: Condition,
         val sequential: Boolean,
@@ -163,6 +175,9 @@ fun DSLContext.delay(time: Long, unit: TimeUnit, block: Boolean = false) = Delay
 }, blockCoroutine = block)
 
 fun DSLContext.pass(): EmptyCommand = EmptyCommand()
+
+fun DSLContext.switch(c: List<SwitchCommand.Case>): SwitchCommand = SwitchCommand(c)
+fun DSLContext.case(cond: Condition, com: Command): SwitchCommand.Case = SwitchCommand.Case(cond, com)
 
 @RobotDsl
 class CommandListContext: DSLContext() {

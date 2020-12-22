@@ -28,15 +28,19 @@ class Park: DslOpMode(mode = Mode.TELE) {
                     }
                 }
 
-                onRun {
-                    seq {
-                        +cmd {
-                            var traj = dt.trajectoryBuilder(dt.poseEstimate)
-                                    .lineTo(Vector2d(72.0, 0.0))
-                                    .build()
-                            dt.followTrajectory(traj)
+                onLoop {
+                    cmd {
+                        var traj = dt.trajectoryBuilder(dt.poseEstimate)
+                                .lineTo(Vector2d(72.0, 0.0))
+                                .build()
+                        dt.followTrajectory(traj)
 
-                        }
+                        sleep (1000)
+
+                        traj = dt.trajectoryBuilder(traj.end())
+                                .lineTo(Vector2d(0.0, 0.0))
+                                .build()
+                        dt.followTrajectory(traj)
                     }
                 }
 

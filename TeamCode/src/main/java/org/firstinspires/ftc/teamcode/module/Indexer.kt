@@ -22,25 +22,18 @@ class Indexer(val bot: Robot) {
     }
 
     suspend fun burst() {
-        feed(Shoot.POST)
-        delay(150)
-        feed(Shoot.PRE)
-        delay(150)
-
-        feed(Shoot.POST)
-        delay(150)
-        feed(Shoot.PRE)
-        delay(150)
-
-        feed(Shoot.POST)
-        delay(150)
-        feed(Shoot.PRE)
-        delay(150)
+        repeat(3) {
+            feed(Shoot.POST)
+            delay(150)
+            feed(Shoot.PRE)
+            delay(150)
+        }
 
         feed(Shoot.POST)
         delay(150)
         feed(Shoot.PRE)
         delay(250)
+        
         bot.out(Shooter.State.OFF)
         height(Height.IN)
     }

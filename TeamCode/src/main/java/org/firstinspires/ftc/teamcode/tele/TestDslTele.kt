@@ -83,19 +83,23 @@ class TestDslTele: DslOpMode() {
                         feed.burst()
                     prevBurst = gamepad2.left_bumper
 
-                    if (gamepad2.right_trigger > 0.5) {
-                        when {
-                            gamepad2.dpad_up -> aim.height(HeightController.Height.HIGH)
-                            gamepad2.dpad_left || gamepad2.dpad_right -> aim.height(HeightController.Height.POWER)
-                            gamepad2.dpad_down -> aim.height(HeightController.Height.ZERO)
+                    when {
+                        gamepad2.right_trigger > 0.5 -> {
+                            when {
+                                gamepad2.dpad_up -> aim.height(HeightController.Height.HIGH)
+                                gamepad2.dpad_left || gamepad2.dpad_right -> aim.height(HeightController.Height.POWER)
+                                gamepad2.dpad_down -> aim.height(HeightController.Height.ZERO)
+                            }
                         }
-                    } else if (gamepad1.left_trigger > 0.5) {
-                        aim.power(-gamepad2.right_stick_y.toDouble() * .25)
-                    } else {
-                        when {
-                            gamepad2.dpad_up -> feed.height(Indexer.Height.HIGH)
-                            gamepad2.dpad_left || gamepad2.dpad_right -> feed.height(Indexer.Height.POWER)
-                            gamepad2.dpad_down -> feed.height(Indexer.Height.IN)
+                        gamepad1.left_trigger > 0.5 -> {
+                            aim.power(-gamepad2.right_stick_y.toDouble() * .25)
+                        }
+                        else -> {
+                            when {
+                                gamepad2.dpad_up -> feed.height(Indexer.Height.HIGH)
+                                gamepad2.dpad_left || gamepad2.dpad_right -> feed.height(Indexer.Height.POWER)
+                                gamepad2.dpad_down -> feed.height(Indexer.Height.IN)
+                            }
                         }
                     }
 
@@ -123,17 +127,6 @@ class TestDslTele: DslOpMode() {
                         +runWobble
                         +runOutput
                         +logLocale
-                        //+onPress(gamepad1::a and gamepad1::b or !gamepad1::x) {
-                        //+cmd {
-                        //log.logData("In toggled command")
-                        //}
-                        //+randomTask
-                        //}
-//                    +whileHeld(gamepad1::a) {
-//                        +EmptyCommand()
-//                    }.onExit {
-//                        +EmptyCommand()
-//                    }
                     }
                 }
 

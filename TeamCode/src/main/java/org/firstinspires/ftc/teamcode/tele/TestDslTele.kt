@@ -61,10 +61,11 @@ class TestDslTele: DslOpMode() {
                         gamepad1.right_bumper -> wob.claw(Wobble.ClawState.CLOSED)
                         gamepad1.left_bumper -> wob.claw(Wobble.ClawState.OPEN)
 
-                    gamepad1.dpad_up -> wob.elbow(Wobble.ElbowState.CARRY)
-                    gamepad1.dpad_right -> wob.elbow(Wobble.ElbowState.STORE)
-                    gamepad1.dpad_left -> wob.elbow(Wobble.ElbowState.DROP)
-                    gamepad1.dpad_down -> wob.elbow(Wobble.ElbowState.INTAKE)
+                        gamepad1.dpad_up -> wob.elbow(Wobble.ElbowState.CARRY)
+                        gamepad1.dpad_right -> wob.elbow(Wobble.ElbowState.STORE)
+                        gamepad1.dpad_left -> wob.elbow(Wobble.ElbowState.DROP)
+                        gamepad1.dpad_down -> wob.elbow(Wobble.ElbowState.INTAKE)
+                    }
                 }
 
                 val runIntake = task {
@@ -109,25 +110,22 @@ class TestDslTele: DslOpMode() {
                     log.logData("aim: ${aim.motor.currentPosition}")
                 }
 
-                log.logData("aim: ${aim.motor.currentPosition}")
-            }
+                val logLocale = task {
+                    telemetry.addData("x", dt.poseEstimate.x)
+                    telemetry.addData("y", dt.poseEstimate.y)
+                    telemetry.addData("heading", dt.poseEstimate.heading)
+                    if (gamepad1.y)
+                        dt.poseEstimate = Pose2d(0.0, 0.0,0.0)
+                }
 
-            val logLocale = task {
-                telemetry.addData("x", dt.poseEstimate.x)
-                telemetry.addData("y", dt.poseEstimate.y)
-                telemetry.addData("heading", dt.poseEstimate.heading)
-                if (gamepad1.y)
-                    dt.poseEstimate = Pose2d(0.0, 0.0,0.0)
-            }
-
-            onLoop {
-                seq {
-                    +runDriveTrain
-                    +runIntake
-                    +runWobble
-                    +runOutput
-                    +logLocale
-                    //+onPress(gamepad1::a and gamepad1::b or !gamepad1::x) {
+                onLoop {
+                    seq {
+                        +runDriveTrain
+                        +runIntake
+                        +runWobble
+                        +runOutput
+                        +logLocale
+                        //+onPress(gamepad1::a and gamepad1::b or !gamepad1::x) {
                         //+cmd {
                         //log.logData("In toggled command")
                         //}
@@ -148,6 +146,7 @@ class TestDslTele: DslOpMode() {
                     }
                 }
             }
+
         }
     }
 }

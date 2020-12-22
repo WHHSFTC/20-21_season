@@ -42,7 +42,7 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     private val turnController: PIDFController
     private lateinit var turnProfile: MotionProfile
     private var turnStart = 0.0
-    private val constraints: DriveConstraints
+    private val constraints: DriveConstraints = DriveConstants.MECANUM_CONSTRAINTS
     private val follower: TrajectoryFollower
     private val poseHistory: LinkedList<Pose2d>
     private val leftFront: DcMotorEx
@@ -273,7 +273,6 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
         mode = DriveMode.IDLE
         turnController = PIDFController(HEADING_PID)
         turnController.setInputBounds(0.0, 2 * Math.PI)
-        constraints = MecanumConstraints(DriveConstants.BASE_CONSTRAINTS, DriveConstants.TRACK_WIDTH)
         follower = HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5)
         poseHistory = LinkedList()

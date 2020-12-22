@@ -16,8 +16,6 @@ class TestDslTele: DslOpMode() {
             dsl {
                 var prevShoot = false
                 var prevBurst = false
-                var prevTurtle = false
-                var turtle = false
 
                 infix fun Double.max(other: Double): Double {
                     return this.coerceAtLeast(other)

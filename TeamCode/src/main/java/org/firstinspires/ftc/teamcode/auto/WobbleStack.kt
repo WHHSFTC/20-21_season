@@ -2,12 +2,9 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
-import com.acmerobotics.roadrunner.trajectory.MarkerCallback
 import com.acmerobotics.roadrunner.trajectory.Trajectory
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -61,9 +58,9 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     }
                             dt.followTrajectory(traj)
                             wob.elbow(Wobble.ElbowState.DROP)
-                            sleep(500)
+                            delay(500)
                             wob.claw(Wobble.ClawState.OPEN)
-                            sleep(500)
+                            delay(500)
                             wob.elbow(Wobble.ElbowState.STORE)
 
                             traj = dt.trajectoryBuilder(traj.end(), true)
@@ -73,7 +70,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             aim.height(HeightController.Height.HIGH)
                             feed.height(Indexer.Height.HIGH)
                             out(Shooter.State.FULL)
-                            sleep(1000)
+                            delay(1000)
                             feed.burst() // turns off shooter and lowers indexer
                             aim.height(HeightController.Height.ZERO)
                             //traj = dt.trajectoryBuilder(traj.end().plus(Pose2d(0.0, 0.0, Math.toRadians(180.0))))
@@ -113,7 +110,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                 }
                             }
                             wob.claw(Wobble.ClawState.CLOSED)
-                            sleep(500)
+                            delay(500)
                             wob.elbow(Wobble.ElbowState.CARRY)
 
                             //val pose: Pose2d =
@@ -167,7 +164,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(21.0, 28.0))
                                             .build()
-                                    sleep(150)
+                                    delay(150)
                                     wob.elbow(Wobble.ElbowState.DROP)
                                     dt.followTrajectory(traj)
                                     out(Shooter.State.OFF)
@@ -177,7 +174,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             }
 
                             wob.claw(Wobble.ClawState.OPEN)
-                            sleep(500)
+                            delay(500)
                             wob.elbow(Wobble.ElbowState.STORE)
 
                             traj = dt.trajectoryBuilder(traj.end())

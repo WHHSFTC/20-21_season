@@ -58,10 +58,8 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             dt.followTrajectory(traj)
                             dt.waitForIdle()
                             wob.elbow(Wobble.ElbowState.DROP)
-//                            sleep(500)
                             delay(500)
                             wob.claw(Wobble.ClawState.OPEN)
-//                            sleep(500)
                             delay(500)
                             wob.elbow(Wobble.ElbowState.STORE)
 
@@ -88,7 +86,6 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             dt.followTrajectory(traj)
                             dt.waitForIdle()
                             wob.claw(Wobble.ClawState.CLOSED)
-//                            sleep(500)
                             delay(500)
                             wob.elbow(Wobble.ElbowState.CARRY)
 
@@ -116,10 +113,8 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             dt.waitForIdle()
 
                             wob.elbow(Wobble.ElbowState.DROP)
-//                            sleep(500)
                             delay(500)
                             wob.claw(Wobble.ClawState.OPEN)
-//                            sleep(500)
                             delay(500)
                             wob.elbow(Wobble.ElbowState.STORE)
                             wob.claw(Wobble.ClawState.CLOSED)
@@ -131,10 +126,8 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
 
                             dt.waitForIdle()
                             wob.elbow(Wobble.ElbowState.DROP)
-//                            sleep(1000)
                             delay(1000)
                             wob.claw(Wobble.ClawState.OPEN)
-//                            sleep(1000)
                             delay(1000)
                             wob.elbow(Wobble.ElbowState.STORE)
 
@@ -146,10 +139,8 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             feed.height(Indexer.Height.HIGH)
                             dt.waitForIdle()
                             out(Shooter.State.FULL)
-//                            sleep(1000)
                             delay(1000)
                             feed.burst()
-//                            sleep(150)
                             delay(150)
                             out(Shooter.State.OFF)
                             feed.height(Indexer.Height.IN)

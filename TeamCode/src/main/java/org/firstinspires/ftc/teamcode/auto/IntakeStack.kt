@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -65,11 +66,11 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     ink(Intake.Power.IN)
                                     dt.followTrajectory(traj)
                                     dt.waitForIdle()
-                                    sleep(1000)
+                                    delay(1000)
                                     ink(Intake.Power.OFF)
-                                    sleep(1000)
+                                    delay(1000)
                                     feed.shake()
-                                    sleep(2000)
+                                    delay(2000)
 
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(-22.0, 36.0), constraintsOverride = constr)
@@ -77,11 +78,11 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     ink(Intake.Power.IN)
                                     dt.followTrajectory(traj)
                                     dt.waitForIdle()
-                                    sleep(1000)
+                                    delay(1000)
                                     ink(Intake.Power.OFF)
-                                    sleep(1000)
+                                    delay(1000)
                                     feed.shake()
-                                    sleep(2000)
+                                    delay(2000)
 
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(-20.0, 36.0), constraintsOverride = constr)
@@ -89,11 +90,11 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     ink(Intake.Power.IN)
                                     dt.followTrajectory(traj)
                                     dt.waitForIdle()
-                                    sleep(1000)
+                                    delay(1000)
                                     ink(Intake.Power.OFF)
-                                    sleep(1000)
+                                    delay(1000)
                                     feed.shake()
-                                    sleep(2000)
+                                    delay(2000)
 
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(-20.0, 20.0))
@@ -111,9 +112,9 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                             feed.height(Indexer.Height.HIGH)
                             dt.waitForIdle()
                             out(Shooter.State.FULL)
-                            sleep(1000)
+                            delay(1000)
                             feed.burst()
-                            sleep(150)
+                            delay(150)
                             out(Shooter.State.OFF)
                             feed.height(Indexer.Height.IN)
                             aim.height(HeightController.Height.ZERO)

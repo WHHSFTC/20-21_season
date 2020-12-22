@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -35,7 +36,7 @@ class Park: DslOpMode(mode = Mode.TELE) {
                                 .build()
                         dt.followTrajectory(traj)
 
-                        sleep (1000)
+                        delay(1000)
 
                         traj = dt.trajectoryBuilder(traj.end())
                                 .lineTo(Vector2d(0.0, 0.0))

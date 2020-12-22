@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -39,9 +40,9 @@ class ShootAuto: DslOpMode(mode = Mode.TELE) {
                             aim.height(HeightController.Height.HIGH)
                             feed.height(Indexer.Height.HIGH)
                             out(Shooter.State.FULL)
-                            sleep(1000)
+                            delay(1000)
                             feed.burst()
-                            sleep(150)
+                            delay(150)
                             out(Shooter.State.OFF)
                             feed.height(Indexer.Height.IN)
                             aim.height(HeightController.Height.ZERO)

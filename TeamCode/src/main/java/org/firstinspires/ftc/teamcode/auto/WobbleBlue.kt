@@ -2,15 +2,14 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
 import java.lang.Math.toRadians
-import kotlin.math.PI
 
 @Autonomous
 class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
@@ -59,9 +58,11 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             dt.followTrajectory(traj)
                             dt.waitForIdle()
                             wob.elbow(Wobble.ElbowState.DROP)
-                            sleep(500)
+//                            sleep(500)
+                            delay(500)
                             wob.claw(Wobble.ClawState.OPEN)
-                            sleep(500)
+//                            sleep(500)
+                            delay(500)
                             wob.elbow(Wobble.ElbowState.STORE)
 
                             traj = dt.trajectoryBuilder(traj.end(), true)
@@ -72,7 +73,8 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             feed.height(Indexer.Height.HIGH)
                             dt.waitForIdle()
                             out(Shooter.State.FULL)
-                            sleep(1000)
+//                            sleep(1000)
+                            delay(1000)
                             feed.burst()
                             aim.height(HeightController.Height.ZERO)
                             wob.elbow(Wobble.ElbowState.INTAKE)
@@ -86,7 +88,8 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             dt.followTrajectory(traj)
                             dt.waitForIdle()
                             wob.claw(Wobble.ClawState.CLOSED)
-                            sleep(500)
+//                            sleep(500)
+                            delay(500)
                             wob.elbow(Wobble.ElbowState.CARRY)
 
                             val pose: Pose2d =
@@ -113,9 +116,11 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             dt.waitForIdle()
 
                             wob.elbow(Wobble.ElbowState.DROP)
-                            sleep(500)
+//                            sleep(500)
+                            delay(500)
                             wob.claw(Wobble.ClawState.OPEN)
-                            sleep(500)
+//                            sleep(500)
+                            delay(500)
                             wob.elbow(Wobble.ElbowState.STORE)
                             wob.claw(Wobble.ClawState.CLOSED)
 
@@ -126,9 +131,11 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
 
                             dt.waitForIdle()
                             wob.elbow(Wobble.ElbowState.DROP)
-                            sleep(1000)
+//                            sleep(1000)
+                            delay(1000)
                             wob.claw(Wobble.ClawState.OPEN)
-                            sleep(1000)
+//                            sleep(1000)
+                            delay(1000)
                             wob.elbow(Wobble.ElbowState.STORE)
 
                             traj = dt.trajectoryBuilder(traj.end(), true)
@@ -139,9 +146,11 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             feed.height(Indexer.Height.HIGH)
                             dt.waitForIdle()
                             out(Shooter.State.FULL)
-                            sleep(1000)
+//                            sleep(1000)
+                            delay(1000)
                             feed.burst()
-                            sleep(150)
+//                            sleep(150)
+                            delay(150)
                             out(Shooter.State.OFF)
                             feed.height(Indexer.Height.IN)
                             aim.height(HeightController.Height.ZERO)

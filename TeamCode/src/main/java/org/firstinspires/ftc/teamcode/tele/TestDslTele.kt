@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.tele
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -76,10 +77,12 @@ class TestDslTele: DslOpMode() {
 
                 val runOutput = task {
                     if (gamepad2.right_bumper && !prevShoot)
+                        bot.dt.powers = CustomMecanumDrive.Powers(.0, .0, .0, .0)
                         feed.shoot()
                     prevShoot = gamepad2.right_bumper
 
                     if (gamepad2.left_bumper && !prevBurst)
+                        bot.dt.powers = CustomMecanumDrive.Powers(.0,.0,.0,.0)
                         feed.burst()
                     prevBurst = gamepad2.left_bumper
 
@@ -121,7 +124,7 @@ class TestDslTele: DslOpMode() {
                 }
 
                 onLoop {
-                    seq {
+                    par {
                         +runDriveTrain
                         +runIntake
                         +runWobble

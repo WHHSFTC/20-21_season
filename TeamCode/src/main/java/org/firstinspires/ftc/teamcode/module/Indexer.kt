@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.Servo
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class Indexer(val bot: Robot) {
     val feedServo: Servo = bot.hwmap.servo["feeder"]
@@ -39,14 +41,16 @@ class Indexer(val bot: Robot) {
     }
 
     suspend fun shake() {
-        height(Height.POWER)
-        delay(250)
-        height(Height.IN)
-        delay(250)
+        GlobalScope.launch {
+            height(Height.POWER)
+            delay(250)
+            height(Height.IN)
+            delay(250)
 
-        height(Height.POWER)
-        delay(250)
-        height(Height.IN)
+            height(Height.POWER)
+            delay(250)
+            height(Height.IN)
+        }
     }
 
     val feed = object : Module<Shoot> {

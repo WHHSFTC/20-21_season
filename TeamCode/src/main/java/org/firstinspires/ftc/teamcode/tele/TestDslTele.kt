@@ -76,14 +76,16 @@ class TestDslTele: DslOpMode() {
                 }
 
                 val runOutput = task {
-                    if (gamepad2.right_bumper && !prevShoot)
+                    if (gamepad2.right_bumper && !prevShoot) {
                         bot.dt.powers = CustomMecanumDrive.Powers(.0, .0, .0, .0)
                         feed.shoot()
+                    }
                     prevShoot = gamepad2.right_bumper
 
-                    if (gamepad2.left_bumper && !prevBurst)
-                        bot.dt.powers = CustomMecanumDrive.Powers(.0,.0,.0,.0)
+                    if (gamepad2.left_bumper && !prevBurst) {
+                        bot.dt.powers = CustomMecanumDrive.Powers(.0, .0, .0, .0)
                         feed.burst()
+                    }
                     prevBurst = gamepad2.left_bumper
 
                     when {

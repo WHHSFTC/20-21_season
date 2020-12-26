@@ -156,7 +156,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     feed.height(Indexer.Height.HIGH)
                                     out(Shooter.State.FULL)
                                     traj = dt.trajectoryBuilder(traj.end())
-                                            .lineToLinearHeading(Pose2d(-3.0, 28.0, 0.0))
+                                            .lineToSplineHeading(Pose2d(-3.0, 28.0, 0.0))
                                             .build()
                                     dt.followTrajectory(traj)
                                     feed.shoot()
@@ -178,7 +178,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             wob.elbow(Wobble.ElbowState.STORE)
 
                             traj = dt.trajectoryBuilder(traj.end())
-                                    .lineToLinearHeading(Pose2d(12.0, 26.0, 0.0))
+                                    .lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                     .build()
                             dt.followTrajectory(traj)
                             wob.claw(Wobble.ClawState.CLOSED)
@@ -190,6 +190,8 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                     cmd {
                         dt.powers = CustomMecanumDrive.Powers()
                         aim.height(HeightController.Height.ZERO) // todo uhh
+                        if (OpMode.DEBUG)
+                            dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(start).build())
                     }
                 }
             }

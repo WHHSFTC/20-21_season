@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.runBlocking
@@ -34,5 +35,10 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
 
     enum class Mode {
         NULL, AUTO, TELE,
+    }
+
+    @Config
+    companion object {
+        @JvmField var DEBUG = false
     }
 }

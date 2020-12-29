@@ -84,9 +84,9 @@ fun DSLContext.delayC(time: Long, unit: TimeUnit, block: Boolean = false) = Dela
 
 fun DSLContext.pass(): EmptyCommand = EmptyCommand()
 
-fun DSLContext.switch(c: List<SwitchCommand.Case>): SwitchCommand = SwitchCommand(c)
+fun <T> DSLContext.switch(supp: Robot.() -> T, c: List<SwitchCommand.Case<T>>): SwitchCommand<T> = SwitchCommand<T>(supp, c)
 
-fun DSLContext.case(cond: Condition, com: Command): SwitchCommand.Case = SwitchCommand.Case(cond, com)
+fun <T> DSLContext.case(supp: Robot.() -> T, com: Command): SwitchCommand.Case<T> = SwitchCommand.Case(supp, com)
 
 fun DSLContext.go(pose: Pose2d, reversed: Boolean = false, b: TrajectoryBuilder.() -> TrajectoryBuilder): LambdaCommand {
     val traj = TrajectoryBuilder(pose, reversed, constraints = DriveConstants.MECANUM_CONSTRAINTS).b().build()

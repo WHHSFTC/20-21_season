@@ -81,13 +81,14 @@ class ConditionalCommand(
     }
 }
 
-class SwitchCommand(
-        val cases: List<SwitchCommand.Case>,
+class SwitchCommand<T: Any?>(
+        val supp: () -> T,
+        val cases: List<SwitchCommand.Case<T>>,
 ): Command() {
-    data class Case(val cond: Condition, val com: Command)
+    data class Case<T: Any?>(val supp: () -> T, val com: Command)
     override suspend fun execute(bot: Robot) {
         for (c in cases) {
-            if (c.cond())
+            if (supp() == c.supp())
                 return c.com.execute(bot)
         }
     }

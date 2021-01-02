@@ -9,16 +9,11 @@ import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.Robot
 import org.firstinspires.ftc.teamcode.module.withContext
 
-open class DslOpMode(protected var commands: CommandScheduler = CommandScheduler(), mode: Mode = Mode.TELE): OpMode(mode) { // TODO (Mode)
-    constructor(commandScheduler: CommandScheduler, mode: Mode, build: suspend CommandScheduler.() -> CommandScheduler):
-            this(CommandScheduler(), mode = mode) {
-                suspend {
-                    commands = commandScheduler.dsl(build)
-                }
-            }
-    constructor(mode: Mode, build: suspend CommandScheduler.() -> CommandScheduler): this(CommandScheduler(), mode, build)
-
-    var builder: suspend CommandScheduler.() -> CommandScheduler = {this}
+open class DslOpMode(
+        protected var commands: CommandScheduler = CommandScheduler(),
+        mode: Mode = Mode.TELE,
+        protected var builder: suspend CommandScheduler.() -> CommandScheduler = {this},) : OpMode(mode) {
+    constructor(mode: Mode, build: suspend CommandScheduler.() -> CommandScheduler): this(mode = mode, builder = build)
 
     override suspend fun onInit() {
         commands = commands.dsl(builder)
@@ -37,7 +32,7 @@ open class DslOpMode(protected var commands: CommandScheduler = CommandScheduler
     }
 
     companion object {
-        suspend fun DslOpMode.dsl(commandScheduler: CommandScheduler = CommandScheduler(), build: suspend CommandScheduler.() -> CommandScheduler) {
+        fun DslOpMode.dsl(build: suspend CommandScheduler.() -> CommandScheduler) {
             this.builder = build
         }
 

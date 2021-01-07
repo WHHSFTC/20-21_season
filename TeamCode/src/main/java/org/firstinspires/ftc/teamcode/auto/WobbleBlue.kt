@@ -16,7 +16,7 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
     init {
         runBlocking {
             dsl {
-                val start: Pose2d = Pose2d(Vector2d(-63.0, 48.0), 0.0)
+                val start = Pose2d(Vector2d(-63.0, 48.0), 0.0)
                 onInit {
                     cmd {
                         wob.elbow(Wobble.ElbowState.STORE)
@@ -71,7 +71,6 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             feed.height(Indexer.Height.HIGH)
                             dt.waitForIdle()
                             out(Shooter.State.FULL)
-//                            sleep(1000)
                             delay(1000)
                             feed.burst()
                             aim.height(HeightController.Height.ZERO)

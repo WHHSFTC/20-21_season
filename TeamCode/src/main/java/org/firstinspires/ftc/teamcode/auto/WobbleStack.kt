@@ -34,23 +34,24 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         +switch({ vis!!.height }, listOf(
                                 case({ VisionPipeline.Height.ZERO }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
+                                    addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
                                     splineToConstantHeading(Vector2d(-3.0, 57.0), 0.0)
                                 }),
                                 case({ VisionPipeline.Height.ONE }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
+                                    addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
                                     splineToConstantHeading(Vector2d(21.0, 33.0), 0.0)
                                 }),
                                 case({ VisionPipeline.Height.FOUR }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
+                                    addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
                                     splineToConstantHeading(Vector2d(45.0, 57.0), 0.0)
                                 })
                         ))
 
-                        +setState(bot.wob.elbow) { Wobble.ElbowState.DROP } // npe on construct unless...
+                        +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
                         +delayC(500)
-                        +setState(bot.wob.claw) { Wobble.ClawState.OPEN } // npe on construct
-                        +delayC(500)
-                        +setState(bot.wob.elbow) { Wobble.ElbowState.STORE } // npe on construct
+                        +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
 
                         +switch({ vis!!.height }, listOf(
                                 case({ VisionPipeline.Height.ZERO }, go(Pose2d(-3.0, 57.0), true) {
@@ -102,7 +103,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     +go(Pose2d(-3.0280,.0)) {
                                         splineToSplineHeading(Pose2d(-12.0, 36.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                         splineToConstantHeading(Vector2d(-32.0, 36.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                        splineToConstantHeading(Vector2d(-36.0, 24.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                        splineToConstantHeading(Vector2d(-34.0, 24.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                         addDisplacementMarker {
                                             bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                             bot.ink(Intake.Power.OFF)
@@ -170,7 +171,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                 case({ VisionPipeline.Height.FOUR }, go(Pose2d(42.0, 50.0, toRadians(45.0))) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, ))
                                 }),
-                                case({ VisionPipeline.Height.ZERO }, go(Pose2d(21.0, 28.0, 0.0)) {
+                                case({ VisionPipeline.Height.ONE }, go(Pose2d(21.0, 28.0, 0.0)) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 })
                         ))

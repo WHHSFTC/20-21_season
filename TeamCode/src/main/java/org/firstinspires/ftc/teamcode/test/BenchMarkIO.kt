@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.test
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -8,6 +9,7 @@ import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.Robot
 
+@TeleOp(group = "Benchmark")
 class BenchMarkIO: OpMode(Mode.TELE) {
     override fun runOpMode() {
         bot = Robot(this)

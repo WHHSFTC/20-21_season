@@ -24,6 +24,7 @@ class Robot(
     val aim: HeightController = HeightController(this)
     var vis: StackCounter? = null
     var out: Shooter = Shooter(this)
+    val alliance: Alliance = Alliance.BLUE
 
     init {
         if (opMode.mode == OpMode.Mode.AUTO)

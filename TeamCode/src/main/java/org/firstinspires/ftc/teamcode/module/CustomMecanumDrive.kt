@@ -51,7 +51,7 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     private val rightFront: DcMotorEx
     private val motors: List<DcMotorEx>
     //private val imu: BNO055IMU
-    private val batteryVoltageSensor: VoltageSensor
+    public val batteryVoltageSensor: VoltageSensor
     private var lastPoseOnTurn: Pose2d? = null
     fun trajectoryBuilder(startPose: Pose2d?): TrajectoryBuilder {
         return TrajectoryBuilder(startPose = startPose!!, constraints = constraints)
@@ -243,7 +243,7 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
             field = value
         }
 
-    var twist: Pose2d = Pose2d()
+    var botTwist: Pose2d = Pose2d()
         set(value) {
             this.setWeightedDrivePower(value)
             field = value

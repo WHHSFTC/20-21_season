@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.module
 
 class Wobble(val bot: Robot) {
     enum class ElbowState(override val pos: Double): StatefulServo.ServoPosition {
-        STORE(.02), DROP(.5), CARRY(.15), INTAKE(.8)
+        STORE(1.0), DROP(.54), CARRY(.9), INTAKE(.32)
     }
 
     enum class ClawState(override val pos: Double): StatefulServo.ServoPosition {

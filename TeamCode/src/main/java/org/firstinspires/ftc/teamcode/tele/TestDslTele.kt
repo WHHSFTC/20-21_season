@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tele
 
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -17,6 +18,7 @@ class TestDslTele: DslOpMode() {
             dsl {
                 var prevShoot = false
                 var prevBurst = false
+                var fieldCentric = false
 
                 infix fun Double.max(other: Double): Double {
                     return this.coerceAtLeast(other)
@@ -42,14 +44,24 @@ class TestDslTele: DslOpMode() {
                 val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
                 val turtleScalar = if (turtle) 3.0 else 1.0
 
-                bot.dt.twist = Pose2d(
+                var twist = Pose2d(
                         x = linearScalar * x,
                         y = linearScalar * y,
                         omega
                 ) / turtleScalar
 
+                if (fieldCentric) {
+                    val theta = -dt.poseEstimate.heading + if (bot.alliance == Alliance.BLUE) -90 else 90
+                    twist = Pose2d(
+                            x = twist.x * cos(theta) - twist.y * sin(theta),
+                            y = twist.y * cos(theta) + twist.x * sin(theta),
+                            omega
+                    )
+                }
+                dt.botTwist = twist
+
                 // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
-                val (x_, y_, omega_) = bot.dt.twist
+                val (x_, y_, omega_) = twist
                 log.logData("x power: $x_")
                 log.logData("y power: $y_")
                 log.logData("omega power: $omega_")
@@ -70,7 +82,10 @@ class TestDslTele: DslOpMode() {
                 val runIntake = task {
                     when {
                         gamepad1.y -> ink(Intake.Power.OUT)
-                        gamepad1.a -> ink(Intake.Power.IN)
+                        gamepad1.a -> {
+                            ink(Intake.Power.IN)
+                            out(Shooter.State.OFF)
+                        }
                         gamepad1.b -> ink(Intake.Power.OFF)
                     }
                 }
@@ -109,20 +124,26 @@ class TestDslTele: DslOpMode() {
                     }
 
                     when {
-                        gamepad2.a -> out(Shooter.State.FULL)
+                        gamepad2.a -> {
+                            out(Shooter.State.FULL)
+                            ink(Intake.Power.OFF)
+                        }
                         gamepad2.b -> out(Shooter.State.OFF)
                         gamepad2.y -> feed.shake()
                     }
 
-                    log.logData("aim: ${aim.motor.currentPosition}")
+                    telemetry.addData("aim",  aim.motor.currentPosition)
                 }
 
                 val logLocale = task {
-                    telemetry.addData("x", dt.poseEstimate.x)
-                    telemetry.addData("y", dt.poseEstimate.y)
-                    telemetry.addData("heading", dt.poseEstimate.heading)
-                    if (gamepad1.y)
-                        dt.poseEstimate = Pose2d(0.0, 0.0,0.0)
+                    dt.update()
+                    val p = dt.poseEstimate
+                    telemetry.addData("x", p.x)
+                    telemetry.addData("y", p.y)
+                    telemetry.addData("heading", p.heading)
+                    if (gamepad2.x)
+                        loc.poseEstimate = Pose2d(0.0, 0.0,0.0)
+                    telemetry.addData("battery", bot.dt.batteryVoltageSensor.voltage * 12.0)
                 }
 
                 onLoop {
@@ -132,6 +153,9 @@ class TestDslTele: DslOpMode() {
                         +runWobble
                         +runOutput
                         +logLocale
+                        +onPress(gamepad1::x) {
+                            +cmd {fieldCentric = !fieldCentric}
+                        }
                     }
                 }
 

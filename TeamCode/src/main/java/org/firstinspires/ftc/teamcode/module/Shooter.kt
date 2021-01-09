@@ -10,7 +10,8 @@ class Shooter(val bot: Robot): Module<Shooter.State> {
 
     override var state: State = State.OFF
         set(value) {
-            motor1.power = value.vel
+            if (value != field)
+                motor1.power = value.vel
             field = value
         }
 }

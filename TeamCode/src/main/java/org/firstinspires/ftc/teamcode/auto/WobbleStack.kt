@@ -99,26 +99,26 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             +setState(bot.ink) { Intake.Power.IN }
                             +go(Pose2d(-3.0280,.0)) {
                             //+go(Pose2d(-3.0, 28.0)) {
-                                splineToSplineHeading(Pose2d(-12.0, 34.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-36.0, 34.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToSplineHeading(Pose2d(-12.0, 33.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-36.0, 33.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 addDisplacementMarker {
                                     bot.ink(Intake.Power.OUT)
                                 }
                                 splineToConstantHeading(Vector2d(-34.0, 32.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-34.0, 24.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-34.0, 22.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 addDisplacementMarker {
                                     bot.wob.elbow(Wobble.ElbowState.INTAKE)
-                                    bot.ink(Intake.Power.OFF)
                                     bot.feed.height(Indexer.Height.HIGH)
                                 }
-                                splineToConstantHeading(Vector2d(-37.0, 26.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-37.0, 25.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 splineToConstantHeading(Vector2d(-37.0, 31.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                             }
+                            +setState(bot.ink) { Intake.Power.OFF }
                         }
 
                         +switch({ vis!!.height }, listOf(
                                 case({ VisionPipeline.Height.ZERO }, zero),
-                                case({ VisionPipeline.Height.FOUR }, zero),
+                                case({ VisionPipeline.Height.FOUR }, onefour),
                                 case({ VisionPipeline.Height.ONE }, onefour)
                         ))
 

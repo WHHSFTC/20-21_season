@@ -7,6 +7,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 import org.firstinspires.ftc.teamcode.module.OpMode
+import org.firstinspires.ftc.teamcode.module.Robot
 
 @TeleOp(group = "Benchmark")
 class Benchmark : OpMode(Mode.TELE) {
@@ -25,6 +26,8 @@ class Benchmark : OpMode(Mode.TELE) {
     override suspend fun onStop() {}
 
     override fun runOpMode() {
+        bot = Robot(this)
+        waitForStart()
         var storePowers: CustomMecanumDrive.Powers
         var power = 0.0
         GlobalScope.launch(Dispatchers.IO) {
@@ -50,6 +53,7 @@ class Benchmark : OpMode(Mode.TELE) {
         val regAvg = regTimes.average()
         val IOAvg = IOTimes.average()
 
+        telemetry.clear()
         telemetry.addData("Regular Thread:", "$regAvg ms")
         telemetry.addData("Dispatchers.IO:", "$IOAvg ms")
 

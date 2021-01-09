@@ -54,12 +54,12 @@ object DriveConstants {
      * acceleration values are required, and the jerk values are optional (setting a jerk of 0.0
      * forces acceleration-limited profiling). All distance units are inches.
      */
-    @JvmField var BASE_CONSTRAINTS = DriveConstraints(
+    var BASE_CONSTRAINTS = DriveConstraints(
             800.0, 50.0, 0.0,
             Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     )
 
-    val MECANUM_CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
+    @JvmField var MECANUM_CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
 
     val SLOW_CONSTRAINTS = DriveConstants.BASE_CONSTRAINTS.copy().apply { maxVel = 10.0 }
 

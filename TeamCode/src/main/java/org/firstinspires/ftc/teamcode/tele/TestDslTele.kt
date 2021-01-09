@@ -34,7 +34,7 @@ class TestDslTele: DslOpMode() {
                 }
 
             val runDriveTrain: Command = task {
-                val turtle = gamepad1.left_trigger > .5
+                val turtle = gamepad1.left_trigger > .5 || gamepad1.right_trigger > .5
                 val x = (-gamepad1.left_stick_y).toDouble()
                 val y = (-gamepad1.left_stick_x).toDouble()
                 val omega = (-gamepad1.right_stick_x).toDouble()
@@ -96,7 +96,7 @@ class TestDslTele: DslOpMode() {
                                 gamepad2.dpad_down -> aim.height(HeightController.Height.ZERO)
                             }
                         }
-                        gamepad1.left_trigger > 0.5 -> {
+                        gamepad2.left_trigger > 0.5 -> {
                             aim.power(-gamepad2.right_stick_y.toDouble() * .25)
                         }
                         else -> {

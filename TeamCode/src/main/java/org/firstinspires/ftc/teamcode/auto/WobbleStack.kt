@@ -82,7 +82,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         //.splineToConstantHeading(Vector2d(-37.0, 31.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                         //.build()
 
-                        val zerofour = CommandContext.seq {
+                        val zero = CommandContext.seq {
                             +setState(bot.wob.elbow) { Wobble.ElbowState.INTAKE }
                             +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
                             +go(Pose2d(-3.0, 28.0)) {
@@ -93,25 +93,33 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             }
                         }
 
+                        val onefour = CommandContext.seq{
+                            +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                            +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
+                            +setState(bot.ink) { Intake.Power.IN }
+                            +go(Pose2d(-3.0280,.0)) {
+                            //+go(Pose2d(-3.0, 28.0)) {
+                                splineToSplineHeading(Pose2d(-12.0, 34.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-36.0, 34.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                addDisplacementMarker {
+                                    bot.ink(Intake.Power.OUT)
+                                }
+                                splineToConstantHeading(Vector2d(-34.0, 32.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-34.0, 24.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                addDisplacementMarker {
+                                    bot.wob.elbow(Wobble.ElbowState.INTAKE)
+                                    bot.ink(Intake.Power.OFF)
+                                    bot.feed.height(Indexer.Height.HIGH)
+                                }
+                                splineToConstantHeading(Vector2d(-37.0, 26.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-37.0, 31.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                            }
+                        }
+
                         +switch({ vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, zerofour),
-                                case({ VisionPipeline.Height.FOUR }, zerofour),
-                                case({ VisionPipeline.Height.ONE }, CommandContext.seq {
-                                    +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                    +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
-                                    +setState(bot.ink) { Intake.Power.IN }
-                                    +go(Pose2d(-3.0280,.0)) {
-                                        splineToSplineHeading(Pose2d(-12.0, 36.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                        splineToConstantHeading(Vector2d(-32.0, 36.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                        splineToConstantHeading(Vector2d(-34.0, 24.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                        addDisplacementMarker {
-                                            bot.wob.elbow(Wobble.ElbowState.INTAKE)
-                                            bot.ink(Intake.Power.OFF)
-                                        }
-                                        splineToConstantHeading(Vector2d(-37.0, 26.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                        splineToConstantHeading(Vector2d(-37.0, 31.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    }
-                                })
+                                case({ VisionPipeline.Height.ZERO }, zero),
+                                case({ VisionPipeline.Height.FOUR }, zero),
+                                case({ VisionPipeline.Height.ONE }, onefour)
                         ))
 
                         +setState(bot.wob.claw) { Wobble.ClawState.CLOSED }
@@ -131,14 +139,22 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     }
                                     splineToSplineHeading(Pose2d(12.0, 50.0, toRadians(90.0)), toRadians(90.0))
                                 }),
-                                case({ VisionPipeline.Height.FOUR }, go(lastpose) {
-                                    splineToConstantHeading(Vector2d(-39.0, 26.0), 0.0)
-                                    splineToConstantHeading(Vector2d(-36.0, 24.0), 0.0)
-                                    splineToConstantHeading(Vector2d(-12.0, 24.0), 0.0)
-                                    addDisplacementMarker {
-                                        bot.wob.elbow(Wobble.ElbowState.DROP)
+                                case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
+                                    +setState(bot.aim.height) { HeightController.Height.HIGH }
+                                    +setState(bot.feed.height) { Indexer.Height.HIGH }
+                                    +setState(bot.out) { Shooter.State.FULL }
+                                    val nextpose = Pose2d(-3.0, 28.0, 0.0)
+                                    +go(lastpose) {
+                                        lineToSplineHeading(nextpose)
                                     }
-                                    splineToSplineHeading(Pose2d(42.0, 50.0, toRadians(45.0)), toRadians(45.0))
+                                    +cmd { feed.burst() }
+                                    +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                                    +go(nextpose) {
+                                        lineToSplineHeading(Pose2d(50.0, 50.0, toRadians(45.0)))
+                                    }
+
+                                    +setState(bot.aim.height) { HeightController.Height.ZERO }
+                                    +setState(bot.feed.height) { Indexer.Height.IN }
                                 }),
                                 case({ VisionPipeline.Height.ONE }, CommandContext.seq {
                                     +setState(bot.aim.height) { HeightController.Height.HIGH }
@@ -169,7 +185,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 }),
                                 case({ VisionPipeline.Height.FOUR }, go(Pose2d(42.0, 50.0, toRadians(45.0))) {
-                                    lineToSplineHeading(Pose2d(12.0, 26.0, ))
+                                    lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 }),
                                 case({ VisionPipeline.Height.ONE }, go(Pose2d(21.0, 28.0, 0.0)) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))

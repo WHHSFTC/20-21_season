@@ -51,7 +51,7 @@ class TestDslTele: DslOpMode() {
                 ) / turtleScalar
 
                 if (fieldCentric) {
-                    val theta = -dt.poseEstimate.heading + if (bot.alliance == Alliance.BLUE) -90 else 90
+                    val theta = -dt.poseEstimate.heading + if (bot.alliance == Alliance.BLUE) -PI/2.0 else PI/2.0
                     twist = Pose2d(
                             x = twist.x * cos(theta) - twist.y * sin(theta),
                             y = twist.y * cos(theta) + twist.x * sin(theta),

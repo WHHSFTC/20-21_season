@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
-import org.firstinspires.ftc.teamcode.module.DriveTrain
 import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.VisionPipeline
 

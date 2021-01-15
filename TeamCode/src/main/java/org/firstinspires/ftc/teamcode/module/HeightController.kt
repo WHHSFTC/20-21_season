@@ -6,7 +6,7 @@ class HeightController(val bot: Robot) {
     val motor = bot.hwmap.dcMotor["aim"].also { it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER }
 
     enum class Height(val pos: Int) {
-        POWER(128), HIGH(390), ZERO(0);
+        POWER(260), HIGH(390), ZERO(0), WALL(284);
     }
 
     val power = object : Module<Double> {

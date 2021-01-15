@@ -37,7 +37,7 @@ class VoltTest: OpMode(Mode.TELE) {
         last = now
         telemetry.addData("target", target.vel)
         telemetry.addData("omega", omega)
-        telemetry.addData("battery", bot.dt.batteryVoltageSensor.voltage * 12.0)
+        telemetry.addData("battery", bot.dt.batteryVoltageSensor.voltage)
     }
 
     override suspend fun onStop() {

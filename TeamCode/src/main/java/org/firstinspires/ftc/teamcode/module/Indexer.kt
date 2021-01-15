@@ -40,6 +40,22 @@ class Indexer(val bot: Robot) {
         height(Height.IN)
     }
 
+    suspend fun slowBurst() {
+        repeat(3) {
+            feed(Shoot.POST)
+            delay(150)
+            feed(Shoot.PRE)
+            delay(1000)
+        }
+
+        feed(Shoot.POST)
+        delay(150)
+        feed(Shoot.PRE)
+        delay(250)
+
+        bot.out(Shooter.State.OFF)
+        height(Height.IN)
+    }
     suspend fun shake() {
         GlobalScope.launch {
             height(Height.POWER)

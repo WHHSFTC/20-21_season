@@ -40,7 +40,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                 case({ VisionPipeline.Height.ONE }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
-                                    splineToConstantHeading(Vector2d(21.0, 33.0), 0.0)
+                                    splineToConstantHeading(Vector2d(27.0, 39.0), 0.0)
                                 }),
                                 case({ VisionPipeline.Height.FOUR }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
@@ -55,13 +55,13 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
 
                         +switch({ vis!!.height }, listOf(
                                 case({ VisionPipeline.Height.ZERO }, go(Pose2d(-3.0, 57.0), true) {
-                                    lineTo(Vector2d(-3.0, 28.0))
+                                    lineTo(Vector2d(-3.0, 24.0))
                                 }),
                                 case({ VisionPipeline.Height.ONE }, go(Pose2d(21.0, 33.0), true) {
-                                    lineTo(Vector2d(-3.0, 28.0))
+                                    lineTo(Vector2d(-3.0, 24.0))
                                 }),
                                 case({ VisionPipeline.Height.FOUR }, go(Pose2d(45.0, 57.0), true) {
-                                    lineTo(Vector2d(-3.0, 28.0))
+                                    lineTo(Vector2d(-3.0, 24.0))
                                 })
                         ))
 
@@ -100,10 +100,11 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             +go(Pose2d(-3.0280,.0)) {
                             //+go(Pose2d(-3.0, 28.0)) {
                                 splineToSplineHeading(Pose2d(-12.0, 33.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-36.0, 33.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-22.0, 33.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 addDisplacementMarker {
                                     bot.ink(Intake.Power.OUT)
                                 }
+                                //splineToConstantHeading(Vector2d(-24.0, 22.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 splineToConstantHeading(Vector2d(-34.0, 32.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 splineToConstantHeading(Vector2d(-34.0, 22.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 addDisplacementMarker {
@@ -169,7 +170,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                     +setState(bot.out) { Shooter.State.OFF }
                                     +go(nextpose) {
-                                        lineTo(Vector2d(21.0, 28.0))
+                                        lineTo(Vector2d(17.0, 39.0))
                                     }
                                     +setState(bot.aim.height) { HeightController.Height.ZERO }
                                     +setState(bot.feed.height) { Indexer.Height.IN }

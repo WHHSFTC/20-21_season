@@ -59,9 +59,9 @@ object DriveConstants {
             Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     )
 
-    @JvmField var MECANUM_CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
+    val MECANUM_CONSTRAINTS get() = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
 
-    val SLOW_CONSTRAINTS = DriveConstants.BASE_CONSTRAINTS.copy().apply { maxVel = 10.0 }
+    val SLOW_CONSTRAINTS get() = DriveConstants.BASE_CONSTRAINTS.copy().apply { maxVel = 10.0 }
 
     fun encoderTicksToInches(ticks: Double): Double {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV

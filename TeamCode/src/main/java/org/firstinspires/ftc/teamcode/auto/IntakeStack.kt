@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
 
+
 @Autonomous
 class IntakeStack: DslOpMode(mode = Mode.AUTO) {
     init {
@@ -43,7 +44,7 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                 }
                                 VisionPipeline.Height.ONE -> {
                                     traj = dt.trajectoryBuilder(traj.end())
-                                            .lineTo(Vector2d(-12.0, 36.0))
+                                            .lineTo(Vector2d(-1.0, 36.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                             .build()
                                     ink(Intake.Power.IN)
                                     dt.followTrajectory(traj)
@@ -57,9 +58,9 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                             .build()
                                     dt.followTrajectory(traj)
                                     dt.waitForIdle()
-
+//
                                     val constr = DriveConstants.BASE_CONSTRAINTS.copy().apply { maxVel /= 3.0 }
-
+//
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(-24.0, 36.0), constraintsOverride = constr)
                                             .build()
@@ -71,7 +72,7 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     delay(1000)
                                     feed.shake()
                                     delay(2000)
-
+//
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(-22.0, 36.0), constraintsOverride = constr)
                                             .build()
@@ -83,10 +84,10 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     delay(1000)
                                     feed.shake()
                                     delay(2000)
-
+//
                                     traj = dt.trajectoryBuilder(traj.end())
-                                            .lineTo(Vector2d(-20.0, 36.0), constraintsOverride = constr)
-                                            .build()
+                                          .lineTo(Vector2d(-20.0, 36.0), constraintsOverride = constr)
+                                          .build()
                                     ink(Intake.Power.IN)
                                     dt.followTrajectory(traj)
                                     dt.waitForIdle()
@@ -95,10 +96,10 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     delay(1000)
                                     feed.shake()
                                     delay(2000)
-
+//
                                     traj = dt.trajectoryBuilder(traj.end())
-                                            .lineTo(Vector2d(-20.0, 20.0))
-                                            .build()
+                                          .lineTo(Vector2d(-20.0, 20.0))
+                                          .build()
                                     dt.followTrajectory(traj)
                                     dt.waitForIdle()
                                 }

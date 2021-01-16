@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import java.lang.Thread.sleep
 
 class HeightController(val bot: Robot) {
-    val motor = bot.hwmap.dcMotor["aim"].also { it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER }
+    val motor = bot.hwmap.dcMotor["aim"].also { it.power = -1.0; sleep(500); it.power = 0.0; it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER }
 
     enum class Height(val pos: Int) {
-        POWER(260), HIGH(390), ZERO(0), WALL(284);
+        POWER(260), HIGH(380), ZERO(0), WALL(296);
     }
 
     val power = object : Module<Double> {
@@ -22,7 +23,7 @@ class HeightController(val bot: Robot) {
             set(value) {
                 motor.targetPosition = value.pos
                 motor.mode = DcMotor.RunMode.RUN_TO_POSITION
-                motor.power = 1.0
+                motor.power = 0.5
                 field = value
             }
     }

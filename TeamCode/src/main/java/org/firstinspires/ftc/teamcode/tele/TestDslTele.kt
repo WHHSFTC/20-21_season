@@ -169,13 +169,15 @@ class TestDslTele: DslOpMode() {
                         //+onPress(gamepad1::x) {
                             //+cmd {fieldCentric = !fieldCentric; loc.poseEstimate = Pose2d(0.0, 0.0, 0.0) }
                         //}
-                        //+onPress(gamepad2::x) {
-                        //+cmd {dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)}
-                        //+go(Pose2d()) {
-                        ////strafeLeft(7.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                        //lineToLinearHeading(Pose2d(0.0, 7.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                        //}
-                        //}
+                        +onPress(gamepad2::x) {
+                            +cmd {
+                                //dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
+                                dt.turn(.1)
+                            }
+                            //+go(Pose2d()) {
+                                //lineToLinearHeading(Pose2d(0.0, 7.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                            //}
+                        }
                         +onPress(gamepad1::x) {
                             +cmd {
                                 if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)
@@ -184,11 +186,11 @@ class TestDslTele: DslOpMode() {
                                     dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
                             }
                         }
-                        +onPress(gamepad1::y) {
-                            +cmd {
-                                dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
-                            }
-                        }
+                        //+onPress(gamepad1::y) {
+                            //+cmd {
+                                //dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
+                            //}
+                        //}
                     }
                 }
 

@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.module.DriveConstants
@@ -34,50 +35,57 @@ class TestDslTele: DslOpMode() {
                                 appendLine("Done")
                             }
                         }
+                        +setState(bot.aim.power) {-.25}
                     }
                 }
 
-            val runDriveTrain: Command = task {
-                val turtle = gamepad1.left_trigger > .5 || gamepad1.right_trigger > .5
-                val x = (-gamepad1.left_stick_y).toDouble()
-                val y = (-gamepad1.left_stick_x).toDouble()
-                var omega: Double
-                if (fieldCentric) {
-                    val head = Vector2d(-gamepad1.right_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble()).rotated(if (bot.alliance == Alliance.BLUE) - PI/2.0 else PI/2.0)
-                    val norm = head.norm()
-                    val err = (head.angle() - dt.poseEstimate.heading + 4 * PI) % (2 * PI)
-                    val sym = if (err > PI) err - 2 * PI else err
-                    omega =  sym * if (norm > 0.1) norm else 0.0
-                }
-                else {
-                    omega = (-gamepad1.right_stick_x).toDouble()
+                onRun {
+                     cmd {
+                         aim.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+                     }
                 }
 
-                val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
-                val turtleScalar = if (turtle) 3.0 else 1.0
+                val runDriveTrain: Command = task {
+                    val turtle = gamepad1.left_trigger > .5 || gamepad1.right_trigger > .5
+                    val x = (-gamepad1.left_stick_y).toDouble()
+                    val y = (-gamepad1.left_stick_x).toDouble()
+                    var omega: Double
+                    if (fieldCentric) {
+                        val head = Vector2d(-gamepad1.right_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble()).rotated(if (bot.alliance == Alliance.BLUE) - PI/2.0 else PI/2.0)
+                        val norm = head.norm()
+                        val err = (head.angle() - dt.poseEstimate.heading + 4 * PI) % (2 * PI)
+                        val sym = if (err > PI) err - 2 * PI else err
+                        omega =  sym * if (norm > 0.1) norm else 0.0
+                    }
+                    else {
+                        omega = (-gamepad1.right_stick_x).toDouble()
+                    }
 
-                var twist = Pose2d(
-                        x = linearScalar * x,
-                        y = linearScalar * y,
-                        omega
-                ) / turtleScalar
+                    val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
+                    val turtleScalar = if (turtle) 3.0 else 1.0
 
-                if (fieldCentric) {
-                    val theta = -dt.poseEstimate.heading + if (bot.alliance == Alliance.BLUE) -PI/2.0 else PI/2.0
-                    twist = Pose2d(
-                            x = twist.x * cos(theta) - twist.y * sin(theta),
-                            y = twist.y * cos(theta) + twist.x * sin(theta),
+                    var twist = Pose2d(
+                            x = linearScalar * x,
+                            y = linearScalar * y,
                             omega
-                    )
-                }
-                dt.botTwist = twist
+                    ) / turtleScalar
 
-                // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
-                val (x_, y_, omega_) = twist
-                log.logData("x power: $x_")
-                log.logData("y power: $y_")
-                log.logData("omega power: $omega_")
-            }
+                    if (fieldCentric) {
+                        val theta = -dt.poseEstimate.heading + if (bot.alliance == Alliance.BLUE) -PI/2.0 else PI/2.0
+                        twist = Pose2d(
+                                x = twist.x * cos(theta) - twist.y * sin(theta),
+                                y = twist.y * cos(theta) + twist.x * sin(theta),
+                                omega
+                        )
+                    }
+                    dt.botTwist = twist
+
+                    // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
+                    val (x_, y_, omega_) = twist
+                    log.logData("x power: $x_")
+                    log.logData("y power: $y_")
+                    log.logData("omega power: $omega_")
+                }
 
                 val runWobble = task {
                     when {
@@ -123,7 +131,8 @@ class TestDslTele: DslOpMode() {
                         gamepad2.right_trigger > 0.5 -> {
                             when {
                                 gamepad2.dpad_up -> aim.height(HeightController.Height.HIGH)
-                                gamepad2.dpad_left || gamepad2.dpad_right -> aim.height(HeightController.Height.POWER)
+                                gamepad2.dpad_right -> aim.height(HeightController.Height.POWER)
+                                gamepad2.dpad_left-> aim.height(HeightController.Height.EDGEPS)
                                 gamepad2.dpad_down -> aim.height(HeightController.Height.ZERO)
                             }
                         }

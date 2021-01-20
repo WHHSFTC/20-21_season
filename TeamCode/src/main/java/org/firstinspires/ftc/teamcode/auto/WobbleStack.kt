@@ -16,13 +16,16 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
             dsl {
                 val start: Pose2d = Pose2d(Vector2d(-63.0, 48.0), 0.0)
                 onInit {
-                    cmd {
-                        wob.elbow(Wobble.ElbowState.STORE)
-                        wob.claw(Wobble.ClawState.CLOSED)
-                        log.logData("Init")
-                        log.logData("...")
-                        log.logData("Done")
-                        dt.poseEstimate = start
+                    seq {
+                        +autoInit
+                        +cmd {
+                            wob.elbow(Wobble.ElbowState.STORE)
+                            wob.claw(Wobble.ClawState.CLOSED)
+                            log.logData("Init")
+                            log.logData("...")
+                            log.logData("Done")
+                            dt.poseEstimate = start
+                        }
                     }
                 }
 

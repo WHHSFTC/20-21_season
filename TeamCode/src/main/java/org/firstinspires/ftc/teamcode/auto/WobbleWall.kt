@@ -17,6 +17,7 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
 
             onInit {
                 seq {
+                    +autoInit
                     +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
                     +setState(bot.wob.claw) { Wobble.ClawState.CLOSED }
                     +cmd {dt.poseEstimate = start}
@@ -69,7 +70,40 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
                                 +setState(bot.wob.claw) {Wobble.ClawState.OPEN}
                                 +delayC(500)
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
-                                +go(Pose2d(12.0, 36.0, 0.0)) {
+                                +go(Pose2d(24.0, 36.0, 0.0)) {
+                                    lineToSplineHeading(Pose2d(-3.0, 24.0, 0.0))
+                                }
+                                +lineShoot
+                                +autoBurst
+                            }),
+                            case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.RING }
+
+                                var pose = Pose2d(-40.0, 36.0, 0.0)
+
+                                +go(start) {
+                                    splineToConstantHeading(pose.vec(),  PI/2.0)
+                                }
+
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.CARRY }
+
+                                +setState(bot.feed.height) { Indexer.Height.IN }
+
+                                repeat(3) {
+                                    +delayC(500)
+                                    +go(pose) { forward(6.0) }
+                                    +setState(bot.ink) { Intake.Power.IN }
+                                    +go(pose + Pose2d(6.0, 0.0, 0.0)) { forward(2.0) }
+                                    +delayC(500)
+                                    +setState(bot.ink) { Intake.Power.OFF }
+                                    +setState(bot.feed.height) { Indexer.Height.HIGH }
+                                    +delayC(500)
+                                    +setState(bot.feed.height) { Indexer.Height.IN }
+
+                                    pose += Pose2d(8.0, 0.0, 0.0)
+                                }
+
+                                +go(pose) {
                                     lineToSplineHeading(Pose2d(-3.0, 24.0, 0.0))
                                 }
                                 +lineShoot

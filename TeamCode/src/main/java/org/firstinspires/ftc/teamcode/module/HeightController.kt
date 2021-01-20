@@ -4,10 +4,10 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import java.lang.Thread.sleep
 
 class HeightController(val bot: Robot) {
-    val motor = bot.hwmap.dcMotor["aim"].also { it.power = -1.0; sleep(500); it.power = 0.0; it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER }
+    val motor = bot.hwmap.dcMotor["aim"].also { it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER }
 
     enum class Height(val pos: Int) {
-        POWER(260), HIGH(380), ZERO(0), WALL(296);
+        POWER(260), HIGH(380), ZERO(0), WALL(322), EDGEPS(188);
     }
 
     val power = object : Module<Double> {

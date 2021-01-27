@@ -43,7 +43,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                 case({ VisionPipeline.Height.ONE }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
-                                    splineToConstantHeading(Vector2d(27.0, 39.0), 0.0)
+                                    splineToConstantHeading(Vector2d(27.0, 34.0), 0.0)
                                 }),
                                 case({ VisionPipeline.Height.FOUR }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
@@ -109,7 +109,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                 }
                                 //splineToConstantHeading(Vector2d(-24.0, 22.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 splineToConstantHeading(Vector2d(-34.0, 32.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-34.0, 22.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-34.0, 20.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 addDisplacementMarker {
                                     bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     bot.feed.height(Indexer.Height.HIGH)
@@ -173,7 +173,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                     +setState(bot.out) { Shooter.State.OFF }
                                     +go(nextpose) {
-                                        lineTo(Vector2d(17.0, 39.0))
+                                        lineTo(Vector2d(17.0, 34.0))
                                     }
                                     +setState(bot.aim.height) { HeightController.Height.ZERO }
                                     +setState(bot.feed.height) { Indexer.Height.IN }

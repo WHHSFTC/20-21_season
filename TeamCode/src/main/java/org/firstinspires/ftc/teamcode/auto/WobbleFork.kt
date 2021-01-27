@@ -10,10 +10,10 @@ import org.firstinspires.ftc.teamcode.module.*
 import kotlin.math.PI
 
 @Autonomous
-class WobbleWall: DslOpMode(mode = Mode.AUTO) {
+class WobbleFork: DslOpMode(mode = Mode.AUTO) {
     init {
         runBlocking {dsl {
-            val start: Pose2d = Pose2d(Vector2d(-64.0, 16.75), 0.0)
+            val start: Pose2d = Pose2d(Vector2d(-64.0, 11.75), 0.0)
 
             onInit {
                 seq {
@@ -32,19 +32,19 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
                 +setState(bot.out) {Shooter.State.FULL}
                 +delayC(1000)
                 +cmd {feed.shoot()}
-                +delayC(500)
+                +delayC(750)
                 +cmd {feed.shoot()}
-                +delayC(500)
+                +delayC(750)
                 +cmd {feed.shoot()}
-                +delayC(500)
+                +delayC(750)
                 +setState(bot.feed.height) {Indexer.Height.IN}
                 +delayC(500)
                 +setState(bot.out) {Shooter.State.OFF}
             }
 
-            val wallShoot = CommandContext.seq {
+            val stackShoot = CommandContext.seq {
                 +setState(bot.feed.height) {Indexer.Height.POWER}
-                +setState(bot.aim.height) {HeightController.Height.WALL}
+                +setState(bot.aim.height) {HeightController.Height.STACK}
             }
 
             val lineShoot = CommandContext.seq {
@@ -69,8 +69,6 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
             onRun {
                 seq {
                     +cmd { vis!!.halt() }
-                    +wallShoot
-                    +autoBurst
                     +switch({ vis!!.height }, listOf(
                             case({ VisionPipeline.Height.ONE }, CommandContext.seq {
                                 +setState(bot.ink) { Intake.Power.IN }
@@ -91,14 +89,22 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
                                 +autoBurst
                             }),
                             case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
+                                val firstShot = Pose2d(-36.0, 11.75, 0.0)
+
+                                +go(start) {
+                                    lineToConstantHeading(firstShot.vec())
+                                }
+                                +stackShoot
+                                +autoBurst
                                 //+setState(bot.wob.elbow) { Wobble.ElbowState.RING }
 
                                 //var pose = Pose2d(-40.0, 36.0, 0.0)
                                 var pose = Pose2d(-36.0, 36.0, 0.0)
 
-                                +go(start) {
+                                +go(firstShot) {
                                     //splineToConstantHeading(pose.vec(),  PI/2.0)
-                                    splineTo(pose.vec(),  0.0)
+                                    //splineTo(pose.vec(),  0.0)
+                                    lineToConstantHeading(pose.vec()  )
                                 }
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.CARRY }

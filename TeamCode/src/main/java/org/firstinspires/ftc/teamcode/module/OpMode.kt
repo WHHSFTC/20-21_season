@@ -4,13 +4,16 @@ import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.util.ElapsedTime
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.gamepad.GamepadEx
 
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Robot
+    lateinit var timer: ElapsedTime
     override fun runOpMode() {
         runBlocking {
+            timer = ElapsedTime()
             telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
             bot = Robot(this@OpMode)
             onInit()
@@ -20,11 +23,12 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
             if (mode == Mode.TELE) {
                 while (!Thread.currentThread().isInterrupted && !isStopRequested) {
                     onLoop()
-                    bot.log.update()
+                    telemetry.update()
                 }
             }
+            telemetry.addData("total time", timer.milliseconds())
             onStop()
-            bot.log.update()
+            telemetry.update()
         }
     }
 

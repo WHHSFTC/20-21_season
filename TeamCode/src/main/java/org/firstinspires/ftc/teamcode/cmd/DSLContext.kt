@@ -89,7 +89,7 @@ fun <T> DSLContext.switch(supp: Robot.() -> T, c: List<SwitchCommand.Case<T>>): 
 fun <T> DSLContext.case(supp: Robot.() -> T, com: Command): SwitchCommand.Case<T> = SwitchCommand.Case(supp, com)
 
 fun DSLContext.go(pose: Pose2d, reversed: Boolean = false, async: Boolean = false, b: TrajectoryBuilder.() -> TrajectoryBuilder): LambdaCommand {
-    val traj = TrajectoryBuilder(pose, reversed, constraints = DriveConstants.MECANUM_CONSTRAINTS).b().build()
+    val traj = TrajectoryBuilder(pose, reversed = reversed, constraints = DriveConstants.MECANUM_CONSTRAINTS).b().build()
     return if (async) LambdaCommand { dt.followTrajectoryAsync(traj) } else LambdaCommand { dt.followTrajectory(traj) }
 }
 

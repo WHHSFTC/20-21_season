@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
 import java.lang.Math.toRadians
 
-@Autonomous
+@Autonomous(name = "_WobbleStack")
 class WobbleStack: DslOpMode(mode = Mode.AUTO) {
     init {
         runBlocking {
@@ -38,17 +38,17 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                 case({ VisionPipeline.Height.ZERO }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
-                                    splineToConstantHeading(Vector2d(-3.0, 57.0), 0.0)
+                                    splineToConstantHeading(Vector2d(1.0, 57.0), 0.0)
                                 }),
                                 case({ VisionPipeline.Height.ONE }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
-                                    splineToConstantHeading(Vector2d(27.0, 34.0), 0.0)
+                                    splineToConstantHeading(Vector2d(27.0, 32.0), 0.0)
                                 }),
                                 case({ VisionPipeline.Height.FOUR }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
-                                    splineToConstantHeading(Vector2d(45.0, 57.0), 0.0)
+                                    splineToConstantHeading(Vector2d(52.0, 57.0), 0.0)
                                 })
                         ))
 
@@ -57,13 +57,13 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
 
                         +switch({ vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, go(Pose2d(-3.0, 57.0), true) {
+                                case({ VisionPipeline.Height.ZERO }, go(Pose2d(1.0, 57.0), true) {
                                     lineTo(Vector2d(-3.0, 24.0))
                                 }),
-                                case({ VisionPipeline.Height.ONE }, go(Pose2d(21.0, 33.0), true) {
+                                case({ VisionPipeline.Height.ONE }, go(Pose2d(27.0, 32.0), true) {
                                     lineTo(Vector2d(-3.0, 24.0))
                                 }),
-                                case({ VisionPipeline.Height.FOUR }, go(Pose2d(45.0, 57.0), true) {
+                                case({ VisionPipeline.Height.FOUR }, go(Pose2d(52.0, 57.0), true) {
                                     lineTo(Vector2d(-3.0, 24.0))
                                 })
                         ))
@@ -90,32 +90,30 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
                             +go(Pose2d(-3.0, 28.0)) {
                                 splineToSplineHeading(Pose2d(-12.0, 24.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-36.0, 24.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-37.0, 26.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-37.0, 31.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-34.0, 29.0), toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                             }
                         }
 
                         val onefour = CommandContext.seq{
-                            +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                            +setState(bot.wob.elbow) { Wobble.ElbowState.CARRY }
                             +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
                             +setState(bot.ink) { Intake.Power.IN }
                             +go(Pose2d(-3.0280,.0)) {
                             //+go(Pose2d(-3.0, 28.0)) {
                                 splineToSplineHeading(Pose2d(-12.0, 33.0, toRadians(180.0)), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-22.0, 33.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-20.0, 33.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                //splineToConstantHeading(Vector2d(-24.0, 22.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 addDisplacementMarker {
                                     bot.ink(Intake.Power.OUT)
                                 }
-                                //splineToConstantHeading(Vector2d(-24.0, 22.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-34.0, 32.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-34.0, 20.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                //splineToConstantHeading(Vector2d(-34.0, 32.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-26.0, 21.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 addDisplacementMarker {
                                     bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     bot.feed.height(Indexer.Height.HIGH)
                                 }
-                                splineToConstantHeading(Vector2d(-37.0, 25.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                splineToConstantHeading(Vector2d(-37.0, 31.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                //splineToConstantHeading(Vector2d(-34.0, 25.0), toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                splineToConstantHeading(Vector2d(-34.0, 29.0), toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                             }
                             +setState(bot.ink) { Intake.Power.OFF }
                         }
@@ -127,11 +125,11 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         ))
 
                         +setState(bot.wob.claw) { Wobble.ClawState.CLOSED }
-                        +delayC(500)
+                        +delayC(1000)
                         +setState(bot.wob.elbow) { Wobble.ElbowState.CARRY }
 
 
-                        val lastpose = Pose2d(-37.0, 31.0, toRadians(180.0))
+                        val lastpose = Pose2d(-37.0, 29.0, toRadians(180.0))
 
                         +switch({ vis!!.height }, listOf(
                                 case({ VisionPipeline.Height.ZERO }, go(lastpose) {
@@ -141,7 +139,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.DROP)
                                     }
-                                    splineToSplineHeading(Pose2d(12.0, 50.0, toRadians(90.0)), toRadians(90.0))
+                                    splineToSplineHeading(Pose2d(16.0, 47.0, toRadians(90.0)), toRadians(90.0))
                                 }),
                                 case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
                                     +setState(bot.aim.height) { HeightController.Height.HIGH }
@@ -154,7 +152,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     +cmd { feed.burst() }
                                     +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                     +go(nextpose) {
-                                        lineToSplineHeading(Pose2d(50.0, 50.0, toRadians(45.0)))
+                                        lineToSplineHeading(Pose2d(52.0, 50.0, toRadians(45.0)))
                                     }
 
                                     +setState(bot.aim.height) { HeightController.Height.ZERO }
@@ -173,7 +171,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                     +setState(bot.out) { Shooter.State.OFF }
                                     +go(nextpose) {
-                                        lineTo(Vector2d(17.0, 34.0))
+                                        lineTo(Vector2d(19.0, 36.0))
                                     }
                                     +setState(bot.aim.height) { HeightController.Height.ZERO }
                                     +setState(bot.feed.height) { Indexer.Height.IN }
@@ -185,13 +183,13 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
 
                         +switch({ bot.vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, go(Pose2d(12.0, 50.0, toRadians(90.0))) {
+                                case({ VisionPipeline.Height.ZERO }, go(Pose2d(16.0, 47.0, toRadians(90.0))) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 }),
-                                case({ VisionPipeline.Height.FOUR }, go(Pose2d(42.0, 50.0, toRadians(45.0))) {
+                                case({ VisionPipeline.Height.FOUR }, go(Pose2d(52.0, 50.0, toRadians(45.0))) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 }),
-                                case({ VisionPipeline.Height.ONE }, go(Pose2d(21.0, 28.0, 0.0)) {
+                                case({ VisionPipeline.Height.ONE }, go(Pose2d(19.0, 36.0, 0.0)) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 })
                         ))

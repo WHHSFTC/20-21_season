@@ -13,7 +13,7 @@ import kotlin.math.PI
 class WobbleFork: DslOpMode(mode = Mode.AUTO) {
     init {
         runBlocking {dsl {
-            val start: Pose2d = Pose2d(Vector2d(-64.0, 11.75), 0.0)
+            val start: Pose2d = Pose2d(Vector2d(-64.0, 21.75), 0.0)
 
             onInit {
                 seq {
@@ -35,6 +35,14 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                 +delayC(750)
                 +cmd {feed.shoot()}
                 +delayC(750)
+                +cmd {feed.shoot()}
+                +delayC(750)
+                +setState(bot.feed.height) {Indexer.Height.IN}
+                +delayC(500)
+                +setState(bot.out) {Shooter.State.OFF}
+            }
+
+            val singleShot = CommandContext.seq {
                 +cmd {feed.shoot()}
                 +delayC(750)
                 +setState(bot.feed.height) {Indexer.Height.IN}
@@ -64,32 +72,85 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                 +setState(bot.wob.elbow) { Wobble.ElbowState.CARRY }
             }
 
-            val shootPose = Pose2d(-3.0, 24.0, 0.0)
+            val linePose = Pose2d(-3.0, 24.0, 0.0)
 
             onRun {
                 seq {
                     +cmd { vis!!.halt() }
                     +switch({ vis!!.height }, listOf(
-                            case({ VisionPipeline.Height.ONE }, CommandContext.seq {
-                                +setState(bot.ink) { Intake.Power.IN }
-                                +go(start) {
-                                    splineTo(Vector2d(-24.0, 36.0), 0.0)
-                                    splineTo(Vector2d(0.0, 36.0), 0.0)
-                                    addDisplacementMarker {
-                                        bot.ink(Intake.Power.OFF)
-                                        bot.wob.elbow(Wobble.ElbowState.DROP)
-                                    }
-                                    splineTo(Vector2d(24.0, 36.0), 0.0)
-                                }
-                                +dropWob
-                                +go(Pose2d(24.0, 36.0, 0.0)) {
-                                    lineToSplineHeading(shootPose)
-                                }
+                            case({ VisionPipeline.Height.ZERO }, CommandContext.seq {
+                                // shoot from line
+                                +go(start) { lineToConstantHeading(linePose.vec() ) }
                                 +lineShoot
                                 +autoBurst
+
+                                // drop wobble at A
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                                +go(linePose) { splineTo(Vector2d(24.0, 48.0), PI/2.0) }
+                                +dropWob
+
+                                // intake wobble
+                                +go(Pose2d(24.0, 48.0, PI)) {
+                                    splineToConstantHeading(Vector2d(-36.0, 36.0), PI, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    addDisplacementMarker {
+                                        bot.wob.elbow(Wobble.ElbowState.INTAKE)
+                                    }
+                                    splineToConstantHeading(Vector2d(-36.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-38.0, 55.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                }
+                                +takeWob
+
+                                // drop wobble 2 at A
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                                +go(Pose2d(-37.0, 55.0, PI)) { lineToLinearHeading(Pose2d(18.0, 48.0, PI/2.0)) }
+                                +dropWob
+
+                                +go(Pose2d(18.0, 48.0, PI/2.0)) {
+                                    lineToLinearHeading(Pose2d(12.0, 24.0, 0.0))
+                                }
+                            }),
+                            case({ VisionPipeline.Height.ONE }, CommandContext.seq {
+                                // shoot from line
+                                +go(start) { lineToConstantHeading(linePose.vec() ) }
+                                +lineShoot
+                                +autoBurst
+
+                                // drop wobble at B
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                                +go(linePose) { lineToConstantHeading(Vector2d(24.0, 36.0)) }
+                                +dropWob
+
+                                // intake
+                                +setState(bot.ink) { Intake.Power.IN }
+                                +go(Pose2d(24.0, 36.0, PI)) {
+                                    splineToConstantHeading(Vector2d(-36.0, 36.0), PI, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    addDisplacementMarker {
+                                        bot.wob.elbow(Wobble.ElbowState.INTAKE)
+                                    }
+                                    splineToConstantHeading(Vector2d(-36.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-38.0, 55.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                }
+                                +setState(bot.ink) { Intake.Power.OFF }
+                                +setState(bot.feed.height) { Indexer.Height.HIGH }
+                                +takeWob
+
+                                // drop wobble 2 at B
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                                +go(Pose2d(-37.0, 55.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 36.0, 0.0)) }
+                                +dropWob
+
+                                +setState(bot.out) { Shooter.State.FULL }
+                                +go(Pose2d(18.0, 36.0, 0.0)) { lineToConstantHeading(linePose.vec()) }
+
+                                +lineShoot
+                                +singleShot
+
+                                +go(linePose) {
+                                    lineToConstantHeading(Vector2d(12.0, 24.0))
+                                }
                             }),
                             case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
-                                val firstShot = Pose2d(-36.0, 11.75, 0.0)
+                                val firstShot = Pose2d(-36.0, 21.75, 0.0)
 
                                 +go(start) {
                                     lineToConstantHeading(firstShot.vec())
@@ -112,15 +173,19 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                 +setState(bot.feed.height) { Indexer.Height.IN }
 
                                 repeat(3) {
-                                    +delayC(500)
+                                    //+delayC(500)
                                     +go(pose) { forward(6.0) }
                                     +setState(bot.ink) { Intake.Power.IN }
                                     +go(pose + Pose2d(6.0, 0.0, 0.0)) { forward(4.0) }
-                                    +delayC(500)
+                                    +delayC(750)
                                     +setState(bot.ink) { Intake.Power.OFF }
-                                    +setState(bot.feed.height) { Indexer.Height.HIGH }
-                                    +delayC(500)
-                                    +setState(bot.feed.height) { Indexer.Height.IN }
+
+                                    if (it == 1) {
+                                        +setState(bot.feed.height) { Indexer.Height.HIGH }
+                                        +delayC(500)
+                                        +setState(bot.feed.height) { Indexer.Height.IN }
+                                        +delayC(500)
+                                    }
 
                                     pose += Pose2d(10.0, 0.0, 0.0)
                                 }
@@ -128,15 +193,15 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                 +setState(bot.ink) { Intake.Power.OUT }
 
                                 +go(pose) {
-                                    splineToConstantHeading(pose.vec() + Vector2d(-24.0, -12.0), 3.0 * PI / 2.0)
-                                    splineToConstantHeading(shootPose.vec(), 0.0)
+                                    splineToConstantHeading(pose.vec() + Vector2d(-12.0, -24.0), 3.0 * PI / 2.0)
+                                    splineToConstantHeading(linePose.vec(), 0.0)
                                 }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +lineShoot
                                 +autoBurst
 
                                 +setState(bot.wob.elbow) {Wobble.ElbowState.DROP }
-                                +go(shootPose) {
+                                +go(linePose) {
                                     splineTo(Vector2d(52.0, 60.0), 0.0)
                                 }
                                 // drop first wobble
@@ -164,14 +229,14 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                 +takeWob
 
                                 +go(Pose2d(-37.0, 31.0, PI)) {
-                                    lineToLinearHeading(shootPose)
+                                    lineToLinearHeading(linePose)
                                 }
 
                                 +lineShoot
                                 +autoBurst
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(shootPose) {
+                                +go(linePose) {
                                     splineTo(Vector2d(43.0, 60.0), 0.0)
                                 }
                                 //drop second wobble

@@ -21,7 +21,7 @@ class TestDslTele: DslOpMode() {
             dsl {
                 var prevShoot = false
                 var prevBurst = false
-                var fieldCentric = false
+                //var fieldCentric = false
 
                 infix fun Double.max(other: Double): Double {
                     return this.coerceAtLeast(other)
@@ -50,16 +50,16 @@ class TestDslTele: DslOpMode() {
                     val x = (-gamepad1.left_stick_y).toDouble()
                     val y = (-gamepad1.left_stick_x).toDouble()
                     var omega: Double
-                    if (fieldCentric) {
-                        val head = Vector2d(-gamepad1.right_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble()).rotated(if (bot.alliance == Alliance.BLUE) - PI/2.0 else PI/2.0)
-                        val norm = head.norm()
-                        val err = (head.angle() - dt.poseEstimate.heading + 4 * PI) % (2 * PI)
-                        val sym = if (err > PI) err - 2 * PI else err
-                        omega =  sym * if (norm > 0.1) norm else 0.0
-                    }
-                    else {
+                    //if (fieldCentric) {
+                        //val head = Vector2d(-gamepad1.right_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble()).rotated(if (bot.alliance == Alliance.BLUE) - PI/2.0 else PI/2.0)
+                        //val norm = head.norm()
+                        //val err = (head.angle() - dt.poseEstimate.heading + 4 * PI) % (2 * PI)
+                        //val sym = if (err > PI) err - 2 * PI else err
+                        //omega =  sym * if (norm > 0.1) norm else 0.0
+                    //}
+                    //else {
                         omega = (-gamepad1.right_stick_x).toDouble()
-                    }
+                    //}
 
                     val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
                     val turtleScalar = if (turtle) 3.0 else 1.0
@@ -70,14 +70,14 @@ class TestDslTele: DslOpMode() {
                             omega
                     ) / turtleScalar
 
-                    if (fieldCentric) {
-                        val theta = -dt.poseEstimate.heading + if (bot.alliance == Alliance.BLUE) -PI/2.0 else PI/2.0
-                        twist = Pose2d(
-                                x = twist.x * cos(theta) - twist.y * sin(theta),
-                                y = twist.y * cos(theta) + twist.x * sin(theta),
-                                omega
-                        )
-                    }
+                    //if (fieldCentric) {
+                        //val theta = -dt.poseEstimate.heading + if (bot.alliance == Alliance.BLUE) -PI/2.0 else PI/2.0
+                        //twist = Pose2d(
+                                //x = twist.x * cos(theta) - twist.y * sin(theta),
+                                //y = twist.y * cos(theta) + twist.x * sin(theta),
+                                //omega
+                        //)
+                    //}
                     dt.botTwist = twist
 
                     // offset of pi/4 makes wheels strafe correctly at cardinal and intermediate directions
@@ -178,27 +178,27 @@ class TestDslTele: DslOpMode() {
                         +runIntake
                         +runWobble
                         +runOutput
-                        +logLocale
+                        //+logLocale
                         //+onPress(gamepad1::x) {
                             //+cmd {fieldCentric = !fieldCentric; loc.poseEstimate = Pose2d(0.0, 0.0, 0.0) }
                         //}
-                        +onPress(gamepad2::x) {
-                            +cmd {
-                                //dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
-                                dt.turn(.1)
-                            }
-                            //+go(Pose2d()) {
-                                //lineToLinearHeading(Pose2d(0.0, 7.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                        //+onPress(gamepad2::x) {
+                            //+cmd {
+                                ////dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
+                                //dt.turn(.1)
                             //}
-                        }
-                        +onPress(gamepad1::x) {
-                            +cmd {
-                                if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)
-                                    dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
-                                else if (!(dt.poseEstimate epsilonEquals Pose2d()))
-                                    dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
-                            }
-                        }
+                            ////+go(Pose2d()) {
+                                ////lineToLinearHeading(Pose2d(0.0, 7.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                            ////}
+                        //}
+                        //+onPress(gamepad1::x) {
+                            //+cmd {
+                                //if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)
+                                    //dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
+                                //else if (!(dt.poseEstimate epsilonEquals Pose2d()))
+                                    //dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
+                            //}
+                        //}
                         //+onPress(gamepad1::y) {
                             //+cmd {
                                 //dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())

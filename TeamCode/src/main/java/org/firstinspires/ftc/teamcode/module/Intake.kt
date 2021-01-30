@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 @Config
 class Intake(val bot: Robot): Module<Intake.Power> {
     companion object {
-        @JvmField var INTAKE_COEF: Double = .75
+        @JvmField var INTAKE_COEF: Double = .8
     }
     val motor: DcMotor = bot.hwmap.dcMotor["intake"]
     //val motor: DcMotor = bot.hwmap.dcMotor["intake"].also { it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER; it.mode = DcMotor.RunMode.RUN_USING_ENCODER }

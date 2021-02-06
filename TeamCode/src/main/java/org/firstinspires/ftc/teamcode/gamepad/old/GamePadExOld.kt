@@ -20,8 +20,7 @@ class GamePadExOld(private val gamepad: Gamepad): GamePad {
             get() = gamepad.right_stick_y.toDouble()
     }
 
-    override val keys: Keys
-        get() = GamePadKeysOld(gamepad)
+    override val keys: Keys get() = GamePadKeysOld(FTCGamepad = gamepad)
 
     override val dpad: DPad = object : DPad {
         override val left: Boolean

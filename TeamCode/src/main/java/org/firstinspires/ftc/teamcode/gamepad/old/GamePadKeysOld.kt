@@ -27,10 +27,11 @@ sealed class GamePadKeysOld(protected val gamepad: Gamepad): Keys {
     }
 
     companion object {
-        operator fun invoke(gamepad: Gamepad): GamePadKeysOld =
-                if (gamepad.type() == Gamepad.Type.SONY_PS4)
-            PS4Keys(gamepad)
-        else
-            XBoxKeys(gamepad)
+        operator fun invoke(FTCGamepad: Gamepad): GamePadKeysOld {
+            return if (FTCGamepad.type() == Gamepad.Type.SONY_PS4)
+                PS4Keys(FTCGamepad)
+            else
+                XBoxKeys(FTCGamepad)
+        }
     }
 }

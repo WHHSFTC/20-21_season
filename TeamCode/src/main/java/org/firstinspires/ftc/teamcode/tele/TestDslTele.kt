@@ -94,7 +94,7 @@ class TestDslTele: DslOpMode() {
 
                         gamepad1.dpad_up -> wob.elbow(Wobble.ElbowState.CARRY)
                         gamepad1.dpad_right -> wob.elbow(Wobble.ElbowState.STORE)
-                        gamepad1.dpad_left -> wob.elbow(Wobble.ElbowState.DROP)
+                        //gamepad1.dpad_left -> wob.elbow(Wobble.ElbowState.DROP)
                         gamepad1.dpad_down -> wob.elbow(Wobble.ElbowState.INTAKE)
                     }
                 }
@@ -178,6 +178,9 @@ class TestDslTele: DslOpMode() {
                         +runIntake
                         +runWobble
                         +runOutput
+                        +onPress(gamepad1::dpad_left) {
+                            +cmd {wob.quickDrop()}
+                        }
                         //+logLocale
                         //+onPress(gamepad1::x) {
                             //+cmd {fieldCentric = !fieldCentric; loc.poseEstimate = Pose2d(0.0, 0.0, 0.0) }

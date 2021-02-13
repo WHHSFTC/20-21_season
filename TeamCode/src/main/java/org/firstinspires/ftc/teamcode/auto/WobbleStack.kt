@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import java.lang.Math.toRadians
 
 @Autonomous(name = "_WobbleStack")
@@ -34,18 +35,18 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         +cmd {
                             vis!!.halt()
                         }
-                        +switch({ vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, go(start) {
+                        +switch({ vis!!.pipeline.height }, listOf(
+                                case({ StackPipeline.Height.ZERO }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
                                     splineToConstantHeading(Vector2d(1.0, 57.0), 0.0)
                                 }),
-                                case({ VisionPipeline.Height.ONE }, go(start) {
+                                case({ StackPipeline.Height.ONE }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
                                     splineToConstantHeading(Vector2d(27.0, 32.0), 0.0)
                                 }),
-                                case({ VisionPipeline.Height.FOUR }, go(start) {
+                                case({ StackPipeline.Height.FOUR }, go(start) {
                                     splineToConstantHeading(Vector2d(-24.0, 52.0), 0.0)
                                     addDisplacementMarker {bot.wob.elbow(Wobble.ElbowState.DROP)}
                                     splineToConstantHeading(Vector2d(52.0, 57.0), 0.0)
@@ -56,14 +57,14 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         +delayC(500)
                         +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
 
-                        +switch({ vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, go(Pose2d(1.0, 57.0), true) {
+                        +switch({ vis!!.pipeline.height }, listOf(
+                                case({ StackPipeline.Height.ZERO }, go(Pose2d(1.0, 57.0), true) {
                                     lineTo(Vector2d(-3.0, 24.0))
                                 }),
-                                case({ VisionPipeline.Height.ONE }, go(Pose2d(27.0, 32.0), true) {
+                                case({ StackPipeline.Height.ONE }, go(Pose2d(27.0, 32.0), true) {
                                     lineTo(Vector2d(-3.0, 24.0))
                                 }),
-                                case({ VisionPipeline.Height.FOUR }, go(Pose2d(52.0, 57.0), true) {
+                                case({ StackPipeline.Height.FOUR }, go(Pose2d(52.0, 57.0), true) {
                                     lineTo(Vector2d(-3.0, 24.0))
                                 })
                         ))
@@ -118,10 +119,10 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                             +setState(bot.ink) { Intake.Power.OFF }
                         }
 
-                        +switch({ vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, zero),
-                                case({ VisionPipeline.Height.FOUR }, onefour),
-                                case({ VisionPipeline.Height.ONE }, onefour)
+                        +switch({ vis!!.pipeline.height }, listOf(
+                                case({ StackPipeline.Height.ZERO }, zero),
+                                case({ StackPipeline.Height.FOUR }, onefour),
+                                case({ StackPipeline.Height.ONE }, onefour)
                         ))
 
                         +setState(bot.wob.claw) { Wobble.ClawState.CLOSED }
@@ -131,8 +132,8 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
 
                         val lastpose = Pose2d(-37.0, 29.0, toRadians(180.0))
 
-                        +switch({ vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, go(lastpose) {
+                        +switch({ vis!!.pipeline.height }, listOf(
+                                case({ StackPipeline.Height.ZERO }, go(lastpose) {
                                     splineToConstantHeading(Vector2d(-39.0, 26.0), 0.0)
                                     splineToConstantHeading(Vector2d(-36.0, 24.0), 0.0)
                                     splineToConstantHeading(Vector2d(-12.0, 24.0), 0.0)
@@ -141,7 +142,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     }
                                     splineToSplineHeading(Pose2d(16.0, 47.0, toRadians(90.0)), toRadians(90.0))
                                 }),
-                                case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
+                                case({ StackPipeline.Height.FOUR }, CommandContext.seq {
                                     +setState(bot.aim.height) { HeightController.Height.HIGH }
                                     +setState(bot.feed.height) { Indexer.Height.HIGH }
                                     +setState(bot.out) { Shooter.State.FULL }
@@ -158,7 +159,7 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                                     +setState(bot.aim.height) { HeightController.Height.ZERO }
                                     +setState(bot.feed.height) { Indexer.Height.IN }
                                 }),
-                                case({ VisionPipeline.Height.ONE }, CommandContext.seq {
+                                case({ StackPipeline.Height.ONE }, CommandContext.seq {
                                     +setState(bot.aim.height) { HeightController.Height.HIGH }
                                     +setState(bot.feed.height) { Indexer.Height.HIGH }
                                     +setState(bot.out) { Shooter.State.FULL }
@@ -182,14 +183,14 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                         +delayC(500)
                         +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
 
-                        +switch({ bot.vis!!.height }, listOf(
-                                case({ VisionPipeline.Height.ZERO }, go(Pose2d(16.0, 47.0, toRadians(90.0))) {
+                        +switch({ bot.vis!!.pipeline.height }, listOf(
+                                case({ StackPipeline.Height.ZERO }, go(Pose2d(16.0, 47.0, toRadians(90.0))) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 }),
-                                case({ VisionPipeline.Height.FOUR }, go(Pose2d(52.0, 50.0, toRadians(45.0))) {
+                                case({ StackPipeline.Height.FOUR }, go(Pose2d(52.0, 50.0, toRadians(45.0))) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 }),
-                                case({ VisionPipeline.Height.ONE }, go(Pose2d(19.0, 36.0, 0.0)) {
+                                case({ StackPipeline.Height.ONE }, go(Pose2d(19.0, 36.0, 0.0)) {
                                     lineToSplineHeading(Pose2d(12.0, 26.0, 0.0))
                                 })
                         ))

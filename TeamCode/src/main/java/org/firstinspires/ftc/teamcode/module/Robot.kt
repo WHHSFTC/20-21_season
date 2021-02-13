@@ -5,6 +5,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.cmd.Command
 import org.firstinspires.ftc.teamcode.dsl.Context
 import org.firstinspires.ftc.teamcode.dsl.RobotDsl
+import org.firstinspires.ftc.teamcode.module.vision.PipelineRunner
+import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 
 @RobotDsl
 class Robot(
@@ -22,13 +24,13 @@ class Robot(
     val dt: CustomMecanumDrive = CustomMecanumDrive(this)
     val ink: Intake = Intake(this)
     val aim: HeightController = HeightController(this)
-    var vis: StackCounter? = null
+    var vis: PipelineRunner<StackPipeline>?
     var out: Shooter = Shooter(this)
     val alliance: Alliance = Alliance.BLUE
 
     init {
         if (opMode.mode == OpMode.Mode.AUTO)
-            vis = StackCounter(this)
+            vis = PipelineRunner(this)
         else
             vis = null
 

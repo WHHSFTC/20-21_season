@@ -2,15 +2,13 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 
 
 @Autonomous
@@ -40,9 +38,9 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                             dt.followTrajectory(traj)
                             dt.waitForIdle()
                             when (vis!!.pipeline.height) {
-                                VisionPipeline.Height.ZERO -> {
+                                StackPipeline.Height.ZERO -> {
                                 }
-                                VisionPipeline.Height.ONE -> {
+                                StackPipeline.Height.ONE -> {
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(-1.0, 36.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                             .build()
@@ -52,7 +50,7 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     ink(Intake.Power.OFF)
                                     feed.shake()
                                 }
-                                VisionPipeline.Height.FOUR -> {
+                                StackPipeline.Height.FOUR -> {
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(-25.0, 36.0))
                                             .build()

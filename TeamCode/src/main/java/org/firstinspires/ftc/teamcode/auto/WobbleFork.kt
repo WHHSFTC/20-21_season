@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import kotlin.math.PI
 
 @Autonomous
@@ -20,7 +21,7 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                     +autoInit
                     +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
                     +setState(bot.wob.claw) { Wobble.ClawState.CLOSED }
-                    +cmd {dt.poseEstimate = start; VisionPipeline.VisionConstants.MIN_WIDTH = 35}
+                    +cmd {dt.poseEstimate = start; StackPipeline.StackConstants.MIN_WIDTH = 35}
                 }
             }
 
@@ -77,8 +78,8 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
             onRun {
                 seq {
                     +cmd { vis!!.halt() }
-                    +switch({ vis!!.height }, listOf(
-                            case({ VisionPipeline.Height.ZERO }, CommandContext.seq {
+                    +switch({ vis!!.pipeline.height }, listOf(
+                            case({ StackPipeline.Height.ZERO }, CommandContext.seq {
                                 // shoot from line
                                 +go(start) { lineToConstantHeading(linePose.vec() ) }
                                 +lineShoot
@@ -109,7 +110,7 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                     lineToLinearHeading(Pose2d(12.0, 24.0, 0.0))
                                 }
                             }),
-                            case({ VisionPipeline.Height.ONE }, CommandContext.seq {
+                            case({ StackPipeline.Height.ONE }, CommandContext.seq {
                                 // shoot from line
                                 +go(start) { lineToConstantHeading(linePose.vec() ) }
                                 +lineShoot
@@ -149,7 +150,7 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                     lineToConstantHeading(Vector2d(12.0, 24.0))
                                 }
                             }),
-                            case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
+                            case({ StackPipeline.Height.FOUR }, CommandContext.seq {
                                 val firstShot = Pose2d(-36.0, 21.75, 0.0)
 
                                 +go(start) {

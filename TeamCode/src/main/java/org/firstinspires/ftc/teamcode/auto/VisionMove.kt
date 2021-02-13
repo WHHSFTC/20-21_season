@@ -2,14 +2,12 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
-import org.firstinspires.ftc.teamcode.module.VisionPipeline
+import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 
 @Autonomous
 class VisionMove: DslOpMode(mode = Mode.AUTO) {
@@ -55,15 +53,15 @@ class VisionMove: DslOpMode(mode = Mode.AUTO) {
                                     .build()
                             dt.followTrajectory(traj)
                             when (vis!!.pipeline.height) {
-                                VisionPipeline.Height.ZERO -> {
+                                StackPipeline.Height.ZERO -> {
                                 }
-                                VisionPipeline.Height.ONE -> {
+                                StackPipeline.Height.ONE -> {
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(33.0, 33.0))
                                             .build()
                                     dt.followTrajectory(traj)
                                 }
-                                VisionPipeline.Height.FOUR -> {
+                                StackPipeline.Height.FOUR -> {
                                     traj = dt.trajectoryBuilder(traj.end())
                                             .lineTo(Vector2d(57.0, 57.0))
                                             .build()

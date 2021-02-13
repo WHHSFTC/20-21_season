@@ -3,37 +3,38 @@ package org.firstinspires.ftc.teamcode.test
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
-import org.firstinspires.ftc.teamcode.module.Indexer
-import org.firstinspires.ftc.teamcode.module.Intake
-import org.firstinspires.ftc.teamcode.module.OpMode
+import kotlinx.coroutines.delay
+import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.module.vision.PipelineRunner
-import org.firstinspires.ftc.teamcode.module.vision.RingPipeline
+import org.firstinspires.ftc.teamcode.module.vision.WobblePipeline
 import kotlin.math.PI
 
 @Autonomous
-class RingFinderTest: OpMode(Mode.NULL) {
-    lateinit var find: PipelineRunner<RingPipeline>
+class WobbleFinderTest: OpMode(Mode.NULL) {
+    lateinit var find: PipelineRunner<WobblePipeline>
     override suspend fun onInit() {
-        find = PipelineRunner<RingPipeline>(bot)
+        find = PipelineRunner<WobblePipeline>(bot)
     }
 
     override suspend fun onRun() {
         find.halt()
         bot.dt.poseEstimate = Pose2d()
-        val camToRing = find.pipeline.estimate
+        val camToGoal = find.pipeline.estimate
         val botToCam = Vector2d(9.0, -5.0)
-        val botToIntake = Vector2d(-4.0, 0.0)
-        val intakeToRing = botToCam + camToRing - botToIntake
+        val botToClaw = Vector2d(13.0, 4.0)
+        val intakeToGoal = botToCam + camToGoal - botToClaw
         bot.feed.height(Indexer.Height.IN)
         bot.feed.feed(Indexer.Shoot.PRE)
-        bot.ink(Intake.Power.IN)
+        bot.wob.elbow(Wobble.ElbowState.INTAKE)
+        bot.wob.claw(Wobble.ClawState.OPEN)
         var traj = bot.dt.trajectoryBuilder(Pose2d())
-                .splineTo(intakeToRing + bot.dt.poseEstimate.vec(), -find.pipeline.widest.alpha)
+                .splineTo(intakeToGoal + bot.dt.poseEstimate.vec(), Math.toRadians(-20.0) + bot.dt.poseEstimate.heading, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                 .build()
         bot.dt.followTrajectory(traj)
 
-        bot.ink(Intake.Power.OFF)
+        bot.wob.claw(Wobble.ClawState.CLOSED)
+        delay(1000)
+
         traj = bot.dt.trajectoryBuilder(traj.end(), reversed = true)
                 .splineTo(Vector2d(), PI)
                 .build()

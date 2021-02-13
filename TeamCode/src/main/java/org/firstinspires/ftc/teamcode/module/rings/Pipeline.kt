@@ -1,37 +1,56 @@
 package org.firstinspires.ftc.teamcode.module.rings
 
+import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.module.Robot
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import org.openftc.easyopencv.OpenCvPipeline
 import kotlin.math.*
 
 
-class Pipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCvPipeline() {
+class Pipeline(val bot: Robot, tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCvPipeline() {
+    private val dashboard: FtcDashboard = FtcDashboard.getInstance()
     var telemetry: Telemetry
     var mat: Mat
     var ret: Mat
 
-    var alpha: Double
-    var distance: Double
+    var widest: AngleRect = AngleRect()
+    var estimate: Vector2d = Vector2d()
 
     @Config
     object RingConstants {
-        @JvmField var lY = 0.0
-        @JvmField var lR = 141.0
-        @JvmField var lB = 0.0
-        @JvmField var uY = 255.0
-        @JvmField var uR = 230.0
-        @JvmField var uB = 110.0
-        @JvmField var MIN_WIDTH = 35
-        @JvmField var HORIZON = 80
-        @JvmField var DFOV = 1.3881
-        @JvmField var FOCAL_SCALAR = 0.7
-        const val RING_RADIUS = 5.0
+        @JvmField
+        var lY = 0.0
+        @JvmField
+        var lR = 141.0
+        @JvmField
+        var lB = 0.0
+        @JvmField
+        var uY = 255.0
+        @JvmField
+        var uR = 230.0
+        @JvmField
+        var uB = 110.0
+        @JvmField
+        var MIN_WIDTH = .1
+        @JvmField
+        var HORIZON = .33
+
+        //@JvmField var DFOV = 1.3881
+        @JvmField
+        var FOCAL_RATIO = 92.5 / 46.0
+        const val RING_RADIUS = 2.5
+        @JvmField
+        var CAMERA_HEIGHT = 3.7
     }
 
-    val focalLength: Double get() = RingConstants.FOCAL_SCALAR * hypot(cwidth.toDouble(), cheight.toDouble()) / 2.0 / tan(RingConstants.DFOV / 2.0)
+    val focalLength: Double get() = RingConstants.FOCAL_RATIO * cwidth.toDouble() / 2.0
+    val horizon: Int get() = (RingConstants.HORIZON * cheight).toInt()
+    val minWidth: Int get() = (RingConstants.MIN_WIDTH * cwidth).toInt()
 
     companion object {
         val lowerOrange get() = Scalar(RingConstants.lY, RingConstants.lR, RingConstants.lB)
@@ -45,12 +64,33 @@ class Pipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCv
         telemetry = tl!!
         ret = Mat()
         mat = Mat()
-        alpha = 0.0
-        distance = 0.0
     }
 
-    override fun processFrame(input: Mat?): Mat {
+    //fun ctransform(x: Int, y: Int): Pair<Int, Int> = Pair(x - cwidth / 2, cheight / 2 - y)
+    fun angle(n: Int): Double = atan2(n.toDouble(), focalLength)
+    fun delta(n1: Int, n2: Int): Double = angle(n2) - angle(n1)
+    fun estimateDistance(da: Double): Double = RingConstants.RING_RADIUS / sin(da / 2.0)
+
+    fun range(rect: Rect): AngleRect // todo angular instead of linear interpolation for midpoint
+        = AngleRect(
+            left = angle(rect.x - cwidth / 2),
+            right = angle(rect.x + rect.width - cwidth / 2),
+            top = angle(cheight / 2 - rect.y),
+            bottom = angle(cheight / 2 - rect.y - rect.height)
+        )
+
+    data class AngleRect(val top: Double = 0.0, val bottom: Double = 0.0, val left: Double = 0.0, val right: Double = 0.0) {
+        val alpha: Double get() = (left + right) / 2.0
+        val beta: Double get() = (top + bottom) / 2.0
+
+        val width: Double get() = right - left
+        val height: Double get() = top - bottom
+    }
+
+    fun getBoxes(input: Mat?): Pair<List<Rect>, Mat> {
         ret.release()
+
+        var boxes: List<Rect> = listOf()
         ret = Mat()
         try {
 //            mat.release()
@@ -74,51 +114,22 @@ class Pipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCv
 
             Imgproc.drawContours(ret, contours, -1, Scalar(0.0, 255.0, 0.0), 3)
 
-            /**finding widths of each contour**/
-            //var widths: MutableList<Int> = ArrayList()
-            //var maxC: MatOfPoint
-            var maxW: Int = 0
-            var maxR: Rect = Rect()
-            for (c: MatOfPoint in contours) {
-                val copy = MatOfPoint2f(*c.toArray())
-                val rect: Rect = Imgproc.boundingRect(copy)
-
-                val w = rect.width
-                if (w > maxW && rect.y + rect.height > RingConstants.HORIZON) {
-                    //maxC = c;
-                    maxW = w;
-                    maxR = rect;
-                }
-                c.release()
-                copy.release()
-            }
-
-            //maxC.release()
-
-            Imgproc.rectangle(ret, maxR, Scalar(0.0, 0.0, 255.0), 2)
             Imgproc.line(ret, Point(.0, RingConstants.HORIZON.toDouble()), Point(cwidth.toDouble(), RingConstants.HORIZON.toDouble()), Scalar(255.0, .0, 255.0))
 
-            telemetry.addData("Vision: maxW", maxW)
+            boxes = contours.mapNotNull {
+                val copy = MatOfPoint2f(*it.toArray())
+                val box: Rect = Imgproc.boundingRect(copy)
 
-            //fun ctransform(x: Int, y: Int): Pair<Int, Int> = Pair(x - cwidth / 2, cheight / 2 - y)
-            fun theta(n: Int): Double = atan2(n.toDouble(), focalLength)
-            fun delta(n1: Int, n2: Int): Double = theta(n2) - theta(n1)
-            fun estimateDistance(da: Double): Double = RingConstants.RING_RADIUS / sin(da/2.0)
-
-            if (maxR.width > RingConstants.MIN_WIDTH) {
-                alpha = theta(maxR.x + (maxR.width - cwidth) / 2)
-                val da = delta(maxR.x - cwidth / 2, maxR.x + maxR.width - cwidth / 2)
-                distance = estimateDistance(da)
-            } else {
-                alpha = 0.0
-                distance = 0.0
-            }
-
-            telemetry.addData("alpha", alpha)
-            telemetry.addData("dist", distance)
-
-            telemetry.addData("x", distance * cos(alpha))
-            telemetry.addData("y", distance * sin(alpha))
+                val w = box.width
+                var r: Rect? = null
+                if (w > minWidth && box.y + box.height > RingConstants.HORIZON) {
+                    Imgproc.rectangle(ret, box, Scalar(0.0, 0.0, 255.0), 2)
+                    r = box
+                }
+                it.release()
+                copy.release()
+                r
+            }.sortedByDescending { it.width }
 
             mat.release()
             mask.release()
@@ -128,9 +139,56 @@ class Pipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCv
             telemetry.addData("[ERROR]", e)
             e.stackTrace.toList().stream().forEach { x -> telemetry.addLine(x.toString()) }
         }
-        telemetry.update()
 
-        /**returns the black and yellow mask with contours drawn to see logic in action**/
-        return ret
+        return Pair(boxes, ret)
+    }
+
+    fun sizeEstimate(range: AngleRect): Vector2d
+        = Vector2d(cos(-range.alpha), sin(-range.alpha)) * estimateDistance(range.width)
+
+    fun horizEstimate(range: AngleRect): Vector2d
+        = Vector2d(1.0, tan(-range.alpha)) * RingConstants.CAMERA_HEIGHT / tan(-range.bottom)
+
+    override fun processFrame(input: Mat?): Mat {
+        //telemetry.update()
+        val (boxes, retImage) = getBoxes(input)
+
+        val ranges = boxes.map { range(it) }
+
+        if (ranges.isNotEmpty()) {
+            widest = ranges[0]
+            estimate = horizEstimate(ranges[0])
+        } else {
+            widest = AngleRect()
+            estimate = Vector2d()
+        }
+
+        drawRing()
+
+        return retImage
+    }
+
+    private fun drawRing() {
+        val p1 = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + sizeEstimate(widest)).rotated(bot.dt.poseEstimate.heading)
+        val p2 = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + horizEstimate(widest)).rotated(bot.dt.poseEstimate.heading)
+
+        val packet = TelemetryPacket()
+        packet.put("x1", p1.x)
+        packet.put("y1", p1.y)
+        packet.put("x2", p2.x)
+        packet.put("y2", p2.y)
+
+        val fieldOverlay = packet.fieldOverlay()
+        fieldOverlay.setFill("#dda277")
+        fieldOverlay.strokeCircle(p1.x, p1.y, 2.5)
+        fieldOverlay.setFill("#e1e1e1")
+        fieldOverlay.fillCircle(p1.x, p1.y, 1.5)
+
+        fieldOverlay.setFill("#dda277")
+        fieldOverlay.strokeCircle(p2.x, p2.y, 2.5)
+        fieldOverlay.setFill("#e1e1e1")
+        fieldOverlay.fillCircle(p2.x, p2.y, 1.5)
+
+        dashboard.sendTelemetryPacket(packet)
     }
 }

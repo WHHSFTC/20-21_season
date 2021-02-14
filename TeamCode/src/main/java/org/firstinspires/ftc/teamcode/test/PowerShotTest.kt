@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.test
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.hardware.DcMotor
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.auto.autoInit
 import org.firstinspires.ftc.teamcode.cmd.*
@@ -31,13 +32,18 @@ class PowerShotTest: DslOpMode(mode = Mode.TELE) {
 
                 +setState(bot.aim.height) { HeightController.Height.POWER }
                 +cmd {
+                    aim.motor.targetPosition = height
+                    aim.motor.mode = DcMotor.RunMode.RUN_TO_POSITION
+                    aim.motor.power = 0.5
+                }
+                +cmd {
                     out.motor1.power = velo
                 }
                 +setState(bot.feed.height) { Indexer.Height.POWER }
                 +delayC(1000)
 
                 var new = pspose
-                repeat(3) {
+                repeat(n) {
                     +cmd {feed.shoot()}
                     val old = new
                     +delayC(500)
@@ -78,5 +84,8 @@ class PowerShotTest: DslOpMode(mode = Mode.TELE) {
         @JvmField var velo = 1.0
 
         @JvmField var move = true
+        @JvmField var n = 3
+
+        @JvmField var height = HeightController.Height.POWER.pos
     }
 }

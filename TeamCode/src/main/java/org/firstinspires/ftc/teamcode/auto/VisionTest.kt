@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.auto
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 import org.firstinspires.ftc.teamcode.module.OpMode
-import org.firstinspires.ftc.teamcode.module.VisionPipeline
 
 @Autonomous
 class VisionTest: OpMode(Mode.AUTO) {
@@ -17,7 +16,7 @@ class VisionTest: OpMode(Mode.AUTO) {
 
     override suspend fun onRun() {
         bot.vis!!.halt()
-        bot.log.addData("[vis] height", bot.vis!!.height)
+        bot.log.addData("[vis] height", bot.vis!!.pipeline.height)
         bot.log.update()
     }
 

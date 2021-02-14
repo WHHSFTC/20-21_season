@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.module
+package org.firstinspires.ftc.teamcode.module.vision
 
 import com.acmerobotics.dashboard.config.Config
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.module.Robot
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import org.openftc.easyopencv.OpenCvPipeline
 
-
-class VisionPipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCvPipeline() {
-    var height: Height
-    var telemetry: Telemetry
+class StackPipeline(bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
+    var height: Height = Height.ZERO
+    var telemetry: Telemetry = bot.log
     var mat: Mat
     var ret: Mat
 
@@ -18,7 +18,7 @@ class VisionPipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): 
     }
 
     @Config
-    object VisionConstants {
+    object StackConstants {
         @JvmField var lY = 0.0
         @JvmField var lR = 141.0
         @JvmField var lB = 0.0
@@ -31,16 +31,14 @@ class VisionPipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): 
     }
 
     companion object {
-        val lowerOrange get() = Scalar(VisionConstants.lY, VisionConstants.lR, VisionConstants.lB)
-        val upperOrange get() = Scalar(VisionConstants.uY, VisionConstants.uR, VisionConstants.uB)
+        val lowerOrange get() = Scalar(StackConstants.lY, StackConstants.lR, StackConstants.lB)
+        val upperOrange get() = Scalar(StackConstants.uY, StackConstants.uR, StackConstants.uB)
     }
 
     /**
      * default init call, constructor
      */
     init {
-        height = Height.ZERO
-        telemetry = tl!!
         ret = Mat()
         mat = Mat()
     }
@@ -81,7 +79,7 @@ class VisionPipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): 
                 val rect: Rect = Imgproc.boundingRect(copy)
 
                 val w = rect.width
-                if (w > maxW && rect.y + rect.height > VisionConstants.HORIZON) {
+                if (w > maxW && rect.y + rect.height > StackConstants.HORIZON) {
                     //maxC = c;
                     maxW = w;
                     maxR = rect;
@@ -93,13 +91,13 @@ class VisionPipeline(tl: Telemetry? = null, val cwidth: Int, val cheight: Int): 
             //maxC.release()
 
             Imgproc.rectangle(ret, maxR, Scalar(0.0, 0.0, 255.0), 2)
-            Imgproc.line(ret, Point(.0, VisionConstants.HORIZON.toDouble()), Point(cwidth.toDouble(), VisionConstants.HORIZON.toDouble()), Scalar(255.0, .0, 255.0))
+            Imgproc.line(ret, Point(.0, StackConstants.HORIZON.toDouble()), Point(cwidth.toDouble(), StackConstants.HORIZON.toDouble()), Scalar(255.0, .0, 255.0))
 
             telemetry.addData("Vision: maxW", maxW)
-            height = if (maxW >= VisionConstants.MIN_WIDTH) {
+            height = if (maxW >= StackConstants.MIN_WIDTH) {
                 val aspectRatio: Double = maxR.height.toDouble() / maxR.width.toDouble()
                 telemetry.addData("Vision: Aspect Ratio", aspectRatio)
-                if (aspectRatio > VisionConstants.BOUND_RATIO) Height.FOUR else Height.ONE
+                if (aspectRatio > StackConstants.BOUND_RATIO) Height.FOUR else Height.ONE
             } else {
                 Height.ZERO
             }

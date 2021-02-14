@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.module.rings
+package org.firstinspires.ftc.teamcode.module.vision
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
@@ -12,9 +12,9 @@ import org.openftc.easyopencv.OpenCvPipeline
 import kotlin.math.*
 
 
-class Pipeline(val bot: Robot, tl: Telemetry? = null, val cwidth: Int, val cheight: Int): OpenCvPipeline() {
+class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
     private val dashboard: FtcDashboard = FtcDashboard.getInstance()
-    var telemetry: Telemetry
+    var telemetry: Telemetry = bot.log
     var mat: Mat
     var ret: Mat
 
@@ -40,15 +40,10 @@ class Pipeline(val bot: Robot, tl: Telemetry? = null, val cwidth: Int, val cheig
         @JvmField
         var HORIZON = .33
 
-        //@JvmField var DFOV = 1.3881
-        @JvmField
-        var FOCAL_RATIO = 92.5 / 46.0
         const val RING_RADIUS = 2.5
-        @JvmField
-        var CAMERA_HEIGHT = 3.7
     }
 
-    val focalLength: Double get() = RingConstants.FOCAL_RATIO * cwidth.toDouble() / 2.0
+    val focalLength: Double get() = VisionConstants.FOCAL_RATIO * cwidth.toDouble() / 2.0
     val horizon: Int get() = (RingConstants.HORIZON * cheight).toInt()
     val minWidth: Int get() = (RingConstants.MIN_WIDTH * cwidth).toInt()
 
@@ -61,7 +56,6 @@ class Pipeline(val bot: Robot, tl: Telemetry? = null, val cwidth: Int, val cheig
      * default init call, constructor
      */
     init {
-        telemetry = tl!!
         ret = Mat()
         mat = Mat()
     }
@@ -122,7 +116,7 @@ class Pipeline(val bot: Robot, tl: Telemetry? = null, val cwidth: Int, val cheig
 
                 val w = box.width
                 var r: Rect? = null
-                if (w > minWidth && box.y + box.height > RingConstants.HORIZON) {
+                if (w > minWidth && box.y + box.height > horizon) {
                     Imgproc.rectangle(ret, box, Scalar(0.0, 0.0, 255.0), 2)
                     r = box
                 }
@@ -147,13 +141,15 @@ class Pipeline(val bot: Robot, tl: Telemetry? = null, val cwidth: Int, val cheig
         = Vector2d(cos(-range.alpha), sin(-range.alpha)) * estimateDistance(range.width)
 
     fun horizEstimate(range: AngleRect): Vector2d
-        = Vector2d(1.0, tan(-range.alpha)) * RingConstants.CAMERA_HEIGHT / tan(-range.bottom)
+        = Vector2d(1.0, tan(-range.alpha)) * VisionConstants.CAMERA_HEIGHT / tan(-range.bottom)
 
     override fun processFrame(input: Mat?): Mat {
         //telemetry.update()
         val (boxes, retImage) = getBoxes(input)
 
-        val ranges = boxes.map { range(it) }
+        val top3 = boxes.subList(0, min(boxes.size, 2))
+
+        val ranges = top3.map { range(it) }
 
         if (ranges.isNotEmpty()) {
             widest = ranges[0]
@@ -169,21 +165,13 @@ class Pipeline(val bot: Robot, tl: Telemetry? = null, val cwidth: Int, val cheig
     }
 
     private fun drawRing() {
-        val p1 = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + sizeEstimate(widest)).rotated(bot.dt.poseEstimate.heading)
-        val p2 = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + horizEstimate(widest)).rotated(bot.dt.poseEstimate.heading)
+        val p2 = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + estimate).rotated(bot.dt.poseEstimate.heading)
 
         val packet = TelemetryPacket()
-        packet.put("x1", p1.x)
-        packet.put("y1", p1.y)
         packet.put("x2", p2.x)
         packet.put("y2", p2.y)
 
         val fieldOverlay = packet.fieldOverlay()
-        fieldOverlay.setFill("#dda277")
-        fieldOverlay.strokeCircle(p1.x, p1.y, 2.5)
-        fieldOverlay.setFill("#e1e1e1")
-        fieldOverlay.fillCircle(p1.x, p1.y, 1.5)
-
         fieldOverlay.setFill("#dda277")
         fieldOverlay.strokeCircle(p2.x, p2.y, 2.5)
         fieldOverlay.setFill("#e1e1e1")

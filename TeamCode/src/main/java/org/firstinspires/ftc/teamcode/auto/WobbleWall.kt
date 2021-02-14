@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import kotlin.math.PI
 
 @Autonomous
@@ -20,7 +21,7 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
                     +autoInit
                     +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
                     +setState(bot.wob.claw) { Wobble.ClawState.CLOSED }
-                    +cmd {dt.poseEstimate = start; VisionPipeline.VisionConstants.MIN_WIDTH = 35}
+                    +cmd {dt.poseEstimate = start; StackPipeline.StackConstants.MIN_WIDTH = 35}
                 }
             }
 
@@ -71,8 +72,8 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
                     +cmd { vis!!.halt() }
                     +wallShoot
                     +autoBurst
-                    +switch({ vis!!.height }, listOf(
-                            case({ VisionPipeline.Height.ONE }, CommandContext.seq {
+                    +switch({ vis!!.pipeline.height }, listOf(
+                            case({ StackPipeline.Height.ONE }, CommandContext.seq {
                                 +setState(bot.ink) { Intake.Power.IN }
                                 +go(start) {
                                     splineTo(Vector2d(-24.0, 36.0), 0.0)
@@ -90,7 +91,7 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
                                 +lineShoot
                                 +autoBurst
                             }),
-                            case({ VisionPipeline.Height.FOUR }, CommandContext.seq {
+                            case({ StackPipeline.Height.FOUR }, CommandContext.seq {
                                 //+setState(bot.wob.elbow) { Wobble.ElbowState.RING }
 
                                 //var pose = Pose2d(-40.0, 36.0, 0.0)

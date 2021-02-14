@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import java.lang.Math.toRadians
 
 @Autonomous
@@ -34,20 +35,20 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
                             vis!!.halt()
                             var traj: Trajectory =
                                     when (vis!!.pipeline.height) {
-                                        VisionPipeline.Height.ZERO -> {
+                                        StackPipeline.Height.ZERO -> {
                                             dt.trajectoryBuilder(dt.poseEstimate)
                                                     .splineToConstantHeading(Vector2d(-39.0, 56.0), 0.0)
                                                     .splineToConstantHeading(Vector2d(-3.0, 57.0), 0.0)
                                                     .build()
                                         }
-                                        VisionPipeline.Height.ONE -> {
+                                        StackPipeline.Height.ONE -> {
                                             dt.trajectoryBuilder(dt.poseEstimate)
                                                     .splineToConstantHeading(Vector2d(-39.0, 56.0), 0.0)
                                                     .splineToConstantHeading(Vector2d(-3.0, 57.0), 0.0)
                                                     .splineToConstantHeading(Vector2d(21.0, 33.0), 0.0)
                                                     .build()
                                         }
-                                        VisionPipeline.Height.FOUR -> {
+                                        StackPipeline.Height.FOUR -> {
                                             dt.trajectoryBuilder(dt.poseEstimate)
                                                     .splineToConstantHeading(Vector2d(-39.0, 56.0), 0.0)
                                                     .splineToConstantHeading(Vector2d(-3.0, 57.0), 0.0)
@@ -90,13 +91,13 @@ class WobbleBlue: DslOpMode(mode = Mode.AUTO) {
 
                             val pose: Pose2d =
                                     when (vis!!.pipeline.height) {
-                                        VisionPipeline.Height.ZERO -> {
+                                        StackPipeline.Height.ZERO -> {
                                             Pose2d(12.0, 50.0, toRadians(90.0))
                                         }
-                                        VisionPipeline.Height.ONE -> {
+                                        StackPipeline.Height.ONE -> {
                                             Pose2d(36.0, 26.0, toRadians(90.0))
                                         }
-                                        VisionPipeline.Height.FOUR -> {
+                                        StackPipeline.Height.FOUR -> {
                                             Pose2d(60.0, 50.0, toRadians(90.0))
                                         }
                                     }

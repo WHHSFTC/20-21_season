@@ -6,7 +6,7 @@ class ConditionalCommand(
         val condition: Condition,
         val sequential: Boolean,
         val onTrue: Command,
-        val onFalse: Command,
+        var onFalse: Command = EmptyCommand(),
 ): Command() {
     override suspend fun execute(bot: Robot) {
         if (condition()) {
@@ -19,13 +19,9 @@ class ConditionalCommand(
 
 suspend infix fun ConditionalCommand.orElse(
         elseC: suspend CommandListContext.() -> CommandListContext,
-): ConditionalCommand =
-        ConditionalCommand(
-                condition = condition,
-                sequential = sequential,
-                onTrue = onTrue,
-                onFalse = if(sequential)
-                    SequentialCommand(CommandListContext().elseC().build())
-                else
-                    ParallelCommand(CommandListContext().elseC().build())
-        )
+) {
+    this.onFalse = if(sequential)
+        SequentialCommand(CommandListContext().elseC().build())
+    else
+        ParallelCommand(CommandListContext().elseC().build())
+}

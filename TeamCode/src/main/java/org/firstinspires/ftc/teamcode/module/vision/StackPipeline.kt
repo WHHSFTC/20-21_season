@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.module.Robot
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
 import org.openftc.easyopencv.OpenCvPipeline
+import kotlin.math.min
 
 class StackPipeline(bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
     var height: Height = Height.ZERO
@@ -25,15 +26,19 @@ class StackPipeline(bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
         @JvmField var uY = 255.0
         @JvmField var uR = 230.0
         @JvmField var uB = 110.0
-        @JvmField var MIN_WIDTH = 50
+        @JvmField var MIN_WIDTH = .05
+        @JvmField var FAR_MIN_WIDTH = .05
         @JvmField var BOUND_RATIO = 0.7
-        @JvmField var HORIZON = 100
+        @JvmField var HORIZON = .5
     }
 
     companion object {
         val lowerOrange get() = Scalar(StackConstants.lY, StackConstants.lR, StackConstants.lB)
         val upperOrange get() = Scalar(StackConstants.uY, StackConstants.uR, StackConstants.uB)
     }
+
+    val horizon get() = (cheight * StackConstants.HORIZON).toInt()
+    val minWidth get() = (cwidth * StackConstants.MIN_WIDTH).toInt()
 
     /**
      * default init call, constructor
@@ -79,7 +84,7 @@ class StackPipeline(bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
                 val rect: Rect = Imgproc.boundingRect(copy)
 
                 val w = rect.width
-                if (w > maxW && rect.y + rect.height > StackConstants.HORIZON) {
+                if (w > maxW && rect.y + rect.height > horizon) {
                     //maxC = c;
                     maxW = w;
                     maxR = rect;
@@ -91,10 +96,10 @@ class StackPipeline(bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
             //maxC.release()
 
             Imgproc.rectangle(ret, maxR, Scalar(0.0, 0.0, 255.0), 2)
-            Imgproc.line(ret, Point(.0, StackConstants.HORIZON.toDouble()), Point(cwidth.toDouble(), StackConstants.HORIZON.toDouble()), Scalar(255.0, .0, 255.0))
+            Imgproc.line(ret, Point(.0, horizon.toDouble()), Point(cwidth.toDouble(), horizon.toDouble()), Scalar(255.0, .0, 255.0))
 
             telemetry.addData("Vision: maxW", maxW)
-            height = if (maxW >= StackConstants.MIN_WIDTH) {
+            height = if (maxW >= minWidth) {
                 val aspectRatio: Double = maxR.height.toDouble() / maxR.width.toDouble()
                 telemetry.addData("Vision: Aspect Ratio", aspectRatio)
                 if (aspectRatio > StackConstants.BOUND_RATIO) Height.FOUR else Height.ONE

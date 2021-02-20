@@ -21,7 +21,7 @@ class WobbleWall: DslOpMode(mode = Mode.AUTO) {
                     +autoInit
                     +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
                     +setState(bot.wob.claw) { Wobble.ClawState.CLOSED }
-                    +cmd {dt.poseEstimate = start; StackPipeline.StackConstants.MIN_WIDTH = 35}
+                    +cmd {dt.poseEstimate = start; StackPipeline.StackConstants.MIN_WIDTH = StackPipeline.StackConstants.FAR_MIN_WIDTH}
                 }
             }
 

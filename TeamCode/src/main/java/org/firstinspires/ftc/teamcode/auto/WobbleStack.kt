@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.auto
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -20,8 +21,9 @@ class WobbleStack: DslOpMode(mode = Mode.AUTO) {
                     seq {
                         +autoInit
                         +cmd {
-                            wob.elbow(Wobble.ElbowState.STORE)
                             wob.claw(Wobble.ClawState.CLOSED)
+                            delay(1000)
+                            wob.elbow(Wobble.ElbowState.STORE)
                             log.logData("Init")
                             log.logData("...")
                             log.logData("Done")

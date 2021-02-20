@@ -46,7 +46,7 @@ class PowerShotTest: DslOpMode(mode = Mode.TELE) {
                 repeat(n) {
                     +cmd {feed.shoot()}
                     val old = new
-                    +delayC(500)
+                    +delayC(1000)
                     new += Pose2d(0.0,  between, 0.0)
                     if (move)
                         +go(old) {

@@ -10,7 +10,7 @@ object DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    @JvmField var TICKS_PER_REV = 1.0
+    @JvmField var TICKS_PER_REV = 537.6
     @JvmField var MAX_RPM = 340.0
 
     /*
@@ -54,8 +54,8 @@ object DriveConstants {
      * acceleration values are required, and the jerk values are optional (setting a jerk of 0.0
      * forces acceleration-limited profiling). All distance units are inches.
      */
-    var BASE_CONSTRAINTS = DriveConstraints(
-            800.0, 50.0, 0.0,
+    @JvmField var BASE_CONSTRAINTS = DriveConstraints(
+            50.0, 70.0, 0.0,
             Math.toRadians(180.0), Math.toRadians(180.0), 0.0
     )
 

@@ -18,7 +18,7 @@ class Robot(
     val wob: Wobble = Wobble(this)
     //lateinit var wob: Wobble
     val enc: Encoders = Encoders(this)
-    val odo: HolonomicOdometry = HolonomicOdometry(enc, TRACK_WIDTH, CENTER_OFFSET)
+    //val odo: HolonomicOdometry = HolonomicOdometry(enc, TRACK_WIDTH, CENTER_OFFSET)
     val loc: CustomLocalizer = CustomLocalizer(enc)
     //    val dt: DriveTrain = DriveTrain(this)
     val dt: CustomMecanumDrive = CustomMecanumDrive(this)

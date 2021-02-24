@@ -19,6 +19,7 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
             onInit()
             bot.log.update()
             waitForStart()
+            timer.reset()
             onRun()
             if (mode == Mode.TELE) {
                 while (!Thread.currentThread().isInterrupted && !isStopRequested) {

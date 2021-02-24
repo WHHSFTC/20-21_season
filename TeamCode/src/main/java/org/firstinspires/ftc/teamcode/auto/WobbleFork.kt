@@ -149,16 +149,17 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                 }
                             }),
                             case({ StackPipeline.Height.FOUR }, CommandContext.seq {
-                                val firstShot = Pose2d(-36.0, 21.75, 0.0)
+                                //val firstShot = Pose2d(-36.0, 21.75, 0.0)
+                                val firstShot = start
 
                                 +prepFull
-                                +stackSet
+                                +stackSet // TODO 3?
 
-                                +go(start) {
-                                    lineToConstantHeading(firstShot.vec())
-                                }
+                                //+go(start) {
+                                    //lineToConstantHeading(firstShot.vec())
+                                //}
 
-                                +await(100) { timer.milliseconds() > 1000 }
+                                +await(100) { timer.milliseconds() > 2000 }
                                 +singleShot
                                 //+setState(bot.wob.elbow) { Wobble.ElbowState.RING }
 
@@ -168,7 +169,7 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
 
                                 +setState(bot.feed.height) { Indexer.Height.IN }
                                 +setState(bot.ink) { Intake.Power.IN }
-                                +go(firstShot, reversed = true) {
+                                +go(firstShot, reversed = true) { // TODO test unreversed
                                     //splineToConstantHeading(pose.vec(),  PI/2.0)
                                     //splineTo(pose.vec(),  0.0)
                                     splineToConstantHeading(pose.vec(), 0.0)

@@ -65,7 +65,7 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
         return TrajectoryBuilder(startPose!!, startHeading, constraints)
     }
 
-    fun turnAsync(angle: Double) {
+    fun turnAsync(angle: Double, constraints: DriveConstraints = this.constraints) {
         val heading = poseEstimate.heading
         lastPoseOnTurn = poseEstimate
         turnProfile = generateSimpleMotionProfile(
@@ -79,8 +79,8 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
         mode = DriveMode.TURN
     }
 
-    fun turn(angle: Double) {
-        turnAsync(angle)
+    fun turn(angle: Double, constraints: DriveConstraints = this.constraints) {
+        turnAsync(angle, constraints)
         waitForIdle()
     }
 

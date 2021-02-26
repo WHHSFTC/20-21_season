@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.apache.commons.math3.analysis.function.Power
 import org.firstinspires.ftc.teamcode.module.DriveConstants
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -133,7 +134,8 @@ class TestDslTele: DslOpMode() {
                                 gamepad2.dpad_up -> aim.height(HeightController.Height.HIGH)
                                 gamepad2.dpad_right -> aim.height(HeightController.Height.POWER)
                                 gamepad2.dpad_left-> aim.height(HeightController.Height.EDGEPS)
-                                gamepad2.dpad_down -> aim.height(HeightController.Height.ZERO)
+                                //gamepad2.dpad_down -> aim.height(HeightController.Height.ZERO)
+                                gamepad2.dpad_down -> aim.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                             }
                         }
                         gamepad2.left_trigger > 0.5 -> {
@@ -179,7 +181,10 @@ class TestDslTele: DslOpMode() {
                         +runWobble
                         +runOutput
                         +onPress(gamepad1::dpad_left) {
-                            +cmd {wob.quickDrop()}
+                            +cmd {
+                                dt.powers = CustomMecanumDrive.Powers()
+                                wob.quickDrop()
+                            }
                         }
                         //+logLocale
                         //+onPress(gamepad1::x) {

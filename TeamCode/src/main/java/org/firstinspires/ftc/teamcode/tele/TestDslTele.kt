@@ -132,8 +132,8 @@ class TestDslTele: DslOpMode() {
                         gamepad2.right_trigger > 0.5 -> {
                             when {
                                 gamepad2.dpad_up -> aim.height(HeightController.Height.HIGH)
-                                gamepad2.dpad_right -> aim.height(HeightController.Height.POWER)
-                                gamepad2.dpad_left-> aim.height(HeightController.Height.EDGEPS)
+                                gamepad2.dpad_right || gamepad2.dpad_left -> aim.height(HeightController.Height.POWER)
+                                //gamepad2.dpad_left-> aim.height(HeightController.Height.EDGEPS)
                                 //gamepad2.dpad_down -> aim.height(HeightController.Height.ZERO)
                                 gamepad2.dpad_down -> aim.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                             }
@@ -152,7 +152,7 @@ class TestDslTele: DslOpMode() {
 
                     when {
                         gamepad2.a -> {
-                            out(Shooter.State.FULL)
+                            out(aim.height().power)
                             ink(Intake.Power.OFF)
                         }
                         gamepad2.b -> out(Shooter.State.OFF)

@@ -153,11 +153,11 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
 
                                 +prepFull
                                 +lineSet
-                                +go(Pose2d(18.0, 32.0, 0.0)) { lineToConstantHeading(linePose.vec() - Vector2d(8.0)) }
+                                +go(Pose2d(18.0, 32.0, 0.0)) { lineToConstantHeading(linePose.vec() - Vector2d(8.0, 8.0)) }
 
                                 +singleShot
 
-                                +go(linePose - Pose2d(8.0)) {
+                                +go(linePose - Pose2d(8.0, 8.0)) {
                                     lineToConstantHeading(Vector2d(12.0, 24.0))
                                 }
                             }),

@@ -14,7 +14,7 @@ import kotlin.math.PI
 class WobbleFork: DslOpMode(mode = Mode.AUTO) {
     init {
         runBlocking {dsl {
-            val start: Pose2d = Pose2d(Vector2d(-62.0, 17.5), 0.0)
+            val start: Pose2d = Pose2d(Vector2d(-62.0, 15.5), 0.0)
 
             onInit {
                 seq {
@@ -195,7 +195,7 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                         bot.ink(Intake.Power.OUT)
                                         bot.wob.elbow(Wobble.ElbowState.DROP)
                                     }
-                                    splineToConstantHeading(Vector2d(40.0, 60.0), 0.0)
+                                    splineToConstantHeading(Vector2d(40.0, 52.0), 0.0)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.OPEN)
                                         bot.feed.height(Indexer.Height.HIGH)
@@ -231,10 +231,10 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                         bot.ink(Intake.Power.IN)
                                         bot.out(Shooter.State.FULL)
                                     }
-                                    splineTo(Vector2d(-36.0, 36.0), 0.0)
+                                    splineTo(Vector2d(-36.0, 32.0), 0.0)
                                     // intake rings:
-                                    splineToConstantHeading(Vector2d(-12.0, 36.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(linePose.vec(), -PI/2.0)
+                                    splineToConstantHeading(Vector2d(-12.0, 32.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(linePose.vec() + Vector2d(0.0, -8.0), -PI/2.0)
                                 }
 
                                 +setState(bot.ink) {Intake.Power.OFF}
@@ -244,7 +244,7 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                 +lineBurst
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose) {
+                                +go(linePose + Pose2d(0.0, -8.0)) {
                                     splineTo(Vector2d(54.0, 44.0), PI/4.0)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.OPEN)

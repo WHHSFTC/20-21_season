@@ -153,14 +153,15 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                 val firstShot = start
 
                                 +prepFull
-                                +stackSet // TODO 3?
+                                +stackSet
 
                                 //+go(start) {
                                     //lineToConstantHeading(firstShot.vec())
                                 //}
 
                                 +await(100) { timer.milliseconds() > 2000 }
-                                +singleShot
+                                //+singleShot
+                                +autoBurst(750)
                                 //+setState(bot.wob.elbow) { Wobble.ElbowState.RING }
 
                                 //var pose = Pose2d(-40.0, 36.0, 0.0)
@@ -169,32 +170,43 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
 
                                 +setState(bot.feed.height) { Indexer.Height.IN }
                                 +setState(bot.ink) { Intake.Power.IN }
-                                +go(firstShot, reversed = true) { // TODO test unreversed
+                                +go(firstShot) {
                                     //splineToConstantHeading(pose.vec(),  PI/2.0)
                                     //splineTo(pose.vec(),  0.0)
                                     splineToConstantHeading(pose.vec(), 0.0)
-                                    splineToConstantHeading(pose.vec() + Vector2d(6.0, 0.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(pose.vec(), PI)
-                                }
-
-                                +prepFull
-                                +lineSet
-                                +go(pose) {
-                                    splineToConstantHeading(pose.vec() + Vector2d(0.0, -12.0), 3.0 * PI / 2.0)
+                                    splineToConstantHeading(pose.vec() + Vector2d(12.0, 0.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(pose.vec() + Vector2d(6.0, -9.0), -PI/2.0)
+                                    addDisplacementMarker {
+                                        bot.out(Shooter.State.FULL)
+                                        bot.aim.height(HeightController.Height.HIGH)
+                                    }
+                                    //splineToConstantHeading(pose.vec() + Vector2d(0.0, -12.0), 3.0 * PI / 2.0)
+                                    splineToConstantHeading(pose.vec() + Vector2d(24.0, -12.0), 0.0)
+                                    addDisplacementMarker {
+                                        bot.ink(Intake.Power.OFF)
+                                        bot.feed.height(Indexer.Height.HIGH)
+                                    }
                                     splineToConstantHeading(linePose.vec(), 0.0)
                                 }
                                 +lineBurst
 
                                 +setState(bot.wob.elbow) {Wobble.ElbowState.DROP }
                                 +go(linePose) {
-                                    splineTo(Vector2d(54.0, 48.0), PI/4.0)
+                                    //splineTo(Vector2d(54.0, 48.0), PI/4.0)
+                                    splineToConstantHeading(Vector2d(48.0, 48.0), PI / 2.0)
+                                    splineToConstantHeading(Vector2d(48.0, 60.0), PI)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.OPEN)
                                         bot.wob.elbow(Wobble.ElbowState.STORE)
                                     }
+                                    splineToConstantHeading(Vector2d(24.0, 52.0), PI)
+                                }
+                                +cmd {dt.turn(-PI)}
                                     //splineToConstantHeading(Vector2d(36.0, 54.0), PI)
                                     //splineToSplineHeading(Pose2d(-24.0, 52.0, PI), PI)
-                                    splineTo(Vector2d(-24.0, 52.0), PI)
+                                    //splineTo(Vector2d(-24.0, 52.0), PI)
+                                +go(Pose2d(24.0, 52.0, PI)) {
+                                    splineToConstantHeading(Vector2d(-24.0, 52.0), PI)
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
@@ -202,29 +214,15 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.CLOSED)
                                     }
-                                }
-//                                +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
-//                                +go(Pose2d(48.0, 56.0, 0.0), reversed = true) {
-//                                    splineToConstantHeading(Vector2d(36.0, 54.0), PI)
-//                                    addDisplacementMarker {
-//                                        bot.wob.elbow(Wobble.ElbowState.STORE)
-//                                    }
-//                                    splineToSplineHeading(Pose2d(-24.0, 52.0, PI), PI)
-//                                    addDisplacementMarker {
-//                                        bot.wob.elbow(Wobble.ElbowState.INTAKE)
-//                                    }
-//                                    splineToConstantHeading(Vector2d(-36.0, 59.0), PI/2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-//                                    addDisplacementMarker {
-//                                        bot.wob.claw(Wobble.ClawState.CLOSED)
-//                                    }
-//                                }
+                                //}
 
-                                +go(Pose2d(-36.0, 59.0, PI)) {
-                                    splineTo(Vector2d(-36.0, 36.0), 0.0)
+                                //+go(Pose2d(-36.0, 59.0, PI)) {
+                                    splineTo(Vector2d(-54.0, 48.0), -PI/2.0)
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.CARRY)
                                         bot.ink(Intake.Power.IN)
                                     }
+                                    splineTo(Vector2d(-36.0, 36.0), 0.0)
                                     splineToConstantHeading(Vector2d(-12.0, 36.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     splineToConstantHeading(linePose.vec(), -PI/2.0)
                                 }
@@ -243,8 +241,9 @@ class WobbleFork: DslOpMode(mode = Mode.AUTO) {
                                 //drop second wobble
                                 +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
 
-                                +go(Pose2d(48.0, 50.0, 0.0), reversed = true) {
-                                    splineTo(Vector2d(12.0, 57.0), PI)
+                                +go(Pose2d(48.0, 50.0, 0.0)) {
+                                    //lineToConstantHeading(Vector2d(12.0, 50.0))
+                                    back(60.0)
                                 }
                             })
                     ))

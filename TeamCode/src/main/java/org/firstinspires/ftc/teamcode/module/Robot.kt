@@ -24,15 +24,18 @@ class Robot(
     val dt: CustomMecanumDrive = CustomMecanumDrive(this)
     val ink: Intake = Intake(this)
     val aim: HeightController = HeightController(this)
-    var vis: PipelineRunner<StackPipeline>?
+    var vis: PipelineRunner?
     var out: Shooter = Shooter(this)
     val alliance: Alliance = Alliance.BLUE
 
     init {
-        if (opMode.mode == OpMode.Mode.AUTO)
-            vis = PipelineRunner(this)
-        else
+        if (opMode.mode == OpMode.Mode.AUTO) {
+            vis = PipelineRunner(this, 640, 480)
+            vis!!.load(vis!!.stack)
+            vis!!.start()
+        } else {
             vis = null
+        }
 
         //dt.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
     }

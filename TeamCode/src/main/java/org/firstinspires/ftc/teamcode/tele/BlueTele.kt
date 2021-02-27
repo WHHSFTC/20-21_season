@@ -13,10 +13,11 @@ import org.firstinspires.ftc.teamcode.module.DriveConstants
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import org.firstinspires.ftc.teamcode.test.PowerShotTest
 import kotlin.math.*
 
-@TeleOp
-class TestDslTele: DslOpMode() {
+@TeleOp(name = "Blue - Tele")
+class BlueTele: DslOpMode() {
     init {
         runBlocking {
             dsl {
@@ -104,11 +105,11 @@ class TestDslTele: DslOpMode() {
                     when {
                         gamepad1.y -> {
                             ink(Intake.Power.OUT)
-                            out(Shooter.State.OFF)
+                            //out(Shooter.State.OFF)
                         }
                         gamepad1.a -> {
                             ink(Intake.Power.IN)
-                            out(Shooter.State.OFF)
+                            //out(Shooter.State.OFF)
                             //wob.elbow(Wobble.ElbowState.RING)
                         }
                         gamepad1.b -> ink(Intake.Power.OFF)
@@ -153,12 +154,12 @@ class TestDslTele: DslOpMode() {
                     when {
                         gamepad2.a -> {
                             out(aim.height().power)
-                            ink(Intake.Power.OFF)
+                            //ink(Intake.Power.OFF)
                         }
                         gamepad2.b -> out(Shooter.State.OFF)
                         gamepad2.y -> {
                             out(Shooter.State.REVERSE)
-                            ink(Intake.Power.OFF)
+                            //ink(Intake.Power.OFF)
                         }
                     }
 
@@ -190,23 +191,50 @@ class TestDslTele: DslOpMode() {
                         //+onPress(gamepad1::x) {
                             //+cmd {fieldCentric = !fieldCentric; loc.poseEstimate = Pose2d(0.0, 0.0, 0.0) }
                         //}
-                        //+onPress(gamepad2::x) {
-                            //+cmd {
-                                ////dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
-                                //dt.turn(.1)
-                            //}
-                            ////+go(Pose2d()) {
-                                ////lineToLinearHeading(Pose2d(0.0, 7.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                            ////}
-                        //}
-                        //+onPress(gamepad1::x) {
-                            //+cmd {
-                                //if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)
-                                    //dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
-                                //else if (!(dt.poseEstimate epsilonEquals Pose2d()))
-                                    //dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
-                            //}
-                        //}
+                        +onPress(gamepad2::x) {
+                            +switch({true}, listOf(
+                                case({gamepad2.left_trigger > .5 || gamepad1.right_trigger > .5}, CommandContext.seq {
+                                    +setState(bot.aim.height) { HeightController.Height.POWER }
+                                    +setState(bot.feed.height) { Indexer.Height.POWER }
+                                    +setState(bot.out) { Shooter.State.POWER }
+                                    +cmd {
+                                        dt.poseEstimate = start
+                                    }
+                                    +go(start) {
+                                        lineToLinearHeading(pspose)
+                                    }
+                                    var new = pspose
+                                    repeat(3) {
+                                        +cmd {feed.shoot()}
+                                        val old = new
+                                        if (it < 2) {
+                                            +delayC(1000)
+                                            new += Pose2d(0.0, between, 0.0)
+                                            +go(old) {
+                                                lineTo(new.vec())
+                                            }
+                                        }
+                                    }
+                                    +cmd {}
+                                }),
+                                case({true}, CommandContext.seq {
+                                    +cmd {
+                                        dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
+                                    }
+                                    +go(Pose2d()) {
+                                        lineToLinearHeading(Pose2d(0.0, 7.5, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    }
+                                }),
+                            ))
+                        }
+                        +onPress(gamepad1::x) {
+                            +cmd {
+                                if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)
+                                    dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
+                                else if (!(dt.poseEstimate epsilonEquals Pose2d()))
+                                    dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
+                            }
+                        }
                         //+onPress(gamepad1::y) {
                             //+cmd {
                                 //dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
@@ -224,5 +252,18 @@ class TestDslTele: DslOpMode() {
             }
 
         }
+    }
+    companion object {
+        @JvmField var startx = 7.0
+        @JvmField var starty = -14.5
+        @JvmField var startth = 0.0
+        val start get() = Pose2d(startx, starty, startth)
+
+        @JvmField var psposex = 0.0
+        @JvmField var psposey = -6.5
+        @JvmField var psposeth = 0.0
+        val pspose get() = Pose2d(psposex, psposey, psposeth)
+
+        @JvmField var between = 7.5
     }
 }

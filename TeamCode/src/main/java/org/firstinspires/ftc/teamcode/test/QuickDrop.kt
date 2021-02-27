@@ -7,9 +7,6 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import kotlinx.coroutines.delay
 import org.firstinspires.ftc.teamcode.module.*
-import org.firstinspires.ftc.teamcode.module.vision.PipelineRunner
-import org.firstinspires.ftc.teamcode.module.vision.RingPipeline
-import kotlin.math.PI
 
 @Autonomous
 @Config

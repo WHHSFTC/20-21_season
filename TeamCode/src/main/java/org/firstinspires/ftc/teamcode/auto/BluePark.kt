@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 
 @Disabled
-@Autonomous
+@Autonomous(name = "Blue - Park")
 class BluePark: DslOpMode(mode = Mode.TELE) {
     init {
         runBlocking {

@@ -16,7 +16,7 @@ class VisionTest: OpMode(Mode.AUTO) {
 
     override suspend fun onRun() {
         bot.vis!!.halt()
-        bot.log.addData("[vis] height", bot.vis!!.pipeline.height)
+        bot.log.addData("[vis] height", bot.vis!!.stack.height)
         bot.log.update()
     }
 

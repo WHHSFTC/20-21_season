@@ -52,7 +52,7 @@ class VisionMove: DslOpMode(mode = Mode.AUTO) {
                                     //.splineToConstantHeading(Vector2d(57.0, 57.0), 0.0)
                                     .build()
                             dt.followTrajectory(traj)
-                            when (vis!!.pipeline.height) {
+                            when (vis!!.stack.height) {
                                 StackPipeline.Height.ZERO -> {
                                 }
                                 StackPipeline.Height.ONE -> {

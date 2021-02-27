@@ -93,5 +93,10 @@ fun DSLContext.go(pose: Pose2d, reversed: Boolean = false, async: Boolean = fals
     return if (async) LambdaCommand { dt.followTrajectoryAsync(traj) } else LambdaCommand { dt.followTrajectory(traj) }
 }
 
+fun DSLContext.go(pose: Pose2d, startTangent: Double, async: Boolean = false, b: TrajectoryBuilder.() -> TrajectoryBuilder): LambdaCommand {
+    val traj = TrajectoryBuilder(pose, startTangent = startTangent, constraints = DriveConstants.MECANUM_CONSTRAINTS).b().build()
+    return if (async) LambdaCommand { dt.followTrajectoryAsync(traj) } else LambdaCommand { dt.followTrajectory(traj) }
+}
+
 fun<T> DSLContext.setState(module: Module<T>, stateSupplier: () -> T): LambdaCommand
         = LambdaCommand {module(stateSupplier())}

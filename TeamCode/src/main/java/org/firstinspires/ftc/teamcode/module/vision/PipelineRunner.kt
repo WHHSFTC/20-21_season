@@ -2,31 +2,46 @@ package org.firstinspires.ftc.teamcode.module.vision
 
 import com.acmerobotics.dashboard.FtcDashboard
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
+import org.firstinspires.ftc.teamcode.module.Module
 import org.firstinspires.ftc.teamcode.module.Robot
 import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraFactory
 import org.openftc.easyopencv.OpenCvCameraRotation
+import org.openftc.easyopencv.OpenCvPipeline
 
-class PipelineRunner<T: Pipeline>(val bot: Robot, val pipeline: T, w: Int, h: Int) {
-    companion object {
-        inline operator fun <reified T: Pipeline> invoke(bot: Robot, w: Int = 640, h: Int = 480): PipelineRunner<T>
-            = PipelineRunner(bot, T::class.java.getDeclaredConstructor(Robot::class.java, Int::class.java, Int::class.java).newInstance(bot, w, h), w, h)
-    }
-
+class PipelineRunner(val bot: Robot, val w: Int, val h: Int): Module<Pipeline> {
     val camId: Int = bot.hwmap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", bot.hwmap.appContext.packageName)
     val cam: OpenCvCamera = OpenCvCameraFactory.getInstance().createWebcam(bot.hwmap.get(WebcamName::class.java, "Webcam 1"), camId)
+
+    val stack = StackPipeline(bot, w, h)
+    val ring = RingPipeline(bot, w, h)
+    val wob = WobblePipeline(bot, w, h)
+
+    override var state: Pipeline = stack
+        set(value) {
+            cam.setPipeline(value)
+            field = value
+        }
+
     init {
         bot.log.addData("camId", camId)
         bot.log.addData("cam", cam)
-        cam.setPipeline(pipeline)
+    }
+
+    fun start() {
         cam.openCameraDeviceAsync { cam.startStreaming(w, h, OpenCvCameraRotation.UPRIGHT) }
         FtcDashboard.getInstance().startCameraStream(cam, 20.0);
-        bot.log.addLine("Vision initialized")
+        bot.log.addLine("Camera initialized")
         bot.log.update()
-        //bot.opMode.waitForStart()
     }
+
+    fun load(pipeline: OpenCvPipeline) {
+        cam.setPipeline(pipeline)
+    }
+
     fun halt() {
         cam.stopStreaming()
-        cam.closeCameraDevice()
+        //cam.closeCameraDevice()
+        FtcDashboard.getInstance().stopCameraStream()
     }
 }

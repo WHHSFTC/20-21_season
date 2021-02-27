@@ -18,8 +18,7 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
     var mat: Mat
     var ret: Mat
 
-    var widest: AngleRect = AngleRect()
-    var estimate: Vector2d = Vector2d()
+    var beams: List<AngleRect> = listOf()
 
     @Config
     object RingConstants {
@@ -140,31 +139,27 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
     fun sizeEstimate(range: AngleRect): Vector2d
         = Vector2d(cos(-range.alpha), sin(-range.alpha)) * estimateDistance(range.width)
 
-    fun horizEstimate(range: AngleRect): Vector2d
+    fun estimateVector(range: AngleRect): Vector2d
         = Vector2d(1.0, tan(-range.alpha)) * VisionConstants.CAMERA_HEIGHT / tan(-range.bottom)
 
     override fun processFrame(input: Mat?): Mat {
         //telemetry.update()
         val (boxes, retImage) = getBoxes(input)
 
-        val top3 = boxes.subList(0, min(boxes.size, 2))
+        val top3 = boxes.subList(0, min(boxes.size, 3))
 
-        val ranges = top3.map { range(it) }
+        beams = top3.map { range(it) }
 
-        if (ranges.isNotEmpty()) {
-            widest = ranges[0]
-            estimate = horizEstimate(ranges[0])
-        } else {
-            widest = AngleRect()
-            estimate = Vector2d()
-        }
-
-        drawRing()
+        if (beams.isNotEmpty())
+            drawRing(estimateVector(beams[0]))
 
         return retImage
     }
 
-    private fun drawRing() {
+    fun absolute(v: Vector2d)
+            = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + v).rotated(bot.dt.poseEstimate.heading)
+
+    private fun drawRing(estimate: Vector2d) {
         val p2 = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + estimate).rotated(bot.dt.poseEstimate.heading)
 
         val packet = TelemetryPacket()

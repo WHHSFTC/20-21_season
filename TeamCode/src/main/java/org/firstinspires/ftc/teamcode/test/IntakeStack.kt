@@ -37,7 +37,7 @@ class IntakeStack: DslOpMode(mode = Mode.AUTO) {
                                     .build()
                             dt.followTrajectory(traj)
                             dt.waitForIdle()
-                            when (vis!!.pipeline.height) {
+                            when (vis!!.stack.height) {
                                 StackPipeline.Height.ZERO -> {
                                 }
                                 StackPipeline.Height.ONE -> {

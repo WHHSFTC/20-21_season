@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import kotlin.math.PI
 
-@Autonomous(name = "THIS ONE")
-class WobbleFork: DslOpMode(mode = Mode.AUTO) {
+@Autonomous(name = "Blue - High Goal")
+class BlueHigh: DslOpMode(mode = Mode.AUTO) {
     init {
         runBlocking {dsl {
             val start: Pose2d = Pose2d(Vector2d(-62.0, 15.5), 0.0)

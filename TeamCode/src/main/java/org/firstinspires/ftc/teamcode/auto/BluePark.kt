@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.module.CustomMecanumDrive
 
 @Disabled
 @Autonomous
-class Park: DslOpMode(mode = Mode.TELE) {
+class BluePark: DslOpMode(mode = Mode.TELE) {
     init {
         runBlocking {
             dsl {

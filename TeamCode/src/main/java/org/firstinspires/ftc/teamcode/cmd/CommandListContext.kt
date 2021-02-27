@@ -29,6 +29,8 @@ class CommandListContext: DSLContext() {
     }
 }
 
+fun CommandContext.cmd(exec: suspend Robot.() -> Unit) = LambdaCommand(exec)
+
 fun CommandListContext.cmd(exec: suspend Robot.() -> Unit) {
     this += LambdaCommand(exec)
 }
@@ -119,17 +121,11 @@ fun CommandListContext.delayFor(time: Long, unit: TimeUnit, block: Boolean = fal
     )
 }
 
-fun CommandListContext.pass() = EmptyCommand()
+fun DSLContext.pass() = EmptyCommand()
 
-fun <T> CommandListContext.switch(supp: Robot.() -> T, c: List<SwitchCommand.Case<T>>) {
-    this += SwitchCommand<T>(supp, c)
+suspend fun <T> CommandListContext.switch(supp: Robot.() -> T, c: suspend SwitchCommand.SwitchCaseBuilder<T>.() -> Unit) {
+    this += SwitchCommand<T>(supp, SwitchCommand.SwitchCaseBuilder<T>().applySuspending(c).build())
 }
-
-fun <T> CommandListContext.switch(supp: Robot.() -> T, c: SwitchCommand.SwitchCaseBuilder<T>.() -> Unit) {
-    this += SwitchCommand<T>(supp, SwitchCommand.SwitchCaseBuilder<T>().apply(c).build())
-}
-
-fun <T> CommandListContext.case(supp: Robot.() -> T, com: Command): SwitchCommand.Case<T> = SwitchCommand.Case(supp, com)
 
 fun CommandListContext.go(pose: Pose2d, reversed: Boolean = false, async: Boolean = false, b: TrajectoryBuilder.() -> TrajectoryBuilder) {
     val traj = TrajectoryBuilder(pose, reversed = reversed, constraints = DriveConstants.MECANUM_CONSTRAINTS).b().build()
@@ -139,6 +135,6 @@ fun CommandListContext.go(pose: Pose2d, reversed: Boolean = false, async: Boolea
         LambdaCommand { dt.followTrajectory(traj) }
 }
 
-fun<T> CommandListContext.setState(module: Module<T>, stateSupplier: () -> T) {
+fun <T> CommandListContext.setState(module: Module<T>, stateSupplier: () -> T) {
     this += LambdaCommand {module(stateSupplier())}
 }

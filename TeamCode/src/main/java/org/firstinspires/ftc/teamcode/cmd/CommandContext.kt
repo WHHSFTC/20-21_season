@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.cmd
 
 import org.firstinspires.ftc.teamcode.dsl.RobotDsl
+import org.firstinspires.ftc.teamcode.module.Robot
 //import kotlin.contracts.ExperimentalContracts
 //import kotlin.contracts.InvocationKind
 //import kotlin.contracts.contract
@@ -15,7 +16,7 @@ suspend fun CommandContext.par(b: suspend CommandListContext.() -> Unit): Parall
         ParallelCommand(CommandListContext().applySuspending(b).build())
 
 //@ExperimentalContracts
-private suspend inline fun <T> T.applySuspending(crossinline block: suspend T.() -> Unit): T {
+internal suspend inline fun <T> T.applySuspending(crossinline block: suspend T.() -> Unit): T {
 //    contract {
 //        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
 //    }

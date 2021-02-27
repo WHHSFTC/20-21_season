@@ -6,6 +6,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import kotlinx.coroutines.runBlocking
+import org.firstinspires.ftc.teamcode.cmd.CommandContext
+import org.firstinspires.ftc.teamcode.cmd.CommandListContext
+import org.firstinspires.ftc.teamcode.cmd.DSLContext
 import org.firstinspires.ftc.teamcode.gamepad.GamepadEx
 
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
@@ -15,7 +18,11 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
         runBlocking {
             timer = ElapsedTime()
             telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
-            bot = Robot(this@OpMode)
+
+            bot = Robot(this@OpMode).also {
+                DSLContext.bot = it
+            }
+
             onInit()
             bot.log.update()
             waitForStart()

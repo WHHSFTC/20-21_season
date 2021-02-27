@@ -12,7 +12,15 @@ import org.firstinspires.ftc.teamcode.module.Shooter
 import org.firstinspires.ftc.teamcode.module.Wobble
 
 @Autonomous
-class WallShoot: DslOpMode(mode = Mode.AUTO) {
+class WallShoot: DslOpMode(mode = Mode.AUTO, builder = {
+    onInit {
+        seq {
+            setState(bot.aim.height) {
+                HeightController.Height.WALL
+            }
+        }
+    }
+}) {
     init {
         runBlocking {
             dsl {

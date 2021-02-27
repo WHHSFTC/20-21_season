@@ -13,7 +13,9 @@ open class DslOpMode(
         protected var commands: CommandScheduler = CommandScheduler(),
         mode: Mode = Mode.TELE,
         protected var builder: suspend CommandScheduler.() -> CommandScheduler = {this},) : OpMode(mode) {
-    constructor(mode: Mode, build: suspend CommandScheduler.() -> CommandScheduler): this(mode = mode, builder = build)
+    constructor(mode: Mode, build: DslOpMode.() -> Unit): this(mode = mode) {
+        this.build()
+    }
 
     override suspend fun onInit() {
         commands = commands.dsl(builder)

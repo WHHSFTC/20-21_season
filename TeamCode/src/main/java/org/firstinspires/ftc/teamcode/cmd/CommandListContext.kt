@@ -23,7 +23,6 @@ class CommandListContext: DSLContext() {
         commands += command
     }
 
-    // TODO remove once fully merged, leaving in for now so nothing breaks
     operator fun Command.unaryPlus(): CommandListContext {
         commands += this
         return this@CommandListContext
@@ -124,6 +123,10 @@ fun CommandListContext.pass() = EmptyCommand()
 
 fun <T> CommandListContext.switch(supp: Robot.() -> T, c: List<SwitchCommand.Case<T>>) {
     this += SwitchCommand<T>(supp, c)
+}
+
+fun <T> CommandListContext.switch(supp: Robot.() -> T, c: SwitchCommand.SwitchCaseBuilder<T>.() -> Unit) {
+    this += SwitchCommand<T>(supp, SwitchCommand.SwitchCaseBuilder<T>().apply(c).build())
 }
 
 fun <T> CommandListContext.case(supp: Robot.() -> T, com: Command): SwitchCommand.Case<T> = SwitchCommand.Case(supp, com)

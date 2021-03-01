@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.Robot
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
@@ -19,6 +20,8 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
     var ret: Mat
 
     var beams: List<AngleRect> = listOf()
+    val vectors: List<Vector2d> get() = beams.mapNotNull { estimateVector(it) }
+    val absolutes: List<Vector2d> get() = vectors.mapNotNull { absolute(it) }
 
     @Config
     object RingConstants {
@@ -35,9 +38,9 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
         @JvmField
         var uB = 110.0
         @JvmField
-        var MIN_WIDTH = .1
+        var MIN_WIDTH = .05
         @JvmField
-        var HORIZON = .33
+        var HORIZON = .5
 
         const val RING_RADIUS = 2.5
     }
@@ -80,7 +83,7 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
         val height: Double get() = top - bottom
     }
 
-    fun getBoxes(input: Mat?): Pair<List<Rect>, Mat> {
+    private fun getBoxes(input: Mat?): Pair<List<Rect>, Mat> {
         ret.release()
 
         var boxes: List<Rect> = listOf()
@@ -136,41 +139,41 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
         return Pair(boxes, ret)
     }
 
-    fun sizeEstimate(range: AngleRect): Vector2d
+    private fun sizeEstimate(range: AngleRect): Vector2d
         = Vector2d(cos(-range.alpha), sin(-range.alpha)) * estimateDistance(range.width)
 
-    fun estimateVector(range: AngleRect): Vector2d
-        = Vector2d(1.0, tan(-range.alpha)) * VisionConstants.CAMERA_HEIGHT / tan(-range.bottom)
+    private fun estimateVector(range: AngleRect)
+        = (Vector2d(1.0, tan(-range.alpha)) * VisionConstants.CAMERA_HEIGHT / tan(VisionConstants.CAMERA_VERTICAL_ANGLE - range.bottom)).takeIf { it.x > 0.0 }
 
     override fun processFrame(input: Mat?): Mat {
         //telemetry.update()
         val (boxes, retImage) = getBoxes(input)
 
-        val top3 = boxes.subList(0, min(boxes.size, 3))
+        //val top3 = boxes.subList(0, min(boxes.size, 3))
+        //beams = top3.map { range(it) }
 
-        beams = top3.map { range(it) }
+        beams = boxes.map { range(it) }
 
-        if (beams.isNotEmpty())
-            drawRing(estimateVector(beams[0]))
+        val abs = absolutes
+        if (abs.isNotEmpty() /*&& OpMode.DEBUG*/)
+            drawRing(abs[0])
 
         return retImage
     }
 
-    fun absolute(v: Vector2d)
-            = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + v).rotated(bot.dt.poseEstimate.heading)
+    private fun absolute(v: Vector2d)
+            = (bot.dt.poseEstimate.vec() + (VisionConstants.cameraPose.vec() + v.rotated(VisionConstants.CAMERA_THETA)).rotated(bot.dt.poseEstimate.heading)).takeIf { abs(it.x) < 6.0 && abs(it.y) < 6.0 }
 
-    private fun drawRing(estimate: Vector2d) {
-        val p2 = bot.dt.poseEstimate.vec() + (Vector2d(9.0, -5.0) + estimate).rotated(bot.dt.poseEstimate.heading)
-
+    private fun drawRing(v: Vector2d) {
         val packet = TelemetryPacket()
-        packet.put("x2", p2.x)
-        packet.put("y2", p2.y)
+        packet.put("ringX", v.x)
+        packet.put("ringY", v.y)
 
         val fieldOverlay = packet.fieldOverlay()
         fieldOverlay.setFill("#dda277")
-        fieldOverlay.strokeCircle(p2.x, p2.y, 2.5)
+        fieldOverlay.strokeCircle(v.x, v.y, 2.5)
         fieldOverlay.setFill("#e1e1e1")
-        fieldOverlay.fillCircle(p2.x, p2.y, 1.5)
+        fieldOverlay.fillCircle(v.x, v.y, 1.5)
 
         dashboard.sendTelemetryPacket(packet)
     }

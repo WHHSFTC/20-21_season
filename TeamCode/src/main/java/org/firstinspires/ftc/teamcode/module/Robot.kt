@@ -69,6 +69,8 @@ class Robot(
     companion object {
         const val TRACK_WIDTH = 14.5 // TODO
         const val CENTER_OFFSET = 7 // TODO
+        const val WIDTH = 17.375
+        const val LENGTH = 17.375
     }
 }
 

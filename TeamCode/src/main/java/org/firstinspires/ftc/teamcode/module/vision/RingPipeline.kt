@@ -162,7 +162,7 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
     }
 
     private fun absolute(v: Vector2d)
-            = (bot.dt.poseEstimate.vec() + (VisionConstants.cameraPose.vec() + v.rotated(VisionConstants.CAMERA_THETA)).rotated(bot.dt.poseEstimate.heading)).takeIf { abs(it.x) < 6.0 && abs(it.y) < 6.0 }
+            = (bot.dt.poseEstimate.vec() + (VisionConstants.cameraPose.vec() + v.rotated(VisionConstants.CAMERA_THETA)).rotated(bot.dt.poseEstimate.heading)).takeIf { abs(it.x) < 72.0 && abs(it.y) < 72.0 }
 
     private fun drawRing(v: Vector2d) {
         val packet = TelemetryPacket()

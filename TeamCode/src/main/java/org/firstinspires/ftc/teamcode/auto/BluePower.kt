@@ -13,8 +13,7 @@ import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.module.vision.PipelineRunner
 import org.firstinspires.ftc.teamcode.module.vision.RingPipeline
 import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
-import kotlin.math.PI
-import kotlin.math.min
+import kotlin.math.*
 
 @Config
 @Autonomous(name = "Blue - Power Shots")
@@ -119,36 +118,43 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
                                 //+cmd { vis!!.start() }
                                 +delayC(1000)
                                 +cmd {
-                                    val rings = vis!!.ring.absolutes.sortedBy { it.x }
+                                    val rings = vis!!.ring.absolutes.filter {it.y > -24.0 + 5.0}.sortedBy { it.x }
                                     vis!!.halt()
                                     if (rings.isNotEmpty()) {
                                         val builder = dt.trajectoryBuilder(psEndPose)
+                                        var last = psEndPose.vec()
                                         for (r in rings.subList(0, min(rings.size, 2))) {
-                                            builder.splineTo(r, 0.0)
+                                            if (r.x - last.x > 14.0) {
+                                                builder.splineToConstantHeading(r - Vector2d(6.0, 0.0), 0.0)
+                                            }
+                                            builder.splineToConstantHeading(r.copy(x = min(r.x, 68.0 - Robot.LENGTH / 2.0)), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                            last = r
                                             //builder.splineTo(psEndPose.vec(), PI)
                                         }
                                         //builder.splineTo(psEndPose.vec(), PI)
                                         builder.addDisplacementMarker {
-                                            ink(Intake.Power.OFF)
                                             out(Shooter.State.FULL)
                                             aim.height(HeightController.Height.HIGH)
+                                        }
+                                        builder.splineToSplineHeading(linePose, PI)
+                                        builder.addDisplacementMarker {
+                                            ink(Intake.Power.OFF)
                                             feed.height(Indexer.Height.HIGH)
                                         }
-                                        builder.splineToConstantHeading(linePose.vec() + Vector2d(0.0, 8.0), 0.0)
                                         feed.height(Indexer.Height.IN)
                                         ink(Intake.Power.IN)
                                         dt.followTrajectory(builder.build())
                                         slowBurst(bot)
                                     } else {
                                         this@seq.go(psEndPose) {
-                                            strafeTo(linePose.vec() + Vector2d(0.0, 8.0) )
+                                            strafeTo(linePose.vec())
                                         }(bot)
                                     }
                                 }
 
                                 // drop wobble 1 at A
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose + Pose2d(0.0, 8.0)) {
+                                +go(linePose) {
                                     splineTo(Vector2d(16.0, 48.0), PI/2.0)
                                     splineTo(Vector2d(16.0, 55.0), PI/2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {

@@ -81,7 +81,6 @@ class ExampleTele: DslOpMode(mode = Mode.TELE) {
                         gamepad1.a -> {
                             ink(Intake.Power.IN)
                             out(Shooter.State.OFF)
-                            wob.elbow(Wobble.ElbowState.RING)
                         }
                         gamepad1.b -> ink(Intake.Power.OFF)
                     }

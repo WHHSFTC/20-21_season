@@ -22,7 +22,7 @@ class QuickDrop: OpMode(Mode.NULL) {
 
     override suspend fun onRun() {
         bot.dt.poseEstimate = Pose2d()
-        bot.wob.elbow(Wobble.ElbowState.DROP)
+        bot.wob.elbow(Wobble.ElbowState.WALL)
         delay(a.toLong())
         bot.wob.claw(Wobble.ClawState.OPEN)
         delay(b.toLong())

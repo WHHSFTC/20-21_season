@@ -9,12 +9,12 @@ object VisionConstants {
     var FOCAL_RATIO = 92.5 / 46.0
 
     @JvmField
-    var CAMERA_HEIGHT = 5.0
+    var CAMERA_HEIGHT = 5.5
 
     @JvmField
     var CAMERA_X = 9.0
     @JvmField
-    var CAMERA_Y = -5.0
+    var CAMERA_Y = 7.25
     @JvmField
     var CAMERA_THETA = 0.0
 

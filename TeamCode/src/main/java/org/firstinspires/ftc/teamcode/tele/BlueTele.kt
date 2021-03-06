@@ -156,7 +156,10 @@ class BlueTele: DslOpMode() {
                             out(aim.height().power)
                             //ink(Intake.Power.OFF)
                         }
-                        gamepad2.b -> out(Shooter.State.OFF)
+                        gamepad2.b -> {
+                            out(Shooter.State.OFF)
+                            feed.height(Indexer.Height.IN)
+                        }
                         gamepad2.y -> {
                             out(Shooter.State.REVERSE)
                             //ink(Intake.Power.OFF)
@@ -193,7 +196,7 @@ class BlueTele: DslOpMode() {
                         //}
                         +onPress(gamepad2::x) {
                             +switch({true}, listOf(
-                                case({gamepad2.left_trigger > .5 || gamepad1.right_trigger > .5}, CommandContext.seq {
+                                case({gamepad2.left_trigger > .5 || gamepad2.right_trigger > .5}, CommandContext.seq {
                                     +setState(bot.aim.height) { HeightController.Height.POWER }
                                     +setState(bot.feed.height) { Indexer.Height.POWER }
                                     +setState(bot.out) { Shooter.State.POWER }

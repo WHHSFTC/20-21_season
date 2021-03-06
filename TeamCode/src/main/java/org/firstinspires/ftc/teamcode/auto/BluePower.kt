@@ -28,7 +28,6 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
                     +cmd {dt.poseEstimate = start; StackPipeline.StackConstants.MIN_WIDTH = StackPipeline.StackConstants.FAR_MIN_WIDTH}
                 }
             }
-
             val prepFull = CommandContext.seq {+setState(bot.out) { Shooter.State.FULL }}
 
             suspend fun autoBurst(t: Long): Command = CommandContext.seq {
@@ -167,11 +166,11 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
 
                                 // intake wobble 2
                                 //+go(Pose2d(18.0, 55.0, PI/2.0), startTangent = -PI/2.0) {
-                                    splineToConstantHeading(Vector2d(-32.0, 36.0), Math.toRadians(180.0))
+                                    splineToConstantHeading(Vector2d(-34.0, 36.0), Math.toRadians(180.0))
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
-                                    splineToConstantHeading(Vector2d(-36.0, 42.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-38.0, 42.0), Math.toRadians(0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.CLOSED)
                                     }
@@ -216,24 +215,25 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
                                     splineToConstantHeading(Vector2d(-34.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-37.0, 57.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-37.0, 59.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +setState(bot.feed.height) { Indexer.Height.HIGH }
                                 +takeWob
 
                                 // drop wobble 2 at B
-                                +go(Pose2d(-37.0, 53.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 32.0, 0.0)) }
+                                +go(Pose2d(-37.0, 59.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 32.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS) }
                                 +dropWob
                                 +setState(bot.wob.elbow) {Wobble.ElbowState.DROP}
 
                                 +prepFull
                                 +lineSet
-                                +go(Pose2d(18.0, 32.0, 0.0)) { lineToConstantHeading(linePose.vec() - Vector2d(8.0, 8.0)) }
+                                +go(Pose2d(18.0, 32.0, 0.0)) { lineToConstantHeading(linePose.vec() - Vector2d(8.0)) }
 
                                 +singleShot
+                                +setState(bot.wob.elbow) {Wobble.ElbowState.STORE}
 
-                                +go(linePose - Pose2d(8.0, 8.0)) {
+                                +go(linePose - Pose2d(8.0)) {
                                     lineToConstantHeading(Vector2d(12.0, 24.0))
                                 }
                             }),

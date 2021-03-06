@@ -10,7 +10,7 @@ class Indexer(val bot: Robot) {
     val heightServo: Servo = bot.hwmap.servo["setter"]
 
     enum class Height(val pos: Double) {
-        IN(1.0), POWER(.87), HIGH(.86)
+        IN(1.0), POWER(.86), HIGH(.86)
     }
 
     enum class Shoot(val pos: Double) {

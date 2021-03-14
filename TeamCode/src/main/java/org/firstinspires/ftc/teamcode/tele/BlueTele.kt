@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.apache.commons.math3.analysis.function.Power
@@ -161,7 +162,7 @@ class BlueTele: DslOpMode() {
                             feed.height(Indexer.Height.IN)
                         }
                         gamepad2.y -> {
-                            out(Shooter.State.REVERSE)
+                            //out(Shooter.State.REVERSE)
                             //ink(Intake.Power.OFF)
                         }
                     }
@@ -170,12 +171,12 @@ class BlueTele: DslOpMode() {
                 }
 
                 val logLocale = task {
-                    dt.update()
+                    //dt.update()
                     val p = dt.poseEstimate
-                    telemetry.addData("x", p.x)
-                    telemetry.addData("y", p.y)
-                    telemetry.addData("heading", p.heading)
-                    telemetry.addData("battery", bot.dt.batteryVoltageSensor.voltage)
+                    log.addData("x", p.x)
+                    log.addData("y", p.y)
+                    log.addData("heading", p.heading)
+                    log.addData("battery", bot.dt.batteryVoltageSensor.voltage)
                 }
 
                 onLoop {
@@ -190,10 +191,44 @@ class BlueTele: DslOpMode() {
                                 wob.quickDrop()
                             }
                         }
-                        //+logLocale
+                        +logLocale
                         //+onPress(gamepad1::x) {
                             //+cmd {fieldCentric = !fieldCentric; loc.poseEstimate = Pose2d(0.0, 0.0, 0.0) }
                         //}
+                        +onPress(gamepad2::y) {
+                            +switch({true}, listOf(
+                                    case({gamepad2.left_trigger > .5 || gamepad2.right_trigger > .5}, CommandContext.seq {
+                                        +setState(bot.aim.height) { HeightController.Height.POWER }
+                                        +setState(bot.feed.height) { Indexer.Height.POWER }
+                                        +setState(bot.out) { Shooter.State.POWER }
+                                        +cmd {
+                                            dt.poseEstimate = start
+                                        }
+                                        val one = 6.05
+                                        val two = 5.96
+                                        val three = 5.89
+                                        +cmd {
+                                            dt.turn(one - 2 * PI)
+                                            delay(1000)
+                                            feed.shoot()
+                                            delay(250)
+
+                                            dt.turn(two - one)
+                                            delay(1000)
+                                            feed.shoot()
+                                            delay(250)
+
+                                            dt.turn(three - two)
+                                            aim.height(HeightController.Height.THIRD_POWER)
+                                            delay(1000)
+                                            feed.shoot()
+                                        }
+                                    }),
+                                    case({true}, CommandContext.seq {
+                                        +setState(bot.out) { Shooter.State.REVERSE }
+                                    })
+                            ))
+                        }
                         +onPress(gamepad2::x) {
                             +switch({true}, listOf(
                                 case({gamepad2.left_trigger > .5 || gamepad2.right_trigger > .5}, CommandContext.seq {
@@ -230,14 +265,14 @@ class BlueTele: DslOpMode() {
                                 }),
                             ))
                         }
-                        +onPress(gamepad1::x) {
-                            +cmd {
-                                if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)
-                                    dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
-                                else if (!(dt.poseEstimate epsilonEquals Pose2d()))
-                                    dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
-                            }
-                        }
+//                        +onPress(gamepad1::x) {
+//                            +cmd {
+//                                if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)
+//                                    dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
+//                                else if (!(dt.poseEstimate epsilonEquals Pose2d()))
+//                                    dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())
+//                            }
+//                        }
                         //+onPress(gamepad1::y) {
                             //+cmd {
                                 //dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(Pose2d()).build())

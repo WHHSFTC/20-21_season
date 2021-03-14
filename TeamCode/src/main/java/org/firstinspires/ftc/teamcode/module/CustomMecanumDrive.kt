@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.module
 
+import android.os.MessageQueue
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
@@ -162,9 +163,13 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     }
 
     fun waitForIdle() {
-        while (!Thread.currentThread().isInterrupted && isBusy) {
+        while (!Thread.currentThread().isInterrupted && isBusy && !bot.opMode.isStopRequested /*bot.opMode.opModeIsActive()*/) {
             update()
         }
+//        if (!bot.opMode.opModeIsActive()) {
+//            mode = DriveMode.IDLE
+//            powers = Powers()
+//        }
     }
 
     val isBusy: Boolean

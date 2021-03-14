@@ -1,19 +1,23 @@
 package org.firstinspires.ftc.teamcode.auto
 
+import android.transition.TransitionManager.go
+import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
+import org.firstinspires.ftc.teamcode.module.vision.PipelineRunner
+import org.firstinspires.ftc.teamcode.module.vision.RingPipeline
 import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
-import kotlin.math.PI
+import kotlin.math.*
 
-@Disabled
-@Autonomous(name = "BAD Blue - High Goal")
-class BlueHigh: DslOpMode(mode = Mode.AUTO) {
+@Config
+@Autonomous(name = "Blue - High Goal 6 rings :((((")
+class ForAndrew: DslOpMode(mode = Mode.AUTO) {
     init {
         runBlocking {dsl {
             val start: Pose2d = Pose2d(Vector2d(-62.0, 15.5), 0.0)
@@ -24,7 +28,6 @@ class BlueHigh: DslOpMode(mode = Mode.AUTO) {
                     +cmd {dt.poseEstimate = start; StackPipeline.StackConstants.MIN_WIDTH = StackPipeline.StackConstants.FAR_MIN_WIDTH}
                 }
             }
-
             val prepFull = CommandContext.seq {+setState(bot.out) { Shooter.State.FULL }}
 
             suspend fun autoBurst(t: Long): Command = CommandContext.seq {
@@ -77,20 +80,38 @@ class BlueHigh: DslOpMode(mode = Mode.AUTO) {
 
             val linePose = Pose2d(0.0, 24.0, 0.0)
 
+            val psPose = Pose2d(0.0, PS_Y, 0.0)
+            val psBetween = 7.5
+            val psEndPose = psPose + Pose2d(0.0, 2 * psBetween, 0.0)
+            val powerShots = CommandContext.seq {
+                +cmd { feed.shoot() }
+                +delayC(500)
+                +go(psPose) {
+                    strafeLeft(psBetween)
+                }
+                +cmd { feed.shoot() }
+                +delayC(500)
+                +go(psPose + Pose2d(0.0, psBetween, 0.0)) {
+                    strafeLeft(psBetween)
+                }
+                +cmd { feed.shoot() }
+                +delayC(500)
+            }
+
             onRun {
                 seq {
-                    +cmd { vis!!.halt() }
+                    //+cmd { vis!!.halt() }
                     +switch({ vis!!.stack.height }, listOf(
                             case({ StackPipeline.Height.ZERO }, CommandContext.seq {
                                 // shoot from line
                                 +prepFull
                                 +lineSet
-                                +go(start) { lineToConstantHeading(linePose.vec() + Vector2d(0.0, 8.0)) }
+                                +go(start) { lineToConstantHeading(linePose.vec() + Vector2d(0.0, 4.0)) }
                                 +slowBurst
 
                                 // drop wobble at A
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose + Pose2d(0.0, 8.0)) { splineTo(Vector2d(18.0, 50.0), PI/2.0) }
+                                +go(linePose + Pose2d(0.0, 4.0)) { splineTo(Vector2d(18.0, 50.0), PI/2.0) }
                                 +dropWob
 
                                 +go(Pose2d(18.0, 50.0, PI/2.0)) { lineToConstantHeading(Vector2d(18.0, 24.0)) }
@@ -102,16 +123,16 @@ class BlueHigh: DslOpMode(mode = Mode.AUTO) {
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
-                                    splineToConstantHeading(Vector2d(-24.0, 56.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-35.0, 58.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-24.0, 52.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-37.0, 54.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 }
                                 +takeWob
 
                                 // drop wobble 2 at A
-                                +go(Pose2d(-35.0, 58.0, PI)) { lineToLinearHeading(Pose2d(12.0, 47.0, PI/2.0)) }
+                                +go(Pose2d(-36.0, 59.0, PI)) { lineToLinearHeading(Pose2d(12.0, 44.0, PI/2.0)) }
                                 +dropWob
 
-                                +go(Pose2d(12.0, 47.0, PI/2.0)) {
+                                +go(Pose2d(12.0, 44.0, PI/2.0)) {
                                     lineToLinearHeading(Pose2d(12.0, 24.0, 0.0))
                                 }
                             }),
@@ -119,12 +140,12 @@ class BlueHigh: DslOpMode(mode = Mode.AUTO) {
                                 // shoot from line
                                 +prepFull
                                 +lineSet
-                                +go(start) { lineToConstantHeading(linePose.vec() ) }
+                                +go(start) { lineToConstantHeading(linePose.vec()+Vector2d(0.0, 4.0) ) }
                                 +slowBurst
 
                                 // drop wobble at B
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose) { lineToConstantHeading(Vector2d(26.0, 32.0)) }
+                                +go(linePose + Pose2d(0.0, 4.0)) { lineToConstantHeading(Vector2d(26.0, 32.0)) }
                                 +dropWob
 
                                 +go(Pose2d(26.0, 32.0, )) { lineToConstantHeading(Vector2d(10.0, 36.0)) }
@@ -142,116 +163,87 @@ class BlueHigh: DslOpMode(mode = Mode.AUTO) {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
                                     splineToConstantHeading(Vector2d(-34.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-37.0, 57.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-37.0, 59.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +setState(bot.feed.height) { Indexer.Height.HIGH }
                                 +takeWob
 
                                 // drop wobble 2 at B
-                                +go(Pose2d(-37.0, 53.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 32.0, 0.0)) }
+                                +go(Pose2d(-37.0, 59.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 32.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS) }
                                 +dropWob
                                 +setState(bot.wob.elbow) {Wobble.ElbowState.DROP}
 
                                 +prepFull
                                 +lineSet
-                                +go(Pose2d(18.0, 32.0, 0.0)) { lineToConstantHeading(linePose.vec() - Vector2d(8.0, 8.0)) }
+                                +go(Pose2d(18.0, 32.0, 0.0)) { lineToConstantHeading(linePose.vec() - Vector2d(8.0)) }
 
-                                +singleShot
+                                +slowBurst
+                                +setState(bot.wob.elbow) {Wobble.ElbowState.STORE}
 
-                                +go(linePose - Pose2d(8.0, 8.0)) {
-                                    lineToConstantHeading(Vector2d(12.0, 24.0))
+                                +go(linePose - Pose2d(8.0)) {
+                                    //lineToConstantHeading(Vector2d(12.0, 24.0))
+                                    forward(18.0)
                                 }
                             }),
                             case({ StackPipeline.Height.FOUR }, CommandContext.seq {
-                                //val firstShot = Pose2d(-36.0, 21.75, 0.0)
-                                val firstShot = start
-
+                                // shoot from line
                                 +prepFull
-                                +stackSet
+                                +lineSet
+                                +go(start) { lineToConstantHeading(linePose.vec()+Vector2d(0.0, 4.0) ) }
+                                +slowBurst
 
-                                //+go(start) {
-                                    //lineToConstantHeading(firstShot.vec())
-                                //}
+                                // drop wobble at C
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                                +go(linePose + Pose2d(0.0, 4.0)) {
+                                    strafeTo(Vector2d(46.0, 44.0))
+                                }
+                                +dropWob
 
-                                +await(100) { timer.milliseconds() > 1500 }
-                                //+singleShot
-                                +autoBurst(750)
-                                //+setState(bot.wob.elbow) { Wobble.ElbowState.RING }
+                                +go(Pose2d(46.0, 44.0)) { lineToConstantHeading(Vector2d(10.0, 36.0)) }
 
-                                //var pose = Pose2d(-40.0, 36.0, 0.0)
-                                var pose = Pose2d(-36.0, 36.0, 0.0)
-
-
-                                +setState(bot.feed.height) { Indexer.Height.IN }
-                                +setState(bot.aim.height) { HeightController.Height.HIGH }
-                                +setState(bot.ink) { Intake.Power.IN }
-                                +go(firstShot) {
-                                    // intake
-                                    splineToConstantHeading(pose.vec(), 0.0)
-                                    // exit to left
-                                    splineToConstantHeading(pose.vec() + Vector2d(14.0, 0.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(pose.vec() + Vector2d(6.0, 12.0), -PI/2.0)
-                                    splineToConstantHeading(pose.vec() + Vector2d(24.0, 24.0), 0.0)
-                                    addDisplacementMarker {
-                                        bot.ink(Intake.Power.OUT)
-                                        bot.wob.elbow(Wobble.ElbowState.DROP)
-                                    }
-                                    splineToConstantHeading(Vector2d(40.0, 52.0), 0.0)
-                                    addDisplacementMarker {
-                                        bot.wob.claw(Wobble.ClawState.OPEN)
-                                        bot.feed.height(Indexer.Height.HIGH)
-                                        bot.out(Shooter.State.FULL)
-                                        bot.ink(Intake.Power.OFF)
-                                    }
-                                    splineToConstantHeading(linePose.vec(), -PI/2.0)
+                                //+cmd {dt.turn(PI)}
+                                +go(Pose2d(10.0, 36.0, 0.0)) {
+                                    lineToLinearHeading(Pose2d(0.0, 12.0, PI/2.0))
                                 }
 
-                                +lineBurst
-
-                                +go(linePose) {
-                                    splineTo(Vector2d(-24.0, 52.0), PI)
+                                // intake
+                                +setState(bot.ink) { Intake.Power.IN }
+                                +go(Pose2d(0.0, 12.0, PI/2.0)) {
+                                    splineTo(Vector2d(-24.0, 36.0), PI, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
-                                    // get wob
-                                    // get wob
-                                    splineToConstantHeading(Vector2d(-24.0, 50.0), -PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    //splineToConstantHeading(Vector2d(-37.0, 50.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-37.0, 53.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    addDisplacementMarker {
-                                        bot.wob.claw(Wobble.ClawState.CLOSED)
-                                    }
+                                    splineToConstantHeading(Vector2d(-34.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-37.0, 59.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 }
-                                +go(Pose2d(-37.0, 55.0, PI)) {
-                                    addDisplacementMarker {
-                                        bot.ink(Intake.Power.OUT)
-                                    }
-                                    splineTo(Vector2d(-54.0, 48.0), -PI/2.0)
-                                    addDisplacementMarker {
-                                        bot.wob.elbow(Wobble.ElbowState.CARRY)
-                                        bot.ink(Intake.Power.IN)
-                                        bot.out(Shooter.State.FULL)
-                                    }
-                                    splineTo(Vector2d(-36.0, 32.0), 0.0)
-                                    // intake rings:
-                                    splineToConstantHeading(Vector2d(-12.0, 32.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(linePose.vec() + Vector2d(0.0, -8.0), -PI/2.0)
-                                }
-
-                                +setState(bot.ink) {Intake.Power.OFF}
+                                +setState(bot.ink) { Intake.Power.OFF }
                                 +setState(bot.feed.height) { Indexer.Height.HIGH }
-                                +delayC(200)
+                                +takeWob
 
-                                +lineBurst
-
-                                +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose + Pose2d(0.0, -8.0)) {
-                                    splineTo(Vector2d(54.0, 44.0), PI/4.0)
+                                // drop wobble 2 at C
+                                +go(Pose2d(-37.0, 59.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 32.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS) }
+                                +go(Pose2d(-37.0, 58.0, 3.0*PI/2.0)) {
+                                    splineTo(Vector2d(42.0, 36.0), PI/4.0)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.OPEN)
+                                        bot.wob.elbow(Wobble.ElbowState.CARRY)
                                     }
-                                    splineToConstantHeading(Vector2d(12.0, 44.0), -PI/2.0)
+                                    splineToConstantHeading(Vector2d(12.0, 36.0), -PI/2.0)
+                                }
+                                +dropWob
+                                +setState(bot.wob.elbow) {Wobble.ElbowState.DROP}
+
+                                +prepFull
+                                +lineSet
+                                +go(Pose2d(18.0, 32.0, 0.0)) { lineToConstantHeading(linePose.vec() - Vector2d(8.0)) }
+
+                                +slowBurst
+                                +setState(bot.wob.elbow) {Wobble.ElbowState.STORE}
+
+                                +go(linePose - Pose2d(8.0)) {
+                                    //lineToConstantHeading(Vector2d(12.0, 24.0))
+                                    forward(18.0)
                                 }
                             })
                     ))
@@ -260,14 +252,17 @@ class BlueHigh: DslOpMode(mode = Mode.AUTO) {
 
             onStop {
                 seq {
-                    +setState(bot.aim.height) { HeightController.Height.ZERO }
+                    //+setState(bot.aim.height) { HeightController.Height.ZERO }
                     +cmd {
                         dt.powers = CustomMecanumDrive.Powers()
-                        if (DEBUG)
-                            dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(start).build())
+                        //if (DEBUG)
+                            //dt.followTrajectory(dt.trajectoryBuilder(dt.poseEstimate).lineToSplineHeading(start).build())
                     }
                 }
             }
         }}
+    }
+    companion object {
+        @JvmField var PS_Y = -5.0
     }
 }

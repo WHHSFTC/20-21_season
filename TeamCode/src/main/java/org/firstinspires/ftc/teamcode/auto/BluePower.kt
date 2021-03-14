@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -154,8 +155,9 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
                                 // drop wobble 1 at A
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                 +go(linePose) {
-                                    splineTo(Vector2d(16.0, 48.0), PI/2.0)
-                                    splineTo(Vector2d(16.0, 55.0), PI/2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineTo(Vector2d(28.0, 50.0), PI/2.0)
+                                    //splineTo(Vector2d(16.0, 48.0), PI/2.0)
+                                    splineToConstantHeading(Vector2d(16.0, 55.0), PI/2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.OPEN)
                                         bot.wob.elbow(Wobble.ElbowState.STORE)
@@ -166,11 +168,12 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
 
                                 // intake wobble 2
                                 //+go(Pose2d(18.0, 55.0, PI/2.0), startTangent = -PI/2.0) {
-                                    splineToConstantHeading(Vector2d(-34.0, 36.0), Math.toRadians(180.0))
+                                    splineToConstantHeading(Vector2d(-40.0, 36.0), Math.toRadians(180.0))
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
-                                    splineToConstantHeading(Vector2d(-38.0, 42.0), Math.toRadians(0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-40.0, 50.0), Math.toRadians(0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-36.0, 50.0), Math.toRadians(0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.CLOSED)
                                     }
@@ -179,8 +182,8 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
                                         //bot.wob.elbow(Wobble.ElbowState.DROP)
                                     //}
                                     splineToConstantHeading(Vector2d(-24.0, 40.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(4.0, 45.0), 0.0)
-                                    splineToConstantHeading(Vector2d(18.0, 45.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(4.0, 47.0), 0.0)
+                                    splineToConstantHeading(Vector2d(18.0, 47.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.OPEN)
                                         bot.wob.elbow(Wobble.ElbowState.STORE)
@@ -345,6 +348,6 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
         }}
     }
     companion object {
-        @JvmField var PS_Y = -4.0
+        @JvmField var PS_Y = -5.0
     }
 }

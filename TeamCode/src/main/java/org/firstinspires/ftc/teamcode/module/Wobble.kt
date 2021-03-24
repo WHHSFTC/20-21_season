@@ -5,11 +5,11 @@ import org.firstinspires.ftc.teamcode.test.QuickDrop
 
 class Wobble(val bot: Robot) {
     enum class ElbowState(override val pos: Double): StatefulServo.ServoPosition {
-        STORE(.9), DROP(.47), CARRY(.78), INTAKE(.32), WALL(.65)
+        STORE(.05), DROP(.8), CARRY(.32), INTAKE(.95), WALL(.65)
     }
 
     enum class ClawState(override val pos: Double): StatefulServo.ServoPosition {
-        OPEN(.15), CLOSED(.52)
+        OPEN(.1), CLOSED(.48)
     }
 
     var elbow = StatefulServo<ElbowState>(bot.hwmap.servo["elbow"], ElbowState.STORE)

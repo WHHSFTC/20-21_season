@@ -38,7 +38,7 @@ class BlueTele: DslOpMode() {
                                 appendLine("Done")
                             }
                         }
-                        +setState(bot.aim.power) {-.25}
+                        //+setState(bot.aim.power) {-.25}
                     }
                 }
 

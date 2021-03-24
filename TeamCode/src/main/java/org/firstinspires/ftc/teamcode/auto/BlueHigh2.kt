@@ -71,7 +71,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
             val dropWob = CommandContext.seq {
                 +setState(bot.wob.claw) { Wobble.ClawState.OPEN }
                 +delayC(500)
-                +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
+                //+setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
             }
 
             val takeWob = CommandContext.seq {
@@ -107,15 +107,16 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 // shoot from line
                                 +prepFull
                                 +lineSet
-                                +go(start) { lineToConstantHeading(linePose.vec() + Vector2d(0.0, 4.0)) }
+                                +go(start) { splineTo(linePose.vec() + Vector2d(0.0, 6.0), 0.0) }
                                 +slowBurst
+                                +setState(bot.ink) { Intake.Power.IN }
 
                                 // drop wobble at A
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose + Pose2d(0.0, 4.0)) { splineTo(Vector2d(18.0, 50.0), PI/2.0) }
+                                +go(linePose + Pose2d(0.0, 6.0)) { splineTo(Vector2d(18.0, 54.0), PI/2.0) }
                                 +dropWob
 
-                                +go(Pose2d(18.0, 50.0, PI/2.0)) { lineToConstantHeading(Vector2d(18.0, 24.0)) }
+                                +go(Pose2d(18.0, 4.0, PI/2.0)) { lineToConstantHeading(Vector2d(18.0, 24.0)) }
 
                                 //+cmd {dt.turn(PI/2.0)}
 
@@ -130,10 +131,10 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 +takeWob
 
                                 // drop wobble 2 at A
-                                +go(Pose2d(-36.0, 59.0, PI)) { lineToLinearHeading(Pose2d(12.0, 44.0, PI/2.0)) }
+                                +go(Pose2d(-37.0, 54.0, PI)) { lineToLinearHeading(Pose2d(12.0, 48.0, PI/2.0)) }
                                 +dropWob
 
-                                +go(Pose2d(12.0, 44.0, PI/2.0)) {
+                                +go(Pose2d(12.0, 48.0, PI/2.0)) {
                                     lineToLinearHeading(Pose2d(12.0, 24.0, 0.0))
                                 }
                             }),
@@ -141,12 +142,12 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 // shoot from line
                                 +prepFull
                                 +lineSet
-                                +go(start) { lineToConstantHeading(linePose.vec()+Vector2d(0.0, 0.0) ) }
+                                +go(start) { splineTo(linePose.vec()+Vector2d(0.0, 4.0), 0.0) }
                                 +slowBurst
 
                                 // drop wobble at B
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose + Pose2d(0.0, 0.0)) { lineToConstantHeading(Vector2d(26.0, 32.0)) }
+                                +go(linePose + Pose2d(0.0, 4.0)) { lineToConstantHeading(Vector2d(26.0, 32.0)) }
                                 +dropWob
 
                                 +go(Pose2d(26.0, 32.0, )) { lineToConstantHeading(Vector2d(10.0, 36.0)) }
@@ -164,7 +165,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                     }
                                     splineToConstantHeading(Vector2d(-28.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-32.0, 59.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-36.0, 59.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +setState(bot.feed.height) { Indexer.Height.HIGH }

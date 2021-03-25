@@ -220,7 +220,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                     addDisplacementMarker {
                                         bot.ink(Intake.Power.OUT)
                                     }
-                                    splineToConstantHeading(pose.vec() + Vector2d(2.0, 12.0), -PI/2.0)
+                                    splineToConstantHeading(pose.vec() + Vector2d(2.0, 12.0), PI/2.0)
                                     splineToConstantHeading(pose.vec() + Vector2d(24.0, 22.0), 0.0)
                                     addDisplacementMarker {
                                         bot.ink(Intake.Power.IN)

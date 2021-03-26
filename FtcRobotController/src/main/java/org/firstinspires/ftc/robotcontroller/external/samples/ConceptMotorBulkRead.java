@@ -75,7 +75,6 @@ import java.util.List;
 
      */
 @TeleOp (name = "Motor Bulk Reads", group = "Tests")
-@Disabled
 public class ConceptMotorBulkRead extends LinearOpMode {
 
     final int       TEST_CYCLES    = 500;   // Number of control cycles to run to determine cycle times.
@@ -85,6 +84,7 @@ public class ConceptMotorBulkRead extends LinearOpMode {
     private double    v1, v2, v3, v4; // Velocities
 
     // Cycle Times
+    double t0 = 0;
     double t1 = 0;
     double t2 = 0;
     double t3 = 0;
@@ -95,10 +95,10 @@ public class ConceptMotorBulkRead extends LinearOpMode {
         int cycles;
 
         // Important Step 1:  Make sure you use DcMotorEx when you instantiate your motors.
-        m1 = hardwareMap.get(DcMotorEx.class, "m1");  // Configure the robot to use these 4 motor names,
-        m2 = hardwareMap.get(DcMotorEx.class, "m2");  // or change these strings to match your existing Robot Configuration.
-        m3 = hardwareMap.get(DcMotorEx.class, "m3");
-        m4 = hardwareMap.get(DcMotorEx.class, "m4");
+        m1 = hardwareMap.get(DcMotorEx.class, "motorLF");  // Configure the robot to use these 4 motor names,
+        m2 = hardwareMap.get(DcMotorEx.class, "motorLB");  // or change these strings to match your existing Robot Configuration.
+        m3 = hardwareMap.get(DcMotorEx.class, "motorRF");
+        m4 = hardwareMap.get(DcMotorEx.class, "motorRB");
 
         // Important Step 2: Get access to a list of Expansion Hub Modules to enable changing caching methods.
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
@@ -117,7 +117,7 @@ public class ConceptMotorBulkRead extends LinearOpMode {
         // This is the same as using LynxModule.BulkCachingMode.OFF
         // --------------------------------------------------------------------------------------
 
-        displayCycleTimes("Test 1 of 3 (Wait for completion)");
+        displayCycleTimes("Test 0 of 3 (Wait for completion)");
 
         timer.reset();
         cycles = 0;
@@ -131,6 +131,29 @@ public class ConceptMotorBulkRead extends LinearOpMode {
             v2 = m2.getVelocity();
             v3 = m3.getVelocity();
             v4 = m4.getVelocity();
+
+            // Put Control loop action code here.
+
+        }
+        // calculate the average cycle time.
+        t0 = timer.milliseconds() / cycles;
+
+        displayCycleTimes("Test 1 of 3 (Wait for completion)");
+
+        LynxModule.BulkData bulkData;
+        timer.reset();
+        cycles = 0;
+        while (opModeIsActive() && (cycles++ < TEST_CYCLES)) {
+            bulkData = allHubs.get(0).getBulkData();
+            e1 = bulkData.getMotorCurrentPosition(0);
+            e2 = bulkData.getMotorCurrentPosition(1);
+            e3 = bulkData.getMotorCurrentPosition(2);
+            e4 = bulkData.getMotorCurrentPosition(3);
+
+            v1 = bulkData.getMotorVelocity(0);
+            v2 = bulkData.getMotorVelocity(1);
+            v3 = bulkData.getMotorVelocity(2);
+            v4 = bulkData.getMotorVelocity(3);
 
             // Put Control loop action code here.
 
@@ -213,9 +236,10 @@ public class ConceptMotorBulkRead extends LinearOpMode {
     // Display three comparison times.
     void displayCycleTimes(String status) {
         telemetry.addData("Testing", status);
-        telemetry.addData("Cache = OFF",    "%5.1f mS/cycle", t1);
-        telemetry.addData("Cache = AUTO",   "%5.1f mS/cycle", t2);
-        telemetry.addData("Cache = MANUAL", "%5.1f mS/cycle", t3);
+        telemetry.addData("Cache = OFF raw",            "%5.1f mS/cycle: %5.1f Hz", t0, 1/1000.0/t0);
+        telemetry.addData("Cache = OFF + getBulkData()","%5.1f mS/cycle: %5.1f Hz", t1, 1/1000.0/t1);
+        telemetry.addData("Cache = AUTO",               "%5.1f mS/cycle: %5.1f Hz", t2, 1/1000.0/t2);
+        telemetry.addData("Cache = MANUAL",             "%5.1f mS/cycle: %5.1f Hz", t3, 1/1000.0/t3);
         telemetry.update();
     }
 }

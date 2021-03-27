@@ -216,6 +216,7 @@ class BluePower: DslOpMode(mode = Mode.AUTO) {
                                     splineTo(Vector2d(-24.0, 36.0), PI, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
+                                        bot.wob.claw(Wobble.ClawState.WIDE)
                                     }
                                     splineToConstantHeading(Vector2d(-34.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     splineToConstantHeading(Vector2d(-37.0, 59.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)

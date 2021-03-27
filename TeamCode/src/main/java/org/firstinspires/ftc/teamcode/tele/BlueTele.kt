@@ -93,7 +93,7 @@ class BlueTele: DslOpMode() {
                 val runWobble = task {
                     when {
                         gamepad1.right_bumper -> wob.claw(Wobble.ClawState.CLOSED)
-                        gamepad1.left_bumper -> wob.claw(Wobble.ClawState.OPEN)
+                        gamepad1.left_bumper -> wob.claw(Wobble.ClawState.WIDE)
 
                         gamepad1.dpad_up -> wob.elbow(Wobble.ElbowState.CARRY)
                         gamepad1.dpad_right -> wob.elbow(Wobble.ElbowState.STORE)
@@ -117,16 +117,21 @@ class BlueTele: DslOpMode() {
                     }
                 }
 
+                var individualShots: Int = 0
+                var burstRings: Int = 0
+
                 val runOutput = task {
                     if (gamepad2.right_bumper && !prevShoot) {
                         bot.dt.powers = CustomMecanumDrive.Powers(.0, .0, .0, .0)
                         feed.shoot()
+                        individualShots++
                     }
                     prevShoot = gamepad2.right_bumper
 
                     if (gamepad2.left_bumper && !prevBurst) {
                         bot.dt.powers = CustomMecanumDrive.Powers(.0, .0, .0, .0)
                         feed.burst()
+                        burstRings += 3
                     }
                     prevBurst = gamepad2.left_bumper
 
@@ -170,6 +175,8 @@ class BlueTele: DslOpMode() {
                     telemetry.addData("aim",  aim.motor.currentPosition)
                 }
 
+                var iter: Long = 0
+
                 val logLocale = task {
                     //dt.update()
                     val p = dt.poseEstimate
@@ -177,10 +184,13 @@ class BlueTele: DslOpMode() {
                     log.addData("y", p.y)
                     log.addData("heading", p.heading)
                     log.addData("battery", bot.dt.batteryVoltageSensor.voltage)
+                    log.addData("iterations", iter)
+                    log.addData("shots", individualShots + burstRings)
+                    iter++
                 }
 
                 onLoop {
-                    par {
+                    seq {
                         +runDriveTrain
                         +runIntake
                         +runWobble
@@ -195,76 +205,76 @@ class BlueTele: DslOpMode() {
                         //+onPress(gamepad1::x) {
                             //+cmd {fieldCentric = !fieldCentric; loc.poseEstimate = Pose2d(0.0, 0.0, 0.0) }
                         //}
-                        +onPress(gamepad2::y) {
-                            +switch({true}, listOf(
-                                    case({gamepad2.left_trigger > .5 || gamepad2.right_trigger > .5}, CommandContext.seq {
-                                        +setState(bot.aim.height) { HeightController.Height.POWER }
-                                        +setState(bot.feed.height) { Indexer.Height.POWER }
-                                        +setState(bot.out) { Shooter.State.POWER }
-                                        +cmd {
-                                            dt.poseEstimate = start
-                                        }
-                                        val one = 6.05
-                                        val two = 5.96
-                                        val three = 5.89
-                                        +cmd {
-                                            dt.turn(one - 2 * PI)
-                                            delay(1000)
-                                            feed.shoot()
-                                            delay(250)
-
-                                            dt.turn(two - one)
-                                            delay(1000)
-                                            feed.shoot()
-                                            delay(250)
-
-                                            dt.turn(three - two)
-                                            aim.height(HeightController.Height.THIRD_POWER)
-                                            delay(1000)
-                                            feed.shoot()
-                                        }
-                                    }),
-                                    case({true}, CommandContext.seq {
-                                        +setState(bot.out) { Shooter.State.REVERSE }
-                                    })
-                            ))
-                        }
-                        +onPress(gamepad2::x) {
-                            +switch({true}, listOf(
-                                case({gamepad2.left_trigger > .5 || gamepad2.right_trigger > .5}, CommandContext.seq {
-                                    +setState(bot.aim.height) { HeightController.Height.POWER }
-                                    +setState(bot.feed.height) { Indexer.Height.POWER }
-                                    +setState(bot.out) { Shooter.State.POWER }
-                                    +cmd {
-                                        dt.poseEstimate = start
-                                    }
-                                    +go(start) {
-                                        lineToLinearHeading(pspose)
-                                    }
-                                    var new = pspose
-                                    repeat(3) {
-                                        +cmd {feed.shoot()}
-                                        val old = new
-                                        if (it < 2) {
-                                            +delayC(1000)
-                                            new += Pose2d(0.0, between, 0.0)
-                                            +go(old) {
-                                                lineTo(new.vec())
-                                            }
-                                        }
-                                    }
-                                    +cmd {}
-                                }),
-                                case({true}, CommandContext.seq {
-                                    +cmd {
-                                        dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
-                                    }
-                                    +go(Pose2d()) {
-                                        lineToLinearHeading(Pose2d(0.0, 7.5, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    }
-                                }),
-                            ))
-                        }
+//                        +onPress(gamepad2::y) {
+//                            +switch({true}, listOf(
+//                                    case({gamepad2.left_trigger > .5 || gamepad2.right_trigger > .5}, CommandContext.seq {
+//                                        +setState(bot.aim.height) { HeightController.Height.POWER }
+//                                        +setState(bot.feed.height) { Indexer.Height.POWER }
+//                                        +setState(bot.out) { Shooter.State.POWER }
+//                                        +cmd {
+//                                            dt.poseEstimate = start
+//                                        }
+//                                        val one = 6.05
+//                                        val two = 5.96
+//                                        val three = 5.89
+//                                        +cmd {
+//                                            dt.turn(one - 2 * PI)
+//                                            delay(1000)
+//                                            feed.shoot()
+//                                            delay(250)
+//
+//                                            dt.turn(two - one)
+//                                            delay(1000)
+//                                            feed.shoot()
+//                                            delay(250)
+//
+//                                            dt.turn(three - two)
+//                                            aim.height(HeightController.Height.THIRD_POWER)
+//                                            delay(1000)
+//                                            feed.shoot()
+//                                        }
+//                                    }),
+//                                    case({true}, CommandContext.seq {
+//                                        +setState(bot.out) { Shooter.State.REVERSE }
+//                                    })
+//                            ))
+//                        }
+//                        +onPress(gamepad2::x) {
+//                            +switch({true}, listOf(
+//                                case({gamepad2.left_trigger > .5 || gamepad2.right_trigger > .5}, CommandContext.seq {
+//                                    +setState(bot.aim.height) { HeightController.Height.POWER }
+//                                    +setState(bot.feed.height) { Indexer.Height.POWER }
+//                                    +setState(bot.out) { Shooter.State.POWER }
+//                                    +cmd {
+//                                        dt.poseEstimate = start
+//                                    }
+//                                    +go(start) {
+//                                        lineToLinearHeading(pspose)
+//                                    }
+//                                    var new = pspose
+//                                    repeat(3) {
+//                                        +cmd {feed.shoot()}
+//                                        val old = new
+//                                        if (it < 2) {
+//                                            +delayC(1000)
+//                                            new += Pose2d(0.0, between, 0.0)
+//                                            +go(old) {
+//                                                lineTo(new.vec())
+//                                            }
+//                                        }
+//                                    }
+//                                    +cmd {}
+//                                }),
+//                                case({true}, CommandContext.seq {
+//                                    +cmd {
+//                                        dt.poseEstimate = Pose2d(0.0, 0.0, 0.0)
+//                                    }
+//                                    +go(Pose2d()) {
+//                                        lineToLinearHeading(Pose2d(0.0, 7.5, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+//                                    }
+//                                }),
+//                            ))
+//                        }
 //                        +onPress(gamepad1::x) {
 //                            +cmd {
 //                                if (gamepad1.right_trigger > .5 || gamepad1.left_trigger > .5)

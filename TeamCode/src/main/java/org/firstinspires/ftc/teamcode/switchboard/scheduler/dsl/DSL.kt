@@ -1,24 +1,36 @@
 package org.firstinspires.ftc.teamcode.switchboard.scheduler.dsl
 
-import org.firstinspires.ftc.teamcode.switchboard.scheduler.CyclicalProcess
+import org.firstinspires.ftc.teamcode.switchboard.scheduler.CyclicalSchedule
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.Process
-import org.firstinspires.ftc.teamcode.switchboard.scheduler.SequentialProcess
+import org.firstinspires.ftc.teamcode.switchboard.scheduler.SequentialSchedule
 
-fun seq(b: ListBuilderContext<Process>.() -> Unit) = SequentialProcess(ListBuilderContext<Process>().apply(b).build())
-fun swap(b: ListBuilderContext<Process>.() -> Unit) = CyclicalProcess(ListBuilderContext<Process>().apply(b).build())
+fun seq(b: ListBuilderContext<Process>.() -> Unit)
+        = SequentialSchedule(
+            ListBuilderContext<Process>()
+                    .apply(b)
+                    .build()
+        )
+
+fun swap(b: ListBuilderContext<Process>.() -> Unit)
+        = CyclicalSchedule(
+            ListBuilderContext<Process>()
+                    .apply(b)
+                    .build()
+        )
 
 /*
 val schedule =
     seq {
-        +read
+        +read // 2ms
         +odo
-        +dt
+        +dt // 8ms
         +swap {
             +idle
             +swap {
-                +squeue
-                +arm
-                +shooter
+                +squeue // 2ms
+                +arm // 2ms
+                +shooter // 4ms
+                +leadscrew // 4ms
             }
         }
     }

@@ -10,15 +10,3 @@ class RevHub(val lynx: LynxModule) {
     var motors: List<Motor> = listOf()
     var servos: List<Servo> = listOf()
 }
-
-interface HardwareInput {
-    fun input()
-}
-interface HardwareOutput {
-    fun output()
-}
-
-class HardwareGroup {
-    var motors: List<Motor> = listOf()
-    var servos: List<Servo> = listOf()
-}

@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import kotlinx.coroutines.runBlocking
-import org.firstinspires.ftc.teamcode.gamepad.GamepadEx
 
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Robot

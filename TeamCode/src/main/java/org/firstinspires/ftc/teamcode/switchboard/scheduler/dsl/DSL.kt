@@ -1,19 +1,20 @@
 package org.firstinspires.ftc.teamcode.switchboard.scheduler.dsl
 
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.CyclicalSchedule
-import org.firstinspires.ftc.teamcode.switchboard.scheduler.Process
+import org.firstinspires.ftc.teamcode.switchboard.scheduler.Schedule
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.SequentialSchedule
+import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 
-fun seq(b: ListBuilderContext<Process>.() -> Unit)
+fun seq(b: ListBuilderContext<Schedule>.() -> Unit)
         = SequentialSchedule(
-            ListBuilderContext<Process>()
+            ListBuilderContext<Schedule>()
                     .apply(b)
                     .build()
         )
 
-fun swap(b: ListBuilderContext<Process>.() -> Unit)
-        = CyclicalSchedule(
-            ListBuilderContext<Process>()
+fun swap(limit: Time = Time.milli(2), b: ListBuilderContext<Schedule>.() -> Unit)
+        = CyclicalSchedule(limit,
+            ListBuilderContext<Schedule>()
                     .apply(b)
                     .build()
         )

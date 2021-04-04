@@ -3,13 +3,9 @@ package org.firstinspires.ftc.teamcode.switchboard.shapes
 import java.util.*
 import kotlin.NoSuchElementException
 
-class BackingList<E>(val list: MutableList<E>) : MutableList<E> by list {
+class BackingList<E>(val list: MutableList<E> = mutableListOf()) : MutableList<E> by list {
     inner class SharedQueue : Queue<E> {
         var i = 0
-            set(value) {
-                refresh()
-                field = value
-            }
 
         /**
          * Inserts the specified element into this queue if it is possible to do so

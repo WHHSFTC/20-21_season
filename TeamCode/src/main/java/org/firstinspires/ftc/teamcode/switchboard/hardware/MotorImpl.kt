@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.switchboard.hardware
 
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import org.firstinspires.ftc.teamcode.switchboard.core.Log
+import org.firstinspires.ftc.teamcode.switchboard.core.Switchboard
 import org.firstinspires.ftc.teamcode.switchboard.hardware.Motor
 
-class MotorImpl(val m: DcMotorEx): Motor {
+class MotorImpl(val m: DcMotorEx, val name: String, val log: Log): Motor {
     //var conf: Power = Power(0.0)
     //open class Power(val pow: Double, val zpb: DcMotorEx.ZeroPowerBehavior = DcMotorEx.ZeroPowerBehavior.BRAKE) {
     //object BRAKE : Power(0.0, DcMotorEx.ZeroPowerBehavior.BRAKE)
@@ -16,5 +18,8 @@ class MotorImpl(val m: DcMotorEx): Motor {
             m.power = power
         if (m.zeroPowerBehavior != zpb.mirror)
             m.zeroPowerBehavior = zpb.mirror
+
+        log.debug["$name power"] = power
+        log.debug["$name zpb"] = zpb
     }
 }

@@ -3,15 +3,15 @@ package org.firstinspires.ftc.teamcode.summum
 import org.firstinspires.ftc.teamcode.geometry.*
 import org.firstinspires.ftc.teamcode.switchboard.core.OpModeContext
 import org.firstinspires.ftc.teamcode.switchboard.hardware.Encoder
-import org.firstinspires.ftc.teamcode.switchboard.scheduler.Activity
+import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.DecompositionSolver
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
-import org.firstinspires.ftc.teamcode.switchboard.event.*
+import org.firstinspires.ftc.teamcode.switchboard.observe.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Distance
 
-abstract class DeadWheelLocalizer(val odos: List<Pair<Encoder, Pose2d>>, val ctx: OpModeContext) : Activity(ctx.eventBus.queue()) {
+abstract class DeadWheelLocalizer(val odos: List<Pair<Encoder, Pose2d>>) : Activity {
     private val forwardSolver: DecompositionSolver
 
     private var prevPositions: List<Int> = odos.map { 0 }
@@ -36,13 +36,7 @@ abstract class DeadWheelLocalizer(val odos: List<Pair<Encoder, Pose2d>>, val ctx
         require(forwardSolver.isNonSingular) { "Wheel configuration is singular, ie is underconstrained" }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun on(e: Envelope<*>): Boolean
-        = when(e.event) {
-            else -> false
-        }
-
-    override fun maintain() {
+    fun update() {
         val positions = odos.map { it.first.position }
 
         val deltas = positions.zip(prevPositions).map { ticksToDistance(it.first - it.second).inches }
@@ -56,14 +50,6 @@ abstract class DeadWheelLocalizer(val odos: List<Pair<Encoder, Pose2d>>, val ctx
         _velo = Pose2d(veloVector.getEntry(0), veloVector.getEntry(1), veloVector.getEntry(2))
 
         prevPositions = positions
-    }
-
-    override fun update() {
-
-    }
-
-    override fun cleanup() {
-
     }
 
     companion object {

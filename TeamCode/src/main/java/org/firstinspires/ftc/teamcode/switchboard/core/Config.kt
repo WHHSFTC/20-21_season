@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.switchboard.core
 
+import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.switchboard.hardware.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
@@ -24,25 +25,27 @@ class Config(val hwMap: HardwareMap, val log: Log) {
                 = getObject(::ServoImpl, ::ServoStub, key)
     }
 
-    val analogOutput = object : DeviceMap<AnalogOutput> {
+    val analogOutputs = object : DeviceMap<AnalogOutput> {
         override operator fun get(key: String): AnalogOutput
                 = getObject(::AnalogOutputImpl, ::AnalogOutputStub, key)
     }
 
-    val analogInput = object : DeviceMap<AnalogInput> {
+    val analogInputs = object : DeviceMap<AnalogInput> {
         override operator fun get(key: String): AnalogInput
                 = getObject(::AnalogInputImpl, ::AnalogInputStub, key)
     }
 
-    val digitalOutput = object : DeviceMap<DigitalOutput> {
+    val digitalOutputs = object : DeviceMap<DigitalOutput> {
         override operator fun get(key: String): DigitalOutput
                 = getObject(::DigitalOutputImpl, ::DigitalOutputStub, key)
     }
 
-    val digitalInput = object : DeviceMap<DigitalInput> {
+    val digitalInputs = object : DeviceMap<DigitalInput> {
         override operator fun get(key: String): DigitalInput
                 = getObject(::DigitalInputImpl, ::DigitalInputStub, key)
     }
+
+    val revHubs get() = hwMap.getAll(LynxModule::class.java)
 
     private fun announceStub(key: String) {
         log.addMessage("MISSING HARDWARE DEVICE: $key", Time.seconds(60))

@@ -10,16 +10,14 @@ class Log(
         var displayDebug: Boolean = false,
 
         // map of state for telemetry to be updated each cycle
-        val data: MutableMap<String, Any> = hashMapOf()
-) : MutableMap<String, Any> by data {
+        val data: MutableMap<String, Any?> = hashMapOf()
+) : MutableMap<String, Any?> by data {
 
-    val debug: MutableMap<String, Any> = hashMapOf()
+    val debug: MutableMap<String, Any?> = hashMapOf()
 
     // list of one-off messages to display
     val messages: MutableList<Pair<String, Time>> = mutableListOf()
-
-    fun addMessage(text: String, duration: Time) {
-        messages += text to Time.now() + duration
+fun addMessage(text: String, duration: Time) { messages += text to Time.now() + duration
     }
 
     fun update() {

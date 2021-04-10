@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.switchboard.hardware
 
-import org.firstinspires.ftc.teamcode.switchboard.core.Log
+import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
-class AnalogOutputImpl(val ao: com.qualcomm.robotcore.hardware.AnalogOutput, val name: String, val log: Log): AnalogOutput {
+class AnalogOutputImpl(val ao: com.qualcomm.robotcore.hardware.AnalogOutput, val name: String, val log: Logger): AnalogOutput {
     private var m: AnalogOutput.OutputMode? = null
     private var a: Int? = null
     private var f: Int? = null
     override var mode: AnalogOutput.OutputMode = AnalogOutput.OutputMode.VOLTAGE_PM4
     override var amplitude: Int = 0
     override var frequency: Int = 0
-    override fun output() {
+    override fun output(all: Boolean) {
         if (m == null || m != mode) {
             ao.setAnalogOutputMode(mode.code)
             m = mode
@@ -23,8 +23,8 @@ class AnalogOutputImpl(val ao: com.qualcomm.robotcore.hardware.AnalogOutput, val
             f = frequency
         }
 
-        log.debug["$name mode"] = mode
-        log.debug["$name amplitude"] = amplitude
-        log.debug["$name frequency"] = frequency
+        log.err["$name mode"] = mode
+        log.err["$name amplitude"] = amplitude
+        log.err["$name frequency"] = frequency
     }
 }

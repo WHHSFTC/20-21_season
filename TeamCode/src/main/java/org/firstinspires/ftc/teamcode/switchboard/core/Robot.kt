@@ -2,23 +2,30 @@ package org.firstinspires.ftc.teamcode.switchboard.core
 
 import com.qualcomm.hardware.lynx.LynxModule
 import org.firstinspires.ftc.teamcode.switchboard.observe.Channel
+import org.firstinspires.ftc.teamcode.switchboard.observe.Frame
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.HardwareScheduler
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 
-abstract class Robot(val log: Log, val config: Config, val name: String) {
-    val frame = Channel<Frame>(Frame(0, Time.zero))
+abstract class Robot(val log: Logger, val config: Config, val name: String) {
+    val frame = Channel<Frame>(Frame(0, Time.zero, Time.zero), "Frame", log.out)
+    var startTime: Time? = null
     abstract val activities: List<Activity>
     abstract val scheduler: HardwareScheduler
 
     fun setup() {
-        config.revHubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
         activities.forEach { it.load() }
     }
 
     fun update() {
-        config.revHubs.forEach { it.clearBulkCache() }
-        frame.set(Frame(frame.get().n + 1, Time.now()))
-        scheduler.update()
+        config.read()
+        frame.set(Frame.from(frame.get()))
+        //scheduler.output()
+        log.update()
+    }
+
+    fun cleanup() {
+        activities.forEach { it.cleanup() }
+        scheduler.output(true)
     }
 
     override fun toString(): String = name

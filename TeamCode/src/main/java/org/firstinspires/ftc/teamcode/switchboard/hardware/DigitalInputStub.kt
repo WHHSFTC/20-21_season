@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.switchboard.hardware
 
-import com.qualcomm.robotcore.hardware.DigitalChannel
-import org.firstinspires.ftc.teamcode.switchboard.core.Log
+import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
-class DigitalInputStub(val name: String, val log: Log): DigitalInput {
+class DigitalInputStub(val name: String, val log: Logger): DigitalInput {
     override val high: Boolean = false
     override fun input() {
-        log["[STUB] $name high"] = high
+        log.out["[STUB] $name high"] = high
     }
 }

@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.switchboard.scheduler
 
 interface HardwareScheduler {
-    fun update()
+    fun output(all: Boolean = false)
 
     object idle : HardwareScheduler {
-        override fun update() { }
+        override fun output(all: Boolean) { }
     }
 }

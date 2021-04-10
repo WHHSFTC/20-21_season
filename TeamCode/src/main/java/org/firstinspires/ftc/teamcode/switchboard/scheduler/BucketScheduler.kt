@@ -22,7 +22,8 @@ class BucketScheduler(val duration: Time, val table: List<List<HardwareScheduler
      */
 
     private var n: Long = 0
-    override fun update() {
+    override fun output(all: Boolean) {
+        if (all) return table.forEach { it.forEach { it.output(all = true) } }
         val start = Time.now()
         val end = start + duration
         table.forEachIndexed { i, l ->
@@ -30,11 +31,11 @@ class BucketScheduler(val duration: Time, val table: List<List<HardwareScheduler
             l.forEachIndexed { j, hw ->
                 if (Time.now() > end) {
                     n++
-                    return@update
+                    return@output
                 }
 
-                if ((n - j) and (period - 1L) == 0L) {
-                    hw.update()
+                if ((n - j) and (period - 1L) == 0L) { // n % period == j
+                    hw.output()
                 }
             }
         }

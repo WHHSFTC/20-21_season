@@ -1,25 +1,25 @@
 package org.firstinspires.ftc.teamcode.summum
 
 import org.firstinspires.ftc.teamcode.geometry.*
-import org.firstinspires.ftc.teamcode.switchboard.core.OpModeContext
 import org.firstinspires.ftc.teamcode.switchboard.hardware.Encoder
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.DecompositionSolver
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
+import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 import org.firstinspires.ftc.teamcode.switchboard.observe.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Distance
 
-abstract class DeadWheelLocalizer(val odos: List<Pair<Encoder, Pose2d>>) : Activity {
+abstract class DeadWheelLocalizer(log: Logger, val odos: List<Pair<Encoder, Pose2d>>) : Activity {
     private val forwardSolver: DecompositionSolver
 
     private var prevPositions: List<Int> = odos.map { 0 }
 
-    val pose = Channel(Pose2d(0.0, 0.0, 0.0))
+    val pose = Channel(Pose2d(0.0, 0.0, 0.0), "Pose", log.out)
     private var _pose: Pose2d by pose.delegate
 
-    val velo = Channel(Pose2d(0.0, 0.0, 0.0))
+    val velo = Channel(Pose2d(0.0, 0.0, 0.0), "PoseVelocity", log.out)
     private var _velo: Pose2d by velo.delegate
 
     init {
@@ -52,11 +52,5 @@ abstract class DeadWheelLocalizer(val odos: List<Pair<Encoder, Pose2d>>) : Activ
         prevPositions = positions
     }
 
-    companion object {
-        val WHEEL_RADIUS = Distance.mm(30.0)
-        val GEAR_RATIO = 1.0
-        val TICKS_PER_REV = 8192.0
-        val FACTOR get() = WHEEL_RADIUS * 2.0 * Math.PI * GEAR_RATIO * TICKS_PER_REV
-        fun ticksToDistance(n: Int): Distance = FACTOR * n.toDouble()
-    }
+    abstract fun ticksToDistance(n: Int): Distance
 }

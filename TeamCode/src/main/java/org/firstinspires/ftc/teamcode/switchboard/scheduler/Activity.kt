@@ -4,7 +4,7 @@ import org.firstinspires.ftc.teamcode.switchboard.event.Envelope
 import org.firstinspires.ftc.teamcode.switchboard.event.Event
 import org.firstinspires.ftc.teamcode.switchboard.shapes.BackingList
 
-abstract class Activity(val queue: BackingList<Envelope>.SharedQueue) : Schedule {
+abstract class Activity() : Schedule {
     abstract fun load()
     abstract fun maintain()
     abstract fun update()
@@ -18,10 +18,10 @@ abstract class Activity(val queue: BackingList<Envelope>.SharedQueue) : Schedule
         }
     }
 
-    fun send(e: Event): Envelope
-        = Envelope(e, this, 0, 0).also(queue::add)
+    fun send(e: Event): Envelope<*>
+        = Envelope(e, this, 0).also(queue::add)
 
-    open fun on(e: Envelope): Boolean = false
+    open fun on(e: Envelope<*>): Boolean = false
 
     override fun recurse(f: (Activity) -> Unit) {
         f(this)

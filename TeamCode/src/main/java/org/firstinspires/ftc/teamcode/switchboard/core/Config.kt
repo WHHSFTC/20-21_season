@@ -1,43 +1,46 @@
 package org.firstinspires.ftc.teamcode.switchboard.core
 
-import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.switchboard.hardware.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 
 class Config(val hwMap: HardwareMap, val log: Log) {
-    val motors = object {
-        operator fun get(key: String): Motor
+    interface DeviceMap<T> {
+        operator fun get(key: String): T
+    }
+
+    val motors = object : DeviceMap<Motor> {
+        override operator fun get(key: String): Motor
                 = getObject(::MotorImpl, ::MotorStub, key)
     }
 
-    val encoders = object {
-        operator fun get(key: String): Encoder
+    val encoders = object : DeviceMap<Encoder> {
+        override operator fun get(key: String): Encoder
                 = getObject(::EncoderImpl, ::EncoderStub, key)
     }
 
-    val servos = object {
-        operator fun get(key: String): Servo
+    val servos = object : DeviceMap<Servo> {
+        override operator fun get(key: String): Servo
                 = getObject(::ServoImpl, ::ServoStub, key)
     }
 
-    val analogOutput = object {
-        operator fun get(key: String): AnalogOutput
+    val analogOutput = object : DeviceMap<AnalogOutput> {
+        override operator fun get(key: String): AnalogOutput
                 = getObject(::AnalogOutputImpl, ::AnalogOutputStub, key)
     }
 
-    val analogInput = object {
-        operator fun get(key: String): AnalogInput
+    val analogInput = object : DeviceMap<AnalogInput> {
+        override operator fun get(key: String): AnalogInput
                 = getObject(::AnalogInputImpl, ::AnalogInputStub, key)
     }
 
-    val digitalOutput = object {
-        operator fun get(key: String): DigitalOutput
+    val digitalOutput = object : DeviceMap<DigitalOutput> {
+        override operator fun get(key: String): DigitalOutput
                 = getObject(::DigitalOutputImpl, ::DigitalOutputStub, key)
     }
 
-    val digitalInput = object {
-        operator fun get(key: String): DigitalInput
+    val digitalInput = object : DeviceMap<DigitalInput> {
+        override operator fun get(key: String): DigitalInput
                 = getObject(::DigitalInputImpl, ::DigitalInputStub, key)
     }
 

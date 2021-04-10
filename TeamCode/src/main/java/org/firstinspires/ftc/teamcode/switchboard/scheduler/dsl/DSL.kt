@@ -35,4 +35,6 @@ val schedule =
             }
         }
     }
+
+val activities = listOf(read, odo, dt, hw)
  */

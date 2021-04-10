@@ -19,7 +19,7 @@ class Log(
     val messages: MutableList<Pair<String, Time>> = mutableListOf()
 
     fun addMessage(text: String, duration: Time) {
-        messages += Pair(text, Time.now() + duration)
+        messages += text to Time.now() + duration
     }
 
     fun update() {

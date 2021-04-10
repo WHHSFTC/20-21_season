@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.teamcode.summum.Summum
 import org.firstinspires.ftc.teamcode.switchboard.core.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
@@ -14,7 +13,7 @@ class LocalizerTest : LinearOpMode() {
     lateinit var bot: Robot
 
     override fun runOpMode() {
-        log = Logger(telemetry)
+        log = Logger(telemetry, displayErr = true)
         config = Config(hardwareMap, log)
         bot = Summum(log, config)
         bot.setup()

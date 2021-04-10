@@ -7,7 +7,7 @@ class Logger(
         val telemetry: Telemetry,
 
         // true if all hardware values should be logged to telemetry
-        var displayDebug: Boolean = false,
+        var displayErr: Boolean = false,
 ) {
     // map of state for telemetry to be updated each cycle
     val out = LogStream("out")
@@ -29,7 +29,7 @@ class Logger(
 
         out.print()
 
-        if (displayDebug)
+        if (displayErr)
             err.print()
 
         telemetry.update()

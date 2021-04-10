@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.switchboard.core
 
-import com.qualcomm.hardware.lynx.LynxModule
 import org.firstinspires.ftc.teamcode.switchboard.observe.Channel
 import org.firstinspires.ftc.teamcode.switchboard.observe.Frame
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.HardwareScheduler

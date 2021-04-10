@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.switchboard.shapes.Distance
 abstract class DeadWheelLocalizer(log: Logger, val odos: List<Pair<Encoder, Pose2d>>) : Activity {
     private val forwardSolver: DecompositionSolver
 
-    private var prevPositions: List<Int> = odos.map { 0 }
+    var prevPositions: List<Int>? = null
 
     val pose = Channel(Pose2d(0.0, 0.0, 0.0), "Pose", log.out)
     private var _pose: Pose2d by pose.delegate
@@ -30,7 +30,7 @@ abstract class DeadWheelLocalizer(log: Logger, val odos: List<Pair<Encoder, Pose
         odos.forEachIndexed { i, p -> inverseMatrix.setRow(i, arrayOf(
                 p.second.theta.cos(),
                 p.second.theta.sin(),
-                p.second.x * p.second.theta.sin() + p.second.y * p.second.theta.cos()
+                p.second.x * p.second.theta.sin() - p.second.y * p.second.theta.cos()
         ).toDoubleArray()) }
         forwardSolver = LUDecomposition(inverseMatrix).solver
         require(forwardSolver.isNonSingular) { "Wheel configuration is singular, ie is underconstrained" }
@@ -39,7 +39,11 @@ abstract class DeadWheelLocalizer(log: Logger, val odos: List<Pair<Encoder, Pose
     fun update() {
         val positions = odos.map { it.first.position }
 
-        val deltas = positions.zip(prevPositions).map { ticksToDistance(it.first - it.second).inches }
+        var prev = prevPositions
+        if (prev == null)
+            prev = positions
+
+        val deltas = positions.zip(prev).map { ticksToDistance(it.first - it.second).inches }
 
         val twistVector = forwardSolver.solve(MatrixUtils.createRealVector(deltas.toDoubleArray()))
         val twist = Pose2d(twistVector.getEntry(0), twistVector.getEntry(1), twistVector.getEntry(2))

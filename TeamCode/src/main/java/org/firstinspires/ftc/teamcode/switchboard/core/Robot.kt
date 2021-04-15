@@ -18,7 +18,7 @@ abstract class Robot(val log: Logger, val config: Config, val name: String) {
     fun update() {
         config.read()
         frame.set(Frame.from(frame.get()))
-        //scheduler.output()
+        scheduler.output()
         log.update()
     }
 

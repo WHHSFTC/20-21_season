@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.geometry
 
 import kotlin.math.PI
+import kotlin.math.abs
 
 const val TAU = 2.0 * PI
 
@@ -25,3 +26,7 @@ fun Number.sin() =
 
 fun Number.cos() =
         kotlin.math.cos(this.toDouble())
+
+const val EPSILON = 1e-6
+
+infix fun Double.epsilonEquals(other: Double) = abs(this - other) < EPSILON

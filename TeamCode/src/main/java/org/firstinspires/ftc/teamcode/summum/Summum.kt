@@ -9,16 +9,16 @@ import org.firstinspires.ftc.teamcode.switchboard.shapes.Time.Companion.milli
 
 class Summum(log: Logger, config: Config) : Robot(log, config, "Summum") {
     val loc = Localizer(this)
-    //val dt = Drivetrain(this)
+    val dt = Drivetrain(this)
 
     override val activities: List<Activity> = listOf(
             loc,
-            //dt,
+            dt,
     )
 
     override val scheduler: HardwareScheduler = bucket(milli(14),
             listOf(
-                    //all(*dt.motors.toTypedArray())
+                    all(*dt.wheels.map { it.first }.toTypedArray())
             ),
             //listOf(
                     //rot(milli(2)

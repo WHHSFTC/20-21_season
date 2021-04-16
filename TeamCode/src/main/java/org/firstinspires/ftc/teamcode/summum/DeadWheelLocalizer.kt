@@ -11,15 +11,15 @@ import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 import org.firstinspires.ftc.teamcode.switchboard.observe.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Distance
 
-abstract class DeadWheelLocalizer(log: Logger, val odos: List<Pair<Encoder, Pose2d>>) : Activity {
+abstract class DeadWheelLocalizer(logger: Logger, val odos: List<Pair<Encoder, Pose2d>>) : Activity {
     private val forwardSolver: DecompositionSolver
 
     var prevPositions: List<Int>? = null
 
-    val pose = Channel(Pose2d(0.0, 0.0, 0.0), "Pose", log.out)
+    val pose = Channel(Pose2d(0.0, 0.0, 0.0), "Pose", logger.out)
     private var _pose: Pose2d by pose.delegate
 
-    val velo = Channel(Pose2d(0.0, 0.0, 0.0), "PoseVelocity", log.out)
+    val velo = Channel(Pose2d(0.0, 0.0, 0.0), "PoseVelocity", logger.out)
     private var _velo: Pose2d by velo.delegate
 
     init {

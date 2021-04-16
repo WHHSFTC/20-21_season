@@ -11,11 +11,14 @@ fun <P, R> Observable<P>.scan(initial: R, f: (acc: R, P) -> R): Observable<R>
 fun <P> Observable<P>.filter(predicate: (P) -> Boolean): Observable<P>
     = FilterSubject<P>(predicate).also { this.subscribe(it) }
 
+fun <T> Observable<T>.dedupe(initial: T): Observable<T>
+    = this.scan(initial to initial) { (a, _), new -> new to a }.filter { it.first != it.second }.map { it.first }
+
 fun <T> Observable<Observable<T>>.flatten(): Observable<T>
     = SwappableSubject<T>().also { this.subscribe(it) }
 
-fun <T> Observable<T>.log(logStream: Logger.LogStream, name: String)
-    = this.subscribe { logStream[name] = it }
+fun <T> Observable<T>.log(loggerStream: Logger.LogStream, name: String)
+    = this.subscribe { loggerStream[name] = it }
 
 fun <T: Observable<*>> T.tap(block: T.() -> Unit)
     = this.apply(block)
@@ -23,10 +26,13 @@ fun <T: Observable<*>> T.tap(block: T.() -> Unit)
 fun <T> Observable<T>.inject(): Subject<T, T>
     = IdentitySubject<T>().also { this.subscribe(it) }
 
-fun Observable<Boolean>.debounce(): Observable<Unit>
+fun Observable<Boolean>.posEdge(): Observable<Unit>
     = this.scan(false to false) { acc, n -> n to acc.first }.filter { it.first && !it.second }.map { Unit }
 
 infix fun <T> Observable<T>.bind(observer: Observer<T>): Subscription<T>
     = this.subscribe(observer)
 
-// localizer.pose bind drivetrain.pose
+fun <T> Observable<T>.comment(s: String)
+    = this
+
+// .comment("localizer.pose bind drivetrain.pose")

@@ -7,8 +7,8 @@ import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time.Companion.milli
 
-class Summum(log: Logger, config: Config) : Robot(log, config, "Summum") {
-    val loc = Localizer(this)
+class Summum(logger: Logger, config: Config) : Robot(logger, config, "Summum") {
+    val loc = SummumLocalizer(this)
     val dt = Drivetrain(this)
 
     override val activities: List<Activity> = listOf(

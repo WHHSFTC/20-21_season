@@ -6,10 +6,8 @@ import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.drive.FeedforwardCoef
 import org.firstinspires.ftc.teamcode.switchboard.observe.Channel
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Distance
-import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 import kotlin.math.absoluteValue
 import kotlin.math.max
-import kotlin.math.sign
 
 class Drivetrain(val bot: Summum, val ff: FeedforwardCoef) : Activity {
     val wheels = listOf(
@@ -30,7 +28,7 @@ class Drivetrain(val bot: Summum, val ff: FeedforwardCoef) : Activity {
         ).toDoubleArray()) }
     }
 
-    val loadFollower = Channel<Follower>(Follower.idle, "Follower", bot.log.out)
+    val loadFollower = Channel<Follower>(Follower.idle, "Follower", bot.logger.out)
     private val follower: Follower by loadFollower.delegate
 
     override fun load() {
@@ -79,7 +77,7 @@ class Drivetrain(val bot: Summum, val ff: FeedforwardCoef) : Activity {
                 .multiply(Array2DRowRealMatrix(
                         arrayOf(twist.x, twist.y, twist.theta).toDoubleArray()
                 ))
-                .getColumn(0).toList().also { bot.log.out["Powers"] = it }
+                .getColumn(0).toList().also { bot.logger.out["Powers"] = it }
 
     fun setMotorPowers(powers: List<Double>) {
         val m = powers.map { it.absoluteValue }.maxOrNull()

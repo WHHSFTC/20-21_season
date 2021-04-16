@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.switchboard.hardware.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 
-class Config(val hwMap: HardwareMap, val log: Logger) {
+class Config(val hwMap: HardwareMap, val logger: Logger) {
     interface DeviceMap<T> {
         operator fun get(key: String): T
     }
@@ -60,7 +60,7 @@ class Config(val hwMap: HardwareMap, val log: Logger) {
     }
 
     private fun announceStub(key: String) {
-        log.addMessage("MISSING HARDWARE DEVICE: $key", Time.seconds(60))
+        logger.addMessage("MISSING HARDWARE DEVICE: $key", Time.seconds(60))
     }
 
     private inline fun <reified BASE, WRAPPER : HardwareInput> getObjectAndRead(impl: (BASE, String, Logger) -> WRAPPER, stub: (String, Logger) -> WRAPPER, key: String): WRAPPER
@@ -71,9 +71,9 @@ class Config(val hwMap: HardwareMap, val log: Logger) {
         while (iter.hasNext()) {
             val d = iter.next()
             if (d is BASE && key in hwMap.getNamesOf(d).fold(listOf<String>()) { acc, s -> acc + s.split('+') })
-                return impl(d, key, log)
+                return impl(d, key, logger)
         }
         announceStub(key)
-        return stub(key, log)
+        return stub(key, logger)
     }
 }

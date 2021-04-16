@@ -1,41 +1,37 @@
 package org.firstinspires.ftc.teamcode.switchboard.hardware
 
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import org.firstinspires.ftc.teamcode.switchboard.core.Frame
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
-import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
-import kotlin.math.absoluteValue
-import kotlin.math.sign
+import org.firstinspires.ftc.teamcode.switchboard.stores.*
 
-class EncoderImpl(val m: DcMotorEx, val name: String, val log: Logger): Encoder {
-    var lastTime = Time.zero
+class EncoderImpl(frame: Observable<Frame>, val m: DcMotorEx, val name: String, val logger: Logger): Encoder {
     var lastPosition = 0
 
-    var rawVelocity: Double = 0.0
+    override val position = StartPoint(0).tap { log(logger.err, "$name pos") }
+    override val velocity = StartPoint(0.0).tap { log(logger.err, "$name velo") }
 
-    override var position: Int = 0
-        private set
-    override var velocity: Double = 0.0
-        private set
+    init {
+        frame.subscribe {
+            input(it)
+        }
+    }
 
-    override fun input() {
-        position = m.currentPosition
-        rawVelocity = m.velocity
+    fun input(frame: Frame) {
+        val pos = m.currentPosition
+        var rawVelocity = m.velocity
 
-        val t = Time.now()
-        val derivative = (position - lastPosition)/(t - lastTime).seconds.toDouble()
+        val derivative = (pos - lastPosition)/frame.step.seconds.toDouble()
 
-        velocity = rawVelocity
+        while (derivative - rawVelocity > (1 shl 16) / 2.0)
+            rawVelocity += 1 shl 16
 
-        while (derivative - velocity > (1 shl 16) / 2.0)
-            velocity += 1 shl 16
+        while (derivative - rawVelocity < (1 shl 16) / -2.0)
+            rawVelocity -= 1 shl 16
 
-        while (derivative - velocity < (1 shl 16) / -2.0)
-            velocity -= 1 shl 16
+        position.value = pos
+        velocity.value = rawVelocity
 
-        lastPosition = position
-        lastTime = t
-
-        log.err["$name pos"] = position
-        log.err["$name velocity"] = velocity
+        lastPosition = pos
     }
 }

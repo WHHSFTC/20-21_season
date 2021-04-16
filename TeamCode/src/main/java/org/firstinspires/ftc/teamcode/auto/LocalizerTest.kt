@@ -8,16 +8,16 @@ import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 
 @Autonomous
 class LocalizerTest : LinearOpMode() {
-    lateinit var log: Logger
+    lateinit var logger: Logger
     lateinit var config: Config
     lateinit var bot: Robot
 
     override fun runOpMode() {
-        log = Logger(telemetry, displayErr = true)
-        config = Config(hardwareMap, log)
-        bot = Summum(log, config)
+        logger = Logger(telemetry, displayErr = true)
+        config = Config(hardwareMap, logger)
+        bot = Summum(logger, config)
         bot.setup()
-        log.update()
+        logger.update()
 
         waitForStart()
         bot.startTime = Time.now()
@@ -25,15 +25,15 @@ class LocalizerTest : LinearOpMode() {
         while (opModeIsActive()) {
             val now = Time.now()
             val loopTime = now - bot.startTime!!
-            log.out["Runtime"] = loopTime
+            logger.out["Runtime"] = loopTime
             val n = bot.frame.get().n.toDouble()
-            log.out["Loop Cycle Time (ms)"] = loopTime.milliseconds / n
-            log.out["Loop Frequency (hz)"] = n / loopTime.seconds
+            logger.out["Loop Cycle Time (ms)"] = loopTime.milliseconds / n
+            logger.out["Loop Frequency (hz)"] = n / loopTime.seconds
             bot.update()
         }
 
         // stop
         bot.cleanup()
-        log.update()
+        logger.update()
     }
 }

@@ -5,8 +5,8 @@ import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 import org.firstinspires.ftc.teamcode.switchboard.stores.StartPoint
 import org.firstinspires.ftc.teamcode.switchboard.stores.*
 
-abstract class Robot(val log: Logger, val config: Config, val name: String) {
-    val frame = StartPoint<Frame>(Frame(0, Time.zero, Time.zero)).tap { this.log(log.out, "Frame") }
+abstract class Robot(val logger: Logger, val config: Config, val name: String) {
+    val frame = StartPoint<Frame>(Frame(0, Time.zero, Time.zero)).tap { this.log(logger.out, "Frame") }
     var startTime: Time? = null
     abstract val activities: List<Activity>
     abstract val scheduler: HardwareScheduler
@@ -19,7 +19,7 @@ abstract class Robot(val log: Logger, val config: Config, val name: String) {
         config.read()
         frame.value = Frame.from(frame.value)
         scheduler.output()
-        log.update()
+        logger.update()
     }
 
     fun cleanup() {

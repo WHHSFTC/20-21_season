@@ -4,9 +4,8 @@ import org.firstinspires.ftc.teamcode.geometry.Pose2d
 import org.firstinspires.ftc.teamcode.geometry.TAU
 import org.firstinspires.ftc.teamcode.geometry.rad
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Distance
-import kotlin.math.PI
 
-class SummumLocalizer(val bot: Summum) : DeadWheelLocalizer(bot.log,
+class SummumLocalizer(val bot: Summum) : DeadWheelLocalizer(bot.logger,
         odos = listOf(
                 bot.config.encoders["leftOdo"] to Pose2d(1.71, 7.375, 0.0),
                 bot.config.encoders["rightOdo"] to Pose2d(1.71, -7.375, 180.0.rad()),

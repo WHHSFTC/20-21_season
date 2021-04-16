@@ -11,7 +11,7 @@ fun <P, R> Observable<P>.scan(initial: R, f: (acc: R, P) -> R): Observable<R>
 fun <P> Observable<P>.filter(predicate: (P) -> Boolean): Observable<P>
     = FilterSubject<P>(predicate).also { this.subscribe(it) }
 
-fun <T> Observable<T>.dedupe(initial: T): Observable<T>
+fun <T> Observable<T>.dedup(initial: T): Observable<T>
     = this.scan(initial to initial) { (a, _), new -> new to a }.filter { it.first != it.second }.map { it.first }
 
 fun <T> Observable<Observable<T>>.flatten(): Observable<T>

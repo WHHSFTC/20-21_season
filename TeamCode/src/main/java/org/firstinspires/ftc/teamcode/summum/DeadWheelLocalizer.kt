@@ -8,19 +8,25 @@ import org.apache.commons.math3.linear.DecompositionSolver
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
-import org.firstinspires.ftc.teamcode.switchboard.observe.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Distance
+import org.firstinspires.ftc.teamcode.switchboard.stores.*
 
 abstract class DeadWheelLocalizer(logger: Logger, val odos: List<Pair<Encoder, Pose2d>>) : Activity {
     private val forwardSolver: DecompositionSolver
 
     var prevPositions: List<Int>? = null
+    var prevPose: Pose2d? = null
 
-    val pose = Channel(Pose2d(0.0, 0.0, 0.0), "Pose", logger.out)
-    private var _pose: Pose2d by pose.delegate
+    val dependencies = odos.unzip().first.fold(listOf<Observable<Pair<Int, Double>>>()) { acc, enc ->
+        acc + (enc.position zip enc.velocity)
+    }
 
-    val velo = Channel(Pose2d(0.0, 0.0, 0.0), "PoseVelocity", logger.out)
-    private var _velo: Pose2d by velo.delegate
+    val pv = zipAll(dependencies).map { readings -> update(readings) }
+
+    val _unz = pv.unzip()
+
+    val pose = _unz.first
+    val velo = _unz.second
 
     init {
         require(odos.size >= 3) { "Localizer requires at least 3 odometry wheels" }
@@ -36,24 +42,25 @@ abstract class DeadWheelLocalizer(logger: Logger, val odos: List<Pair<Encoder, P
         require(forwardSolver.isNonSingular) { "Wheel configuration is singular, ie is underconstrained" }
     }
 
-    fun update() {
-        val positions = odos.map { it.first.position }
+    fun update(readings: List<Pair<Int, Double>>): Pair<Pose2d, Pose2d> {
+        val positions = readings.map { it.first }
 
-        var prev = prevPositions
-        if (prev == null)
-            prev = positions
+        val prev = prevPositions ?: positions
 
         val deltas = positions.zip(prev).map { ticksToDistance(it.first - it.second).inches }
 
         val twistVector = forwardSolver.solve(MatrixUtils.createRealVector(deltas.toDoubleArray()))
         val twist = Pose2d(twistVector.getEntry(0), twistVector.getEntry(1), twistVector.getEntry(2))
-        _pose = _pose.exp(twist)
+        val pose = (prevPose ?: Pose2d(0.0, 0.0, 0.0)).exp(twist)
 
-        val odoVelo = odos.map { it.first.velocity }
+        val odoVelo = readings.map { it.second }
         val veloVector = forwardSolver.solve(MatrixUtils.createRealVector(odoVelo.toDoubleArray()))
-        _velo = Pose2d(veloVector.getEntry(0), veloVector.getEntry(1), veloVector.getEntry(2))
+        val velo = Pose2d(veloVector.getEntry(0), veloVector.getEntry(1), veloVector.getEntry(2))
 
         prevPositions = positions
+        prevPose = pose
+
+        return pose to velo
     }
 
     abstract fun ticksToDistance(n: Int): Distance

@@ -4,6 +4,10 @@ import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.switchboard.hardware.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
+import org.firstinspires.ftc.teamcode.switchboard.stores.Observable
+import org.firstinspires.ftc.teamcode.switchboard.stores.StartPoint
+import org.firstinspires.ftc.teamcode.switchboard.stores.log
+import org.firstinspires.ftc.teamcode.switchboard.stores.tap
 
 class Config(val hwMap: HardwareMap, val logger: Logger) {
     interface DeviceMap<T> {
@@ -12,38 +16,38 @@ class Config(val hwMap: HardwareMap, val logger: Logger) {
 
     val motors = object : DeviceMap<Motor> {
         override operator fun get(key: String): Motor
-                = getObject(::MotorImpl, ::MotorStub, key)
+                = getOutput(::MotorImpl, ::MotorStub, key)
     }
 
 
     val servos = object : DeviceMap<Servo> {
         override operator fun get(key: String): Servo
-                = getObject(::ServoImpl, ::ServoStub, key)
+                = getOutput(::ServoImpl, ::ServoStub, key)
     }
 
     val analogOutputs = object : DeviceMap<AnalogOutput> {
         override operator fun get(key: String): AnalogOutput
-                = getObject(::AnalogOutputImpl, ::AnalogOutputStub, key)
+                = getOutput(::AnalogOutputImpl, ::AnalogOutputStub, key)
     }
 
     val digitalOutputs = object : DeviceMap<DigitalOutput> {
         override operator fun get(key: String): DigitalOutput
-                = getObject(::DigitalOutputImpl, ::DigitalOutputStub, key)
+                = getOutput(::DigitalOutputImpl, ::DigitalOutputStub, key)
     }
 
     val encoders = object : DeviceMap<Encoder> {
         override operator fun get(key: String): Encoder
-                = getObjectAndRead(::EncoderImpl, ::EncoderStub, key)
+                = getInput(::EncoderImpl, ::EncoderStub, key)
     }
 
     val analogInputs = object : DeviceMap<AnalogInput> {
         override operator fun get(key: String): AnalogInput
-                = getObjectAndRead(::AnalogInputImpl, ::AnalogInputStub, key)
+                = getInput(::AnalogInputImpl, ::AnalogInputStub, key)
     }
 
     val digitalInputs = object : DeviceMap<DigitalInput> {
         override operator fun get(key: String): DigitalInput
-                = getObjectAndRead(::DigitalInputImpl, ::DigitalInputStub, key)
+                = getInput(::DigitalInputImpl, ::DigitalInputStub, key)
     }
 
     val revHubs get() = hwMap.getAll(LynxModule::class.java)
@@ -54,19 +58,29 @@ class Config(val hwMap: HardwareMap, val logger: Logger) {
         revHubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
     }
 
+    val frame = StartPoint(Frame(0, Time.zero, Time.zero)).tap { this.log(logger.out, "Frame") }
+
     fun read() {
         revHubs.forEach { it.clearBulkCache() }
-        sensors.forEach { it.input() }
+        frame.value = Frame.from(frame.value)
     }
 
     private fun announceStub(key: String) {
         logger.addMessage("MISSING HARDWARE DEVICE: $key", Time.seconds(60))
     }
 
-    private inline fun <reified BASE, WRAPPER : HardwareInput> getObjectAndRead(impl: (BASE, String, Logger) -> WRAPPER, stub: (String, Logger) -> WRAPPER, key: String): WRAPPER
-        = getObject(impl, stub, key).also { sensors += it }
+    private inline fun <reified BASE, WRAPPER : HardwareInput> getInput(impl: (Observable<Frame>, BASE, String, Logger) -> WRAPPER, stub: (Observable<Frame>, String, Logger) -> WRAPPER, key: String): WRAPPER {
+        val iter = hwMap.iterator()
+        while (iter.hasNext()) {
+            val d = iter.next()
+            if (d is BASE && key in hwMap.getNamesOf(d).fold(listOf<String>()) { acc, s -> acc + s.split('+') })
+                return impl(frame, d, key, logger)
+        }
+        announceStub(key)
+        return stub(frame, key, logger)
+    }
 
-    private inline fun <reified BASE, WRAPPER> getObject(impl: (BASE, String, Logger) -> WRAPPER, stub: (String, Logger) -> WRAPPER, key: String): WRAPPER {
+    private inline fun <reified BASE, WRAPPER : HardwareOutput> getOutput(impl: (BASE, String, Logger) -> WRAPPER, stub: (String, Logger) -> WRAPPER, key: String): WRAPPER {
         val iter = hwMap.iterator()
         while (iter.hasNext()) {
             val d = iter.next()

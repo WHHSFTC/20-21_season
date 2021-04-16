@@ -41,9 +41,46 @@ infix fun <F, S> KV<F>.alt(that : KV<S>): Observable<Pair<F, S>>
 infix fun <F, S> Observable<F>.zip(that: Observable<S>): Observable<Pair<F, S>>
     = ZipObservable<F, S>().also { this.subscribe(it.first); that.subscribe(it.second) }
 
-fun <F, S> Observable<Pair<F, S>>.unzip(): Pair<Observable<F>, Observable<S>> {
+fun <F, S> Observable<Pair<F, S>>.unzip(): Pair<Observable<F>, Observable<S>>
+    = this.map { it.first } to this.map { it.second }
 
+fun <F, S> Observable<Pair<F, S>>.unzipDedup(initial: Pair<F, S>): Pair<Observable<F>, Observable<S>>
+    = this.map { it.first }.dedup(initial.first) to this.map { it.second }.dedup(initial.second)
+
+class ZipListObservable<T>(val obs: List<Observable<T>>): PushObservable<List<T>>() {
+    val list = mutableListOf<T?>()
+
+    fun clear() {
+        list.clear()
+        obs.forEach {
+            list.add(null)
+        }
+    }
+
+    fun check() {
+        val new = mutableListOf<T>()
+        for (x in list) {
+            if (x == null)
+                return
+            new += x
+        }
+        update(new.toList())
+        clear()
+    }
+
+    init {
+        clear()
+        obs.forEachIndexed { i, o ->
+            o.subscribe {
+                list[i] = it
+                check()
+            }
+        }
+    }
 }
+
+fun <T> zipAll(obs: List<Observable<T>>): Observable<List<T>>
+    = ZipListObservable(obs.toList())
 
 // (gamepad1.a to false) alt (gamepad1.b to false)
 // gamepad1.a zip gamepad1.b

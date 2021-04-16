@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.switchboard.observe
+package org.firstinspires.ftc.teamcode.switchboard.core
 
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 
@@ -7,9 +7,9 @@ data class Frame(val n: Long, val time: Time, val step: Time) {
         fun from(last: Frame)
             = Time.now().let {
                 Frame(
-                    last.n + 1,
-                    it,
-                    it - last.time,
+                        last.n + 1,
+                        it,
+                        it - last.time,
                 )
             }
     }

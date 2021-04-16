@@ -12,7 +12,7 @@ data class Vector2d(
     val norm: Double by lazy { hypot(x, y) }
 
     infix fun rotateBy(angle: Double): Vector2d {
-        val rad = angle.rad()
+        val rad = angle
         val cos = cos(rad)
         val sin = sin(rad)
         return Vector2d(x * cos - y * sin, x * sin + y * cos)

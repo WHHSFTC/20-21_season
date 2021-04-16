@@ -6,32 +6,30 @@ import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 import org.firstinspires.ftc.teamcode.switchboard.stores.*
 
 class EncoderImpl(frame: Observable<Frame>, val m: DcMotorEx, val name: String, val logger: Logger): Encoder {
-    var lastPosition = 0
+    override val position = frame.map { m.currentPosition }
+            .tap { log(logger.err, "$name pos") }
+    override val velocity = (frame zip (frame.map { m.velocity } zip position.pairwise())).map { structure -> correctVelocity(structure) }
+            .tap { log(logger.err, "$name velo") }
 
-    override val position = StartPoint(0).tap { log(logger.err, "$name pos") }
-    override val velocity = StartPoint(0.0).tap { log(logger.err, "$name velo") }
+    fun correctVelocity(structure: Pair<Frame, Pair<Double, Pair<Int, Int>>>): Double {
+        val (frame, s1) = structure
+        val (raw, s2) = s1
+        val (new, old) = s2
 
-    init {
-        frame.subscribe {
-            input(it)
-        }
-    }
+        var t = frame.step.seconds
+        if (t == 0.0)
+            t = 1.0
 
-    fun input(frame: Frame) {
-        val pos = m.currentPosition
-        var rawVelocity = m.velocity
+        val derivative = (new - old)/t
 
-        val derivative = (pos - lastPosition)/frame.step.seconds.toDouble()
+        var velo = raw
 
-        while (derivative - rawVelocity > (1 shl 16) / 2.0)
-            rawVelocity += 1 shl 16
+        while (derivative - velo > (1 shl 16) / 2.0)
+            velo += 1 shl 16
 
-        while (derivative - rawVelocity < (1 shl 16) / -2.0)
-            rawVelocity -= 1 shl 16
+        while (derivative - velo < (1 shl 16) / -2.0)
+            velo -= 1 shl 16
 
-        position.value = pos
-        velocity.value = rawVelocity
-
-        lastPosition = pos
+        return velo
     }
 }

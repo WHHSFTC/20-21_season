@@ -14,20 +14,6 @@ import org.firstinspires.ftc.teamcode.switchboard.stores.*
 abstract class DeadWheelLocalizer(logger: Logger, val odos: List<Pair<Encoder, Pose2d>>) : Activity {
     private val forwardSolver: DecompositionSolver
 
-    var prevPositions: List<Int>? = null
-    var prevPose: Pose2d? = null
-
-    val dependencies = odos.unzip().first.fold(listOf<Observable<Pair<Int, Double>>>()) { acc, enc ->
-        acc + (enc.position zip enc.velocity)
-    }
-
-    val pv = zipAll(dependencies).map { readings -> update(readings) }
-
-    val _unz = pv.unzip()
-
-    val pose = _unz.first
-    val velo = _unz.second
-
     init {
         require(odos.size >= 3) { "Localizer requires at least 3 odometry wheels" }
 
@@ -42,25 +28,30 @@ abstract class DeadWheelLocalizer(logger: Logger, val odos: List<Pair<Encoder, P
         require(forwardSolver.isNonSingular) { "Wheel configuration is singular, ie is underconstrained" }
     }
 
-    fun update(readings: List<Pair<Int, Double>>): Pair<Pose2d, Pose2d> {
-        val positions = readings.map { it.first }
 
-        val prev = prevPositions ?: positions
+    val positions = zipAll(odos.unzip().first.map { enc -> enc.position })
 
-        val deltas = positions.zip(prev).map { ticksToDistance(it.first - it.second).inches }
+    val deltas = positions.pairwise().map { (new, old) -> (new zip old).map { (n, o) -> n - o } }
 
-        val twistVector = forwardSolver.solve(MatrixUtils.createRealVector(deltas.toDoubleArray()))
-        val twist = Pose2d(twistVector.getEntry(0), twistVector.getEntry(1), twistVector.getEntry(2))
-        val pose = (prevPose ?: Pose2d(0.0, 0.0, 0.0)).exp(twist)
+    val velocities = zipAll(odos.unzip().first.map { enc -> enc.velocity })
 
-        val odoVelo = readings.map { it.second }
-        val veloVector = forwardSolver.solve(MatrixUtils.createRealVector(odoVelo.toDoubleArray()))
-        val velo = Pose2d(veloVector.getEntry(0), veloVector.getEntry(1), veloVector.getEntry(2))
+    //val pv = (deltas zip velocities).tap { log(logger.out, "odos") }
+            //.scan(Pose2d() to Pose2d()) { (pose, twist), (deltas, velos) -> update(pose, deltas, velos) }
 
-        prevPositions = positions
-        prevPose = pose
+//    private val unzipped = pv.unzip()
 
-        return pose to velo
+//    val pose = unzipped.first.tap { log(logger.out, "pose") }
+//    val velo = unzipped.second.tap { log(logger.out, "velo") }
+
+    val stepTwist = deltas.map { solve(it.map { ticksToDistance(it).inches }) }.taplog(logger.out, "#steptwist")
+
+    val pose = stepTwist.scan(Pose2d()) { prev, twist -> prev.exp(twist) }
+
+    val velo = velocities.map { solve(it) }
+
+    fun solve(vector: List<Double>): Pose2d {
+        val ve = forwardSolver.solve(MatrixUtils.createRealVector(vector.toDoubleArray()))
+        return Pose2d(ve.getEntry(0), ve.getEntry(1), ve.getEntry(2))
     }
 
     abstract fun ticksToDistance(n: Int): Distance

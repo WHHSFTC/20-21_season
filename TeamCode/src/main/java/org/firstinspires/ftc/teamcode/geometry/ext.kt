@@ -15,10 +15,10 @@ fun Number.angleWrap(): Double {
     return d
 }
 
-fun Number.rad() =
+fun Number.degToRad() =
         Math.toRadians(this.toDouble())
 
-fun Number.deg() =
+fun Number.radToDeg() =
         Math.toDegrees(this.toDouble())
 
 fun Number.sin() =

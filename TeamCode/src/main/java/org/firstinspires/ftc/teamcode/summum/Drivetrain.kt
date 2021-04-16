@@ -9,16 +9,19 @@ import org.firstinspires.ftc.teamcode.switchboard.stores.*
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
-class Drivetrain(val bot: Summum, val ff: FeedforwardCoef) : Activity {
+class Drivetrain(val bot: Summum) : Activity {
     val wheels = listOf(
-            "RF" to Pose2d(WHEELX, -WHEELY, -135.0.rad()),
-            "LF" to Pose2d(WHEELX, WHEELY, -45.0.rad()),
-            "LB" to Pose2d(-WHEELX, WHEELY, 45.0.rad()),
-            "RB" to Pose2d(-WHEELX, -WHEELY, 135.0.rad())
+            "RF" to Pose2d(WHEELX, -WHEELY, -135.0.degToRad()),
+            "LF" to Pose2d(WHEELX, WHEELY, -45.0.degToRad()),
+            "LB" to Pose2d(-WHEELX, WHEELY, 45.0.degToRad()),
+            "RB" to Pose2d(-WHEELX, -WHEELY, 135.0.degToRad())
     ).map { bot.config.motors["motor${it.first}"] to it.second }
 
+    //val ff = FeedforwardCoef(0.0159, 0.0024, 0.0)
+    val ff = FeedforwardCoef(1.0, 0.0, 0.0)
+
     val follower = SimpleSubject<Observable<Signal>>()
-    private val driveSignal = follower.flatten().inject()
+    private val driveSignal = follower.flatten().inject().tap { log(bot.logger.out, "signal") }
 
     private val velo = driveSignal.map { it.velo }
     private val accel = driveSignal.map { it.accel }
@@ -65,13 +68,27 @@ class Drivetrain(val bot: Summum, val ff: FeedforwardCoef) : Activity {
         }
 
     fun makeApproach(point: Vector2d): Observable<Signal>
-        = (bot.loc.pose zip bot.loc.velo).map { (pose, velo) ->
+        = ((bot.loc.pose zip bot.loc.velo).map { (pose, velo) ->
             val e = point - pose.vec
             Signal(
-                    velo = Pose2d((e rotateBy -pose.theta) * 0.05, 0.0),
+                    velo = Pose2d(e * 0.05, 0.0),
                     accel = Pose2d(0.0, 0.0, 0.0)
             )
+        } zip bot.loc.pose).map { (signal, pose) ->
+            globalToLocal(pose, signal)
         }
+
+    fun globalToLocal(botPose: Pose2d, value: Pose2d): Pose2d
+        = Pose2d(
+            value.vec rotateBy -botPose.theta,
+            value.theta
+        )
+
+    fun globalToLocal(botPose: Pose2d, signal: Signal): Signal
+        = Signal(
+            globalToLocal(botPose, signal.velo),
+            globalToLocal(botPose, signal.accel)
+        )
 
     fun twistToPowers(twist: Pose2d): List<Double>
         = inverseMatrix
@@ -80,11 +97,11 @@ class Drivetrain(val bot: Summum, val ff: FeedforwardCoef) : Activity {
                 ))
                 .getColumn(0).toList().also { bot.logger.out["Powers"] = it }
 
-    fun adjustPowers(powers: List<Double>): List<Double> {
-        val m = powers.map { it.absoluteValue }.maxOrNull()
-        require(m != null && powers.size == 4) { "Powers list must contain 4 Doubles" }
+    fun adjustPowers(pow: List<Double>): List<Double> {
+        val m = pow.map { it.absoluteValue }.maxOrNull()
+        require(m != null && pow.size == 4) { "Powers list must contain 4 Doubles" }
         val n = max(m, 1.0)
-        return powers.map { it/n }
+        return pow.map { it/n }
     }
 
     companion object {

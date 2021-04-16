@@ -29,6 +29,9 @@ fun <T> Observable<T>.log(loggerStream: Logger.LogStream, name: String)
 fun <T: Observable<*>> T.tap(block: T.() -> Unit)
     = this.apply(block)
 
+fun <T> Observable<T>.taplog(loggerStream: Logger.LogStream, name: String): Observable<T>
+        = this.tap { log(loggerStream, name) }
+
 fun <T> Observable<T>.inject(): Subject<T, T>
     = SimpleSubject<T>().also { this bind it }
 
@@ -52,5 +55,8 @@ fun <T> entry(): Subject<T, T>
 
 fun <T, S : T> Observable<S>.upCast(): Observable<T>
     = this.map { it }
+
+fun <T, A> Observable<T>.turnstile(arbiter: Observable<A>): Observable<T>
+    = TurnstileSubject<T, A>().also { this bind it; arbiter bind it.pass }
 
 // .comment("localizer.pose bind drivetrain.pose")

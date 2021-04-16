@@ -26,7 +26,7 @@ class LocalizerTest : LinearOpMode() {
             val now = Time.now()
             val loopTime = now - bot.startTime!!
             logger.out["Runtime"] = loopTime
-            val n = bot.frame.get().n.toDouble()
+            val n = config.frame.value.n.toDouble()
             logger.out["Loop Cycle Time (ms)"] = loopTime.milliseconds / n
             logger.out["Loop Frequency (hz)"] = n / loopTime.seconds
             bot.update()

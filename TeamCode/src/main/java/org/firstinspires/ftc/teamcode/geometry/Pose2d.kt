@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.geometry
 import kotlin.math.*
 
 data class Pose2d(
-        val x: Double, val y: Double, val theta: Double
+        val x: Double = 0.0, val y: Double = 0.0, val theta: Double = 0.0
 ) {
     constructor(vec: Vector2d, theta: Double = 0.0) : this(vec.x, vec.y, theta)
 

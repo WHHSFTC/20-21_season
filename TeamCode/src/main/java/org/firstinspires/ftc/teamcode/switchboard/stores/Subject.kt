@@ -41,3 +41,15 @@ class SwappableSubject<R>: Subject<Observable<R>, R>() {
         subscription = x bind observer
     }
 }
+
+class TurnstileSubject<T, A>: Subject<T, T>() {
+    private var last: T? = null
+
+    val pass = Observer<A> { _ ->
+        last?.let { v -> update(v) }
+    }
+
+    override fun next(x: T) {
+        last = x
+    }
+}

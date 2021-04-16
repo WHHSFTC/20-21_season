@@ -43,9 +43,9 @@ abstract class DeadWheelLocalizer(logger: Logger, val odos: List<Pair<Encoder, P
 //    val pose = unzipped.first.tap { log(logger.out, "pose") }
 //    val velo = unzipped.second.tap { log(logger.out, "velo") }
 
-    val stepTwist = deltas.map { solve(it.map { ticksToDistance(it).inches }) }.taplog(logger.out, "#steptwist")
+    val stepTwist = deltas.map { solve(it.map { ticksToDistance(it).inches }) }
 
-    val pose = stepTwist.scan(Pose2d()) { prev, twist -> prev.exp(twist) }
+    val pose = stepTwist.scan(Pose2d()) { prev, twist -> prev.exp(twist) }.taplog(logger.out, "!Pose")
 
     val velo = velocities.map { solve(it) }
 

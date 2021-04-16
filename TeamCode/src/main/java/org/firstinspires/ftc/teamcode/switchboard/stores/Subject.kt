@@ -23,7 +23,7 @@ class FilterSubject<P>(private val predicate: (P) -> Boolean): Subject<P, P>() {
     }
 }
 
-class IdentitySubject<P>: Subject<P, P>() {
+class SimpleSubject<P>: Subject<P, P>() {
     override fun next(x: P) {
         update(x)
     }
@@ -38,6 +38,6 @@ class SwappableSubject<R>: Subject<Observable<R>, R>() {
 
     override fun next(x: Observable<R>) {
         subscription?.close()
-        subscription = x.subscribe(observer)
+        subscription = x bind observer
     }
 }

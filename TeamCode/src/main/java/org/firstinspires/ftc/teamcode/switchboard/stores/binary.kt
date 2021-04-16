@@ -36,10 +36,10 @@ class ZipObservable<F, S>: PushObservable<Pair<F, S>>() {
 typealias KV<T> = Pair<Observable<T>, T>
 
 infix fun <F, S> KV<F>.alt(that : KV<S>): Observable<Pair<F, S>>
-    = AlterObservable<F, S>(this.second to that.second).also { this.first.subscribe(it.first); that.first.subscribe(it.second) }
+    = AlterObservable<F, S>(this.second to that.second).also { this.first bind it.first; that.first bind it.second}
 
 infix fun <F, S> Observable<F>.zip(that: Observable<S>): Observable<Pair<F, S>>
-    = ZipObservable<F, S>().also { this.subscribe(it.first); that.subscribe(it.second) }
+    = ZipObservable<F, S>().also { this bind it.first; that bind it.second }
 
 fun <F, S> Observable<Pair<F, S>>.unzip(): Pair<Observable<F>, Observable<S>>
     = this.map { it.first } to this.map { it.second }

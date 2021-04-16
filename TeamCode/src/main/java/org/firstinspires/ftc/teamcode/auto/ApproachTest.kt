@@ -20,7 +20,7 @@ class ApproachTest : LinearOpMode() {
         bot = Summum(logger, config)
         bot.setup()
         logger.update()
-        bot.dt.loadFollower.set(Drivetrain.Follower.Approach(Vector2d(48.0, 0.0)))
+        bot.dt.follower.next(bot.dt.makeApproach(Vector2d(24.0, 24.0)))
 
         waitForStart()
         bot.startTime = Time.now()
@@ -30,7 +30,7 @@ class ApproachTest : LinearOpMode() {
             val now = Time.now()
             val loopTime = now - bot.startTime!!
             logger.out["Runtime"] = loopTime
-            val n = bot.frame.get().n.toDouble()
+            val n = config.frame.value.n.toDouble()
             logger.out["Loop Cycle Time (ms)"] = loopTime.milliseconds / n
             logger.out["Loop Frequency (hz)"] = n / loopTime.seconds
 

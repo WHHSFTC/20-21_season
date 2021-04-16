@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.switchboard.hardware
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import org.firstinspires.ftc.teamcode.switchboard.stores.Observer
 
 interface Motor: HardwareOutput {
     enum class ZeroPowerBehavior(val mirror: DcMotor.ZeroPowerBehavior) {
         BRAKE(DcMotor.ZeroPowerBehavior.BRAKE), FLOAT(DcMotor.ZeroPowerBehavior.FLOAT)
     }
-    var power: Double
-    var zpb: ZeroPowerBehavior
+    val power: Observer<Double>
+    val zpb: Observer<ZeroPowerBehavior>
 }

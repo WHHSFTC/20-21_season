@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.geometry.Pose2d
 import org.firstinspires.ftc.teamcode.geometry.Vector2d
+import org.firstinspires.ftc.teamcode.geometry.angleWrap
+import org.firstinspires.ftc.teamcode.geometry.radToDeg
 import org.firstinspires.ftc.teamcode.summum.Drivetrain
 import org.firstinspires.ftc.teamcode.summum.Summum
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
@@ -61,9 +63,20 @@ class DrivetrainTele : LinearOpMode() {
 
     inner class KeyMap: Activity {
         val translational = (g1.leftStick.x zip g1.leftStick.y).map { (x, y) -> Vector2d(-y, -x) }
-        val rotational = g1.rightStick.x.map { it * -1.0 }
-        val twist = (translational zip rotational).map { (t, r) -> Pose2d(t, r) }
+
+        val flick = ((bot.loc.pose to Pose2d()) alt ((g1.rightStick.theta zip g1.rightStick.r) to (0.0 to 0.0))).map { (pose, polar) ->
+            0.1 * polar.second * (-polar.first - pose.theta + 90.0.radToDeg()).angleWrap()
+        }.comment("Flick Turn")
+
+        val simpleTurn = g1.rightStick.x.map { it * -.25 }.comment("Simple Turn")
+
+        val turnMethod = (g1.shift.posEdge().map { flick } merge g1.shift.negEdge().map { simpleTurn }).taplog(logger.out, "Turn Method")
+
+        val rotational = turnMethod.flatten()
+
+        val twist = ((translational to Vector2d()) alt (rotational to 0.0)).map { (t, r) -> Pose2d(t, r) }
         val accel = PullObservable { Pose2d() }
+
         val global = ((twist to Pose2d()) alt (accel to Pose2d())).map { (tw, ac) -> Drivetrain.Signal(tw, ac) }
         val local = ((bot.loc.pose to Pose2d()) alt (global to Drivetrain.Signal()))
                 .map { (pose, glob) -> Drivetrain.globalToLocal(pose, glob) }

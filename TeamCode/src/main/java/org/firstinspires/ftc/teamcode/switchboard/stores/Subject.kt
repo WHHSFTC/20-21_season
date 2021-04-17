@@ -23,7 +23,7 @@ class FilterSubject<P>(private val predicate: (P) -> Boolean): Subject<P, P>() {
     }
 }
 
-class SimpleSubject<P>: Subject<P, P>() {
+open class SimpleSubject<P>: Subject<P, P>() {
     override fun next(x: P) {
         update(x)
     }

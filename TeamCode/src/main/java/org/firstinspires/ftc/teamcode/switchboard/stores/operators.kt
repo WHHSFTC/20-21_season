@@ -38,14 +38,23 @@ fun <T> Observable<T>.inject(): Subject<T, T>
 fun Observable<Boolean>.posEdge(): Observable<Unit>
     = this.scan(false to false) { acc, n -> n to acc.first }.filter { it.first && !it.second }.map { Unit }
 
+fun Observable<Boolean>.negEdge(): Observable<Unit>
+        = (!this).posEdge()
+
 infix fun <T> Observable<T>.bind(observer: Observer<T>): Subscription<T>
     = this.subscribe(observer)
 
 infix fun <T> Observable<T>.bind(f: (T) -> Unit): Subscription<T>
         = this.subscribe(f)
 
-fun <T> Observable<T>.comment(s: String)
-    = this
+class CommentSubject<T>(val com: String) : SimpleSubject<T>() {
+    override fun toString(): String {
+        return com
+    }
+}
+
+fun <T> Observable<T>.comment(s: String): Observable<T>
+    = CommentSubject<T>(s).also { this bind it }
 
 fun <T> Observable<T>.store(initial: T): Store<T>
     = Store<T>(initial).also { this bind it }

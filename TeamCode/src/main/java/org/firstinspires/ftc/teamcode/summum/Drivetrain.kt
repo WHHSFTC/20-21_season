@@ -57,7 +57,7 @@ class Drivetrain(val bot: Summum) : Activity {
     }
 
     data class Profile(val maxVelo: Double, val maxAccel: Double, val maxJerk: Double)
-    data class Signal(val velo: Pose2d, val accel: Pose2d)
+    data class Signal(val velo: Pose2d = Pose2d(), val accel: Pose2d = Pose2d())
 
     fun makeStop(): Observable<Signal>
         = (bot.loc.pose zip bot.loc.velo).map {
@@ -77,18 +77,6 @@ class Drivetrain(val bot: Summum) : Activity {
         } zip bot.loc.pose).map { (signal, pose) ->
             globalToLocal(pose, signal)
         }
-
-    fun globalToLocal(botPose: Pose2d, value: Pose2d): Pose2d
-        = Pose2d(
-            value.vec rotateBy -botPose.theta,
-            value.theta
-        )
-
-    fun globalToLocal(botPose: Pose2d, signal: Signal): Signal
-        = Signal(
-            globalToLocal(botPose, signal.velo),
-            globalToLocal(botPose, signal.accel)
-        )
 
     fun twistToPowers(twist: Pose2d): List<Double>
         = inverseMatrix
@@ -112,5 +100,17 @@ class Drivetrain(val bot: Summum) : Activity {
         val GEAR_RATIO = 1.0
 
         val CIRCUMFERENCE = WHEEL_RADIUS * TAU
+
+        fun globalToLocal(botPose: Pose2d, value: Pose2d): Pose2d
+                = Pose2d(
+                value.vec rotateBy -botPose.theta,
+                value.theta
+        )
+
+        fun globalToLocal(botPose: Pose2d, signal: Signal): Signal
+                = Signal(
+                globalToLocal(botPose, signal.velo),
+                globalToLocal(botPose, signal.accel)
+        )
     }
 }

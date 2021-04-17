@@ -58,7 +58,7 @@ class Config(val hwMap: HardwareMap, val logger: Logger) {
         revHubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
     }
 
-    val frame = StartPoint(Frame(0, Time.zero, Time.zero)).tap { this.log(logger.out, "Frame") }
+    val frame = StartPoint(Frame(0, Time.zero, Time.zero)).tap { log(logger.err, "Frame") }
 
     fun read() {
         revHubs.forEach { it.clearBulkCache() }

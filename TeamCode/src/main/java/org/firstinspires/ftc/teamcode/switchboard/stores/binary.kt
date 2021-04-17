@@ -120,6 +120,9 @@ operator fun <T> Observable<T>.unaryPlus()
 operator fun Observable<Double>.unaryMinus()
         = this.map { d -> -d }
 
+infix fun <T> Observable<T>.merge(that: Observable<T>): Observable<T>
+        = SimpleSubject<T>().also { this bind it; that bind it }
+
 
 fun <T> Observable<T?>.notNull(): Observable<T>
     = this.filter { it != null }.map { it!! }

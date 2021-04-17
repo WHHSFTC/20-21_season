@@ -11,7 +11,7 @@ class Summum(logger: Logger, config: Config) : Robot(logger, config, "Summum") {
     val loc = SummumLocalizer(this)
     val dt = Drivetrain(this)
 
-    override val activities: List<Activity> = listOf(
+    override val activities: MutableList<Activity> = mutableListOf(
             loc,
             dt,
     )

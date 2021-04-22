@@ -58,26 +58,23 @@ class Config(val hwMap: HardwareMap, val logger: Logger) {
         revHubs.forEach { it.bulkCachingMode = LynxModule.BulkCachingMode.MANUAL }
     }
 
-    val frame = StartPoint(Frame(0, Time.zero, Time.zero)).tap { log(logger.err, "Frame") }
-
     fun read() {
         revHubs.forEach { it.clearBulkCache() }
-        frame.value = Frame.from(frame.value)
     }
 
     private fun announceStub(key: String) {
         logger.addMessage("MISSING HARDWARE DEVICE: $key", Time.seconds(60))
     }
 
-    private inline fun <reified BASE, WRAPPER : HardwareInput> getInput(impl: (Observable<Frame>, BASE, String, Logger) -> WRAPPER, stub: (Observable<Frame>, String, Logger) -> WRAPPER, key: String): WRAPPER {
+    private inline fun <reified BASE, WRAPPER : HardwareInput> getInput(impl: (BASE, String, Logger) -> WRAPPER, stub: (String, Logger) -> WRAPPER, key: String): WRAPPER {
         val iter = hwMap.iterator()
         while (iter.hasNext()) {
             val d = iter.next()
             if (d is BASE && key in hwMap.getNamesOf(d).fold(listOf<String>()) { acc, s -> acc + s.split('+') })
-                return impl(frame, d, key, logger)
+                return impl(d, key, logger)
         }
         announceStub(key)
-        return stub(frame, key, logger)
+        return stub(key, logger)
     }
 
     private inline fun <reified BASE, WRAPPER : HardwareOutput> getOutput(impl: (BASE, String, Logger) -> WRAPPER, stub: (String, Logger) -> WRAPPER, key: String): WRAPPER {

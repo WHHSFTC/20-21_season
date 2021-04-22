@@ -22,6 +22,7 @@ abstract class Robot(val logger: Logger, val config: Config, val name: String) {
 
     fun update() {
         config.read()
+        activities.forEach { it.update() }
         scheduler.output()
         logger.update()
     }

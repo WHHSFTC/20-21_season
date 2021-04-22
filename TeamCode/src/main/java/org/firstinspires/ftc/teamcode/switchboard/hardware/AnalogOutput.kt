@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
 interface AnalogOutput: HardwareOutput {
     enum class OutputMode(val code: Byte) {

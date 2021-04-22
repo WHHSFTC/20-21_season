@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
-import org.firstinspires.ftc.teamcode.switchboard.core.Frame
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
-import org.firstinspires.ftc.teamcode.switchboard.stores.Observable
-import org.firstinspires.ftc.teamcode.switchboard.stores.*
 
-class EncoderStub(val frame: Observable<Frame>, val name: String, val logger: Logger): Encoder {
-    override val position = frame.map { (Math.random() * 10.0).toInt() }.tap { log(logger.out, "[STUB] $name pos") }
-    override val velocity = frame.map { Math.random() }.tap { log(logger.out, "[STUB] $name velo") }
+class EncoderStub(val name: String, val log: Logger): Encoder {
+    override val position: Int = 0
+    override val velocity: Double = 0.0
+
+    override fun input() {
+        log.out["[STUB] $name pos"] = position
+        log.out["[STUB] $name velocity"] = velocity
+    }
 }

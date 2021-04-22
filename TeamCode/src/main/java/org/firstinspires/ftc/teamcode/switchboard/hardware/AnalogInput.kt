@@ -1,8 +1,6 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
-
-import org.firstinspires.ftc.teamcode.switchboard.stores.Observable
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
 interface AnalogInput: HardwareInput {
-    val voltage: Observable<Double>
-    val maxVoltage: Observable<Double>
+    val voltage: Double
+    val maxVoltage: Double
 }

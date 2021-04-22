@@ -1,3 +1,5 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
-interface HardwareInput
+interface HardwareInput {
+    fun input()
+}

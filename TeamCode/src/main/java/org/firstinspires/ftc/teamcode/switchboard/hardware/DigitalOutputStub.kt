@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
-class DigitalOutputStub(val name: String, val logger: Logger): DigitalOutput {
+class DigitalOutputStub(val name: String, val log: Logger): DigitalOutput {
     override var high: Boolean = false
     override fun output(all: Boolean) {
-        logger.out["[STUB] $name high"] = high
+        log.out["[STUB] $name high"] = high
     }
 }

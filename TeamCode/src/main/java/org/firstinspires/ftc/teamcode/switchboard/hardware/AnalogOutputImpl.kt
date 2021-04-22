@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
-class AnalogOutputImpl(val ao: com.qualcomm.robotcore.hardware.AnalogOutput, val name: String, val logger: Logger): AnalogOutput {
+class AnalogOutputImpl(val ao: com.qualcomm.robotcore.hardware.AnalogOutput, val name: String, val log: Logger): AnalogOutput {
     private var m: AnalogOutput.OutputMode? = null
     private var a: Int? = null
     private var f: Int? = null
@@ -23,8 +23,8 @@ class AnalogOutputImpl(val ao: com.qualcomm.robotcore.hardware.AnalogOutput, val
             f = frequency
         }
 
-        logger.err["$name mode"] = mode
-        logger.err["$name amplitude"] = amplitude
-        logger.err["$name frequency"] = frequency
+        log.err["$name mode"] = mode
+        log.err["$name amplitude"] = amplitude
+        log.err["$name frequency"] = frequency
     }
 }

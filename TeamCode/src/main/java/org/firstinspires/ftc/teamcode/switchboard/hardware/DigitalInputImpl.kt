@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
 import com.qualcomm.robotcore.hardware.DigitalChannel
-import org.firstinspires.ftc.teamcode.switchboard.core.Frame
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
-import org.firstinspires.ftc.teamcode.switchboard.stores.*
 
-class DigitalInputImpl(val frame: Observable<Frame>, val dc: DigitalChannel, val name: String, val logger: Logger): DigitalInput {
-    override var high = frame.map { dc.state }.tap { log(logger.err, "$name high") }
-
-    init {
+class DigitalInputImpl(val dc: DigitalChannel, val name: String, val log: Logger): DigitalInput {
+    override var high: Boolean = false
+        private set
+    override fun input() {
         if (dc.mode != DigitalChannel.Mode.INPUT)
             dc.mode = DigitalChannel.Mode.INPUT
+        high = dc.state
+        log.err["$name high"] = high
     }
 }

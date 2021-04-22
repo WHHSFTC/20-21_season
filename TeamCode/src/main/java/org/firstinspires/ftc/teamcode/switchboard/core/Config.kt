@@ -4,10 +4,6 @@ import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.switchboard.hardware.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
-import org.firstinspires.ftc.teamcode.switchboard.stores.Observable
-import org.firstinspires.ftc.teamcode.switchboard.stores.StartPoint
-import org.firstinspires.ftc.teamcode.switchboard.stores.log
-import org.firstinspires.ftc.teamcode.switchboard.stores.tap
 
 class Config(val hwMap: HardwareMap, val logger: Logger) {
     interface DeviceMap<T> {

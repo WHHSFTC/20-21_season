@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.switchboard.hardware
+package org.firstinspires.ftc.teamcode.switchboard.hw
 
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
-class ServoStub(val name: String, val logger: Logger): Servo {
+class ServoStub(val name: String, val log: Logger): Servo {
     override var position: Double = 0.0
     override fun output(all: Boolean) {
-        logger.out["[STUB] $name pos"] = position
+        log.out["[STUB] $name pos"] = position
     }
 }

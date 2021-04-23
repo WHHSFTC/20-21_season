@@ -3,13 +3,14 @@ package org.firstinspires.ftc.teamcode.module.vision
 import com.acmerobotics.dashboard.FtcDashboard
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.module.Module
-import org.firstinspires.ftc.teamcode.module.Robot
+import org.firstinspires.ftc.teamcode.module.Summum
+import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraFactory
 import org.openftc.easyopencv.OpenCvCameraRotation
 import org.openftc.easyopencv.OpenCvPipeline
 
-class PipelineRunner(val bot: Robot, val w: Int, val h: Int): Module<Pipeline> {
+class PipelineRunner(val bot: Summum, val w: Int, val h: Int): Module<Pipeline> {
     val camId: Int = bot.hwmap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", bot.hwmap.appContext.packageName)
     val cam: OpenCvCamera = OpenCvCameraFactory.getInstance().createWebcam(bot.hwmap.get(WebcamName::class.java, "Webcam 1"), camId)
 
@@ -24,15 +25,14 @@ class PipelineRunner(val bot: Robot, val w: Int, val h: Int): Module<Pipeline> {
         }
 
     init {
-        bot.log.addData("camId", camId)
-        bot.log.addData("cam", cam)
+        bot.logger.out["camId"] = camId
+        bot.logger.out["cam"] = cam
     }
 
     fun start() {
         cam.openCameraDeviceAsync { cam.startStreaming(w, h, OpenCvCameraRotation.UPRIGHT) }
         FtcDashboard.getInstance().startCameraStream(cam, 20.0);
-        bot.log.addLine("Camera initialized")
-        bot.log.update()
+        bot.logger.addMessage("Camera Initialized", Time.seconds(20))
     }
 
     fun load(pipeline: OpenCvPipeline) {

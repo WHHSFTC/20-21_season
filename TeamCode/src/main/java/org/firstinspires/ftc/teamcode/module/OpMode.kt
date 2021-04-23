@@ -5,38 +5,40 @@ import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
-import kotlinx.coroutines.runBlocking
-import org.firstinspires.ftc.teamcode.gamepad.GamepadEx
+import org.firstinspires.ftc.teamcode.switchboard.core.*
 
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
-    lateinit var bot: Robot
-    lateinit var timer: ElapsedTime
+    lateinit var bot: Summum
+    lateinit var logger: Logger
+    lateinit var config: Configuration
+
     override fun runOpMode() {
-        runBlocking {
-            timer = ElapsedTime()
+        if (DEBUG)
             telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
-            bot = Robot(this@OpMode)
-            onInit()
-            bot.log.update()
-            waitForStart()
-            timer.reset()
-            onRun()
-            if (mode == Mode.TELE) {
-                while (!Thread.currentThread().isInterrupted && !isStopRequested) {
-                    onLoop()
-                    telemetry.update()
-                }
-            }
-            telemetry.addData("total time", timer.milliseconds())
-            onStop()
-            telemetry.update()
-        }
+
+        logger = Logger(telemetry)
+        config = Configuration(hardwareMap, logger)
+
+        bot = Summum(logger, config, this)
+        logger.update()
+
+        initHook()
+
+        bot.setup()
+        logger.update()
+        waitForStart()
+
+        startHook()
+        while (!Thread.currentThread().isInterrupted && !isStopRequested)
+            bot.update()
+
+        stopHook()
+        bot.cleanup()
     }
 
-    abstract suspend fun onInit()
-    abstract suspend fun onRun()
-    abstract suspend fun onLoop()
-    abstract suspend fun onStop()
+    open fun initHook() {}
+    open fun startHook() {}
+    open fun stopHook() {}
 
     enum class Mode {
         NULL, AUTO, TELE,

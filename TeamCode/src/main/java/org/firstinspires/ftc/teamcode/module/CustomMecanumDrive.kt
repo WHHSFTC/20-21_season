@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.module
 
-import android.os.MessageQueue
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
@@ -17,14 +16,17 @@ import com.acmerobotics.roadrunner.profile.MotionState
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.util.NanoClock
-import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
 import org.firstinspires.ftc.teamcode.acme.util.DashboardUtil
 import org.firstinspires.ftc.teamcode.acme.util.LynxModuleUtil
+import org.firstinspires.ftc.teamcode.switchboard.core.Activity
+import org.firstinspires.ftc.teamcode.switchboard.core.Configuration
+import org.firstinspires.ftc.teamcode.switchboard.core.Frame
+import org.firstinspires.ftc.teamcode.switchboard.hardware.Motor
+import org.firstinspires.ftc.teamcode.switchboard.hardware.MotorImpl
 import java.util.*
 import kotlin.math.abs
 
@@ -32,7 +34,10 @@ import kotlin.math.abs
 * Simple mecanum drive hardware implementation for REV hardware.
 */
 @Config
-class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, DriveConstants.TRACK_WIDTH, DriveConstants.TRACK_WIDTH, LATERAL_MULTIPLIER) {
+class CustomMecanumDrive(val bot: Summum, config: Configuration)
+    //: MecanumDrive(RotundaConstants.kV, RotundaConstants.kA, RotundaConstants.kStatic, RotundaConstants.TRACK_WIDTH, RotundaConstants.TRACK_WIDTH, LATERAL_MULTIPLIER),
+    : MecanumDrive(SummumConstants.kV, SummumConstants.kA, SummumConstants.kStatic, SummumConstants.TRACK_WIDTH, SummumConstants.TRACK_WIDTH, LATERAL_MULTIPLIER),
+Activity {
     enum class DriveMode {
         IDLE, TURN, FOLLOW_TRAJECTORY
     }
@@ -43,14 +48,15 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     private val turnController: PIDFController
     private lateinit var turnProfile: MotionProfile
     private var turnStart = 0.0
-    private val constraints: DriveConstraints = DriveConstants.MECANUM_CONSTRAINTS
+    //private val constraints: DriveConstraints = RotundaConstants.MECANUM_CONSTRAINTS
+    private val constraints: DriveConstraints = SummumConstants.MECANUM_CONSTRAINTS
     private val follower: TrajectoryFollower
     private val poseHistory: LinkedList<Pose2d>
-    private val leftFront: DcMotorEx
-    private val leftRear: DcMotorEx
-    private val rightRear: DcMotorEx
-    private val rightFront: DcMotorEx
-    private val motors: List<DcMotorEx>
+    private val leftFront: MotorImpl
+    private val leftRear: MotorImpl
+    private val rightRear: MotorImpl
+    private val rightFront: MotorImpl
+    val motors: List<MotorImpl>
     //private val imu: BNO055IMU
     public val batteryVoltageSensor: VoltageSensor
     private var lastPoseOnTurn: Pose2d? = null
@@ -102,7 +108,9 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
                     DriveMode.IDLE -> Pose2d()
                 }
 
-    fun update() {
+    override fun load() { }
+
+    override fun update(frame: Frame) {
         updatePoseEstimate()
         val currentPose = poseEstimate
         val lastError = lastError
@@ -110,15 +118,20 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
         if (POSE_HISTORY_LIMIT > -1 && poseHistory.size > POSE_HISTORY_LIMIT) {
             poseHistory.removeFirst()
         }
+
         val packet = TelemetryPacket()
         val fieldOverlay = packet.fieldOverlay()
-        packet.put("mode", mode)
-        packet.put("x", currentPose.x)
-        packet.put("y", currentPose.y)
-        packet.put("heading", currentPose.heading)
-        packet.put("xError", lastError.x)
-        packet.put("yError", lastError.y)
-        packet.put("headingError", lastError.heading)
+
+        if (OpMode.DEBUG) {
+            packet.put("mode", mode)
+            packet.put("x", currentPose.x)
+            packet.put("y", currentPose.y)
+            packet.put("heading", currentPose.heading)
+            packet.put("xError", lastError.x)
+            packet.put("yError", lastError.y)
+            packet.put("headingError", lastError.heading)
+        }
+
         when (mode) {
             DriveMode.IDLE -> { }
             DriveMode.TURN -> {
@@ -133,9 +146,13 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
                 ), Pose2d(
                         .0, .0, targetAlpha
                 )))
-                val newPose = lastPoseOnTurn!!.copy(lastPoseOnTurn!!.x, lastPoseOnTurn!!.y, targetState.x)
-                fieldOverlay.setStroke("#4CAF50")
-                DashboardUtil.drawRobot(fieldOverlay, newPose)
+
+                if (OpMode.DEBUG) {
+                    val newPose = lastPoseOnTurn!!.copy(lastPoseOnTurn!!.x, lastPoseOnTurn!!.y, targetState.x)
+                    fieldOverlay.setStroke("#4CAF50")
+                    DashboardUtil.drawRobot(fieldOverlay, newPose)
+                }
+
                 if (t >= turnProfile.duration()) {
                     mode = DriveMode.IDLE
                     setDriveSignal(DriveSignal())
@@ -143,29 +160,35 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
             }
             DriveMode.FOLLOW_TRAJECTORY -> {
                 setDriveSignal(follower.update(currentPose))
-                val trajectory = follower.trajectory
-                fieldOverlay.setStrokeWidth(1)
-                fieldOverlay.setStroke("#4CAF50")
-                DashboardUtil.drawSampledPath(fieldOverlay, trajectory.path)
-                val t = follower.elapsedTime()
-                DashboardUtil.drawRobot(fieldOverlay, trajectory[t])
-                fieldOverlay.setStroke("#3F51B5")
-                DashboardUtil.drawPoseHistory(fieldOverlay, poseHistory)
+
+                if (OpMode.DEBUG) {
+                    val trajectory = follower.trajectory
+                    fieldOverlay.setStrokeWidth(1)
+                    fieldOverlay.setStroke("#4CAF50")
+                    DashboardUtil.drawSampledPath(fieldOverlay, trajectory.path)
+                    val t = follower.elapsedTime()
+                    DashboardUtil.drawRobot(fieldOverlay, trajectory[t])
+                    fieldOverlay.setStroke("#3F51B5")
+                    DashboardUtil.drawPoseHistory(fieldOverlay, poseHistory)
+                }
+
                 if (!follower.isFollowing()) {
                     mode = DriveMode.IDLE
                     setDriveSignal(DriveSignal())
                 }
             }
         }
-        fieldOverlay.setStroke("#3F51B5")
-        DashboardUtil.drawRobot(fieldOverlay, currentPose)
-        dashboard.sendTelemetryPacket(packet)
+        if (OpMode.DEBUG) {
+            fieldOverlay.setStroke("#3F51B5")
+            DashboardUtil.drawRobot(fieldOverlay, currentPose)
+            dashboard.sendTelemetryPacket(packet)
+        }
     }
 
     fun waitForIdle() {
-        while (!Thread.currentThread().isInterrupted && isBusy && !bot.opMode.isStopRequested /*bot.opMode.opModeIsActive()*/) {
-            update()
-        }
+//        while (!Thread.currentThread().isInterrupted && isBusy && !bot.opMode.isStopRequested /*bot.opMode.opModeIsActive()*/) {
+//            update()
+//        }
 //        if (!bot.opMode.opModeIsActive()) {
 //            mode = DriveMode.IDLE
 //            powers = Powers()
@@ -175,19 +198,13 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     val isBusy: Boolean
         get() = mode != DriveMode.IDLE
 
-    fun setMode(runMode: RunMode?) {
-        for (motor in motors) {
-            motor.mode = runMode
-        }
-    }
-
     fun setPIDFCoefficients(runMode: RunMode?, coefficients: PIDFCoefficients) {
         val compensatedCoefficients = PIDFCoefficients(
                 coefficients.p, coefficients.i, coefficients.d,
                 coefficients.f * 12 / batteryVoltageSensor.voltage
         )
         for (motor in motors) {
-            motor.setPIDFCoefficients(runMode, compensatedCoefficients)
+            motor.m.setPIDFCoefficients(runMode, compensatedCoefficients)
         }
     }
 
@@ -209,7 +226,8 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     override fun getWheelPositions(): List<Double> {
         val wheelPositions: MutableList<Double> = ArrayList()
         for (motor in motors) {
-            wheelPositions.add(DriveConstants.encoderTicksToInches(motor.currentPosition.toDouble()))
+            //wheelPositions.add(RotundaConstants.encoderTicksToInches(motor.m.currentPosition.toDouble()))
+            wheelPositions.add(SummumConstants.encoderTicksToInches(motor.m.currentPosition.toDouble()))
         }
         return wheelPositions
     }
@@ -217,7 +235,8 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     override fun getWheelVelocities(): List<Double>? {
         val wheelVelocities: MutableList<Double> = ArrayList()
         for (motor in motors) {
-            wheelVelocities.add(DriveConstants.encoderTicksToInches(motor.velocity))
+            //wheelVelocities.add(RotundaConstants.encoderTicksToInches(motor.m.velocity))
+            wheelVelocities.add(SummumConstants.encoderTicksToInches(motor.m.velocity))
         }
         return wheelVelocities
     }
@@ -235,7 +254,6 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     var powers: Powers = Powers()
         set(value) {
             val (frontLeft, rearLeft, rearRight, frontRight) = value
-            bot.log.addData("Powers", "fl: %f, bl: %f, br: %f, fr: %f", frontLeft, rearLeft, rearRight, frontRight)
             this.setMotorPowers(frontLeft = frontLeft, rearLeft = rearLeft, rearRight = rearRight, frontRight = frontRight)
             field = value
         }
@@ -243,7 +261,7 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
     var zeroPowerBehavior: ZeroPowerBehavior = ZeroPowerBehavior.BRAKE
         set(value) {
             for (motor in motors) {
-                motor.zeroPowerBehavior = value
+                motor.zpb = Motor.ZeroPowerBehavior.mirrorOf(value)
             }
             field = value
         }
@@ -283,9 +301,10 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
         poseHistory = LinkedList()
         LynxModuleUtil.ensureMinimumFirmwareVersion(bot.hwmap)
         batteryVoltageSensor = bot.hwmap.voltageSensor.iterator().next()
-        for (module in bot.hwmap.getAll(LynxModule::class.java)) {
-            module.bulkCachingMode = LynxModule.BulkCachingMode.AUTO
-        }
+
+//        for (module in bot.hwmap.getAll(LynxModule::class.java)) {
+//            module.bulkCachingMode = LynxModule.BulkCachingMode.AUTO
+//        }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         //imu = bot.hwmap.get(BNO055IMU::class.java, "imu")
@@ -296,27 +315,28 @@ class CustomMecanumDrive(val bot: Robot) : MecanumDrive(DriveConstants.kV, Drive
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
-        leftFront = bot.hwmap.get(DcMotorEx::class.java, "motorLF")
-        leftRear = bot.hwmap.get(DcMotorEx::class.java, "motorLB")
-        rightRear = bot.hwmap.get(DcMotorEx::class.java, "motorRB")
-        rightFront = bot.hwmap.get(DcMotorEx::class.java, "motorRF")
+        leftFront = config.motors["motorLF"] as MotorImpl
+        leftRear = config.motors["motorLB"] as MotorImpl
+        rightFront = config.motors["motorRF"] as MotorImpl
+        rightRear = config.motors["motorRB"] as MotorImpl
+
         motors = listOf(leftFront, leftRear, rightRear, rightFront)
         for (motor in motors) {
-            val motorConfigurationType = motor.motorType.clone()
+            val motorConfigurationType = motor.m.motorType.clone()
             motorConfigurationType.achieveableMaxRPMFraction = 1.0
-            motor.motorType = motorConfigurationType
-        }
-        if (DriveConstants.RUN_USING_ENCODER) {
-            setMode(RunMode.RUN_USING_ENCODER)
+            motor.m.motorType = motorConfigurationType
         }
         zeroPowerBehavior = ZeroPowerBehavior.BRAKE
-        if (DriveConstants.RUN_USING_ENCODER) {
-            setPIDFCoefficients(RunMode.RUN_USING_ENCODER, DriveConstants.MOTOR_VELO_PID)
+
+        //if (RotundaConstants.RUN_USING_ENCODER) {
+        if (SummumConstants.RUN_USING_ENCODER) {
+            //setPIDFCoefficients(RunMode.RUN_USING_ENCODER, RotundaConstants.MOTOR_VELO_PID)
+            setPIDFCoefficients(RunMode.RUN_USING_ENCODER, SummumConstants.MOTOR_VELO_PID)
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        rightRear.direction = DcMotorSimple.Direction.REVERSE
-        rightFront.direction = DcMotorSimple.Direction.REVERSE
+        rightRear.m.direction = DcMotorSimple.Direction.REVERSE
+        rightFront.m.direction = DcMotorSimple.Direction.REVERSE
 
         localizer = bot.loc
     }

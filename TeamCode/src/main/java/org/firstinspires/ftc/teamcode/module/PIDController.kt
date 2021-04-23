@@ -4,7 +4,7 @@ import kotlin.math.abs
 
 data class PIDCoefficients(val kP: Double = 0.0, val kI: Double = 0.0, val kD: Double = 0.0)
 
-class PIDController(var coef: PIDCoefficients, val write: NConsumer<Double>, val read: NSupplier<Double>): Module<Double> {
+class PIDController(var coef: PIDCoefficients, val write: (Double) -> Unit, val read: () -> Double): Module<Double> {
     private var target = 0.0
     var prevError = target - read()
     var integral = 0.0

@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.hardware.DcMotor
 
 @Config
-class Intake(val bot: Robot): Module<Intake.Power> {
+class Intake(val bot: Summum): Module<Intake.Power> {
     companion object {
         @JvmField var INTAKE_COEF: Double = .8
     }

@@ -2,15 +2,14 @@ package org.firstinspires.ftc.teamcode.module.vision
 
 import com.acmerobotics.dashboard.config.Config
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.module.Robot
+import org.firstinspires.ftc.teamcode.module.Summum
+import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
-import org.openftc.easyopencv.OpenCvPipeline
-import kotlin.math.min
 
-class StackPipeline(bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
+class StackPipeline(bot: Summum, val cwidth: Int, val cheight: Int): Pipeline() {
     var height: Height = Height.ZERO
-    var telemetry: Telemetry = bot.log
+    var telemetry = bot.logger
     var mat: Mat
     var ret: Mat
 
@@ -98,24 +97,24 @@ class StackPipeline(bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
             Imgproc.rectangle(ret, maxR, Scalar(0.0, 0.0, 255.0), 2)
             Imgproc.line(ret, Point(.0, horizon.toDouble()), Point(cwidth.toDouble(), horizon.toDouble()), Scalar(255.0, .0, 255.0))
 
-            telemetry.addData("Vision: maxW", maxW)
+            telemetry.err["Vision: maxW"] = maxW
             height = if (maxW >= minWidth) {
                 val aspectRatio: Double = maxR.height.toDouble() / maxR.width.toDouble()
-                telemetry.addData("Vision: Aspect Ratio", aspectRatio)
+                telemetry.err["Vision: Aspect Ratio"] = aspectRatio
                 if (aspectRatio > StackConstants.BOUND_RATIO) Height.FOUR else Height.ONE
             } else {
                 Height.ZERO
             }
 
-            telemetry.addData("Vision: Height", height)
+            telemetry.out["Vision: Height"] = height
 
             mat.release()
             mask.release()
             hierarchy.release()
         } catch (e: Exception) {
             /**error handling, prints stack trace for specific debug**/
-            telemetry.addData("[ERROR]", e)
-            e.stackTrace.toList().stream().forEach { x -> telemetry.addLine(x.toString()) }
+            telemetry.err["[VISION ERROR]"] = e
+            e.stackTrace.toList().stream().forEach { x -> telemetry.addMessage(x.toString(), Time.seconds(60)) }
         }
         telemetry.update()
 

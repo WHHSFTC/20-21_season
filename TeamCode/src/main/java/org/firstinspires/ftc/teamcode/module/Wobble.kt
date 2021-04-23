@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.module
 
 import kotlinx.coroutines.delay
-import org.firstinspires.ftc.teamcode.test.QuickDrop
 
-class Wobble(val bot: Robot) {
+class Wobble(val bot: Summum) {
     enum class ElbowState(override val pos: Double): StatefulServo.ServoPosition {
         STORE(.05), DROP(.8), CARRY(.32), INTAKE(.95), WALL(.65)
     }

@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class Indexer(val bot: Robot) {
+class Indexer(val bot: Summum) {
     val feedServo: Servo = bot.hwmap.servo["feeder"]
     val heightServo: Servo = bot.hwmap.servo["setter"]
 
@@ -38,7 +38,7 @@ class Indexer(val bot: Robot) {
         height(Height.IN)
         delay(250)
 
-        bot.out(Shooter.State.OFF)
+//        bot.out(Shooter.State.OFF)
     }
 
     suspend fun slowBurst() {
@@ -54,7 +54,7 @@ class Indexer(val bot: Robot) {
         feed(Shoot.PRE)
         delay(250)
 
-        bot.out(Shooter.State.OFF)
+//        bot.out(Shooter.State.OFF)
         height(Height.IN)
     }
     suspend fun shake() {

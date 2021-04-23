@@ -1,0 +1,55 @@
+package org.firstinspires.ftc.teamcode.module
+
+import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.switchboard.core.*
+import org.firstinspires.ftc.teamcode.switchboard.scheduler.*
+import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
+
+class Summum(
+        logger: Logger,
+        config: Configuration,
+        val opMode: OpMode
+) : Robot(logger, config, "Summum") {
+
+    val hwmap: HardwareMap = opMode.hardwareMap
+
+    //val feed: Indexer = Indexer(this)
+    //val wob: Wobble = Wobble(this)
+    val loc: CustomLocalizer = CustomLocalizer(config, logger)
+    val dt: CustomMecanumDrive = CustomMecanumDrive(this, config)
+    //val ink: Intake = Intake(this)
+    val aim: HeightController = HeightController(config, logger)
+    //var vis: PipelineRunner = PipelineRunner(this, 640, 480)
+    val out: Shooter = Shooter(config, logger)
+    val alliance: Alliance = Alliance.BLUE
+
+    override val activities: MutableList<Activity> = mutableListOf(loc, dt, aim, out)
+    override val scheduler = bucket(Time.milli(14),
+            listOf( // on ones
+                    all(*dt.motors.toTypedArray())
+            ),
+
+            listOf( // on twos
+                    out.motor1, aim.motor
+            ),
+
+            listOf( // on fours
+            ),
+
+            listOf( // on eights
+
+            )
+    )
+
+    init {
+        //vis.load(vis.stack)
+        //vis.start()
+    }
+
+    companion object {
+        const val TRACK_WIDTH = 14.5 // TODO
+        const val CENTER_OFFSET = 7 // TODO
+        const val WIDTH = 17.375
+        const val LENGTH = 17.375
+    }
+}

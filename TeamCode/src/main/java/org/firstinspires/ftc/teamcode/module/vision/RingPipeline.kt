@@ -5,17 +5,16 @@ import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.module.OpMode
-import org.firstinspires.ftc.teamcode.module.Robot
+import org.firstinspires.ftc.teamcode.module.Summum
+import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 import org.opencv.core.*
 import org.opencv.imgproc.Imgproc
-import org.openftc.easyopencv.OpenCvPipeline
 import kotlin.math.*
 
 
-class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline() {
+class RingPipeline(val bot: Summum, val cwidth: Int, val cheight: Int): Pipeline() {
     private val dashboard: FtcDashboard = FtcDashboard.getInstance()
-    var telemetry: Telemetry = bot.log
+    var telemetry = bot.logger
     var mat: Mat
     var ret: Mat
 
@@ -132,8 +131,8 @@ class RingPipeline(val bot: Robot, val cwidth: Int, val cheight: Int): Pipeline(
             hierarchy.release()
         } catch (e: Exception) {
             /**error handling, prints stack trace for specific debug**/
-            telemetry.addData("[ERROR]", e)
-            e.stackTrace.toList().stream().forEach { x -> telemetry.addLine(x.toString()) }
+            telemetry.err["[VISION ERROR]"] = e
+            e.stackTrace.toList().stream().forEach { x -> telemetry.addMessage(x.toString(), Time.seconds(60)) }
         }
 
         return Pair(boxes, ret)

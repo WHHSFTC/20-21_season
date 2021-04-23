@@ -24,6 +24,7 @@ class BlueTele: DslOpMode() {
             dsl {
                 var prevShoot = false
                 var prevBurst = false
+                var prevManual = false
                 //var fieldCentric = false
 
                 infix fun Double.max(other: Double): Double {
@@ -135,6 +136,8 @@ class BlueTele: DslOpMode() {
                     }
                     prevBurst = gamepad2.left_bumper
 
+                    val manual = gamepad2.left_trigger > 0.5
+
                     when {
                         gamepad2.right_trigger > 0.5 -> {
                             when {
@@ -145,8 +148,14 @@ class BlueTele: DslOpMode() {
                                 gamepad2.dpad_down -> aim.motor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
                             }
                         }
-                        gamepad2.left_trigger > 0.5 -> {
-                            aim.power(-gamepad2.right_stick_y.toDouble() * .25)
+                        manual -> {
+                            val p = -gamepad2.right_stick_y.toDouble()
+                            if (p > 0.1)
+                                aim.power(p * .25)
+                            else if (p < -0.1)
+                                aim.power(p)
+                            else
+                                aim.power(0.0)
                         }
                         else -> {
                             when {
@@ -156,6 +165,12 @@ class BlueTele: DslOpMode() {
                             }
                         }
                     }
+
+                    if (prevManual && !manual) {
+                        aim.power(0.0)
+                    }
+
+                    prevManual = manual
 
                     when {
                         gamepad2.a -> {

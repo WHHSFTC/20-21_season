@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.core.*
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
@@ -13,7 +14,7 @@ class Summum(
 
     val hwmap: HardwareMap = opMode.hardwareMap
 
-    //val feed: Indexer = Indexer(this)
+    val feed: Indexer = Indexer(config)
     val wob: Wobble = Wobble(config, logger)
     val loc: CustomLocalizer = CustomLocalizer(config, logger)
     val dt: CustomMecanumDrive = CustomMecanumDrive(this, config)

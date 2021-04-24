@@ -3,10 +3,7 @@ package org.firstinspires.ftc.teamcode.tele
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gamepad
-import org.firstinspires.ftc.teamcode.module.HeightController
-import org.firstinspires.ftc.teamcode.module.OpMode
-import org.firstinspires.ftc.teamcode.module.Shooter
-import org.firstinspires.ftc.teamcode.module.Wobble
+import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.core.Frame
 import kotlin.math.absoluteValue
@@ -62,11 +59,12 @@ class BlueTele: OpMode(Mode.TELE) {
         var lastA = false
         var lastB = false
         var lastDeadzone = true
+        var lastShoot = false
+        var lastBurst = false
 
-        override fun update(frame: Frame) {
+        fun flywheel(frame: Frame) {
             val a = pad.a
             val b = pad.b
-            val shift = pad.shift()
 
             when {
                 a and !lastA -> {
@@ -77,6 +75,13 @@ class BlueTele: OpMode(Mode.TELE) {
                     bot.out(Shooter.State.OFF)
                 }
             }
+
+            lastA = a
+            lastB = b
+        }
+
+        fun heights(frame: Frame) {
+            val shift = pad.shift()
 
             val p = -pad.right_stick_y
             val deadzone = p.absoluteValue < 0.1
@@ -93,11 +98,33 @@ class BlueTele: OpMode(Mode.TELE) {
                         pad.dpad_left || pad.dpad_right -> bot.aim.height(HeightController.Height.POWER)
                     }
 
+            } else {
+                when {
+                    pad.dpad_up -> bot.feed.height(Indexer.Height.HIGH)
+                    pad.dpad_down -> bot.feed.height(Indexer.Height.IN)
+                    pad.dpad_right || pad.dpad_left -> bot.feed.height(Indexer.Height.POWER)
+                }
             }
 
             lastDeadzone = deadzone
-            lastA = a
-            lastB = b
+        }
+
+        fun shooting(frame: Frame) {
+            val shoot = pad.right_bumper
+            val burst = pad.left_bumper
+
+            when {
+                shoot && !lastShoot -> bot.feed.shoot()
+                burst && !lastBurst -> bot.feed.burst()
+            }
+
+            lastShoot = shoot
+            lastBurst = burst
+        }
+
+        override fun update(frame: Frame) {
+            flywheel(frame)
+            heights(frame)
         }
     }
 

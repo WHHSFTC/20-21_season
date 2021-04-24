@@ -1,13 +1,18 @@
 package org.firstinspires.ftc.teamcode.module
 
-import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.teamcode.switchboard.hardware.Servo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.firstinspires.ftc.teamcode.switchboard.command.Command
+import org.firstinspires.ftc.teamcode.switchboard.command.linear
+import org.firstinspires.ftc.teamcode.switchboard.core.Activity
+import org.firstinspires.ftc.teamcode.switchboard.core.Configuration
+import org.firstinspires.ftc.teamcode.switchboard.core.Frame
 
-class Indexer(val bot: Summum) {
-    val feedServo: Servo = bot.hwmap.servo["feeder"]
-    val heightServo: Servo = bot.hwmap.servo["setter"]
+class Indexer(config: Configuration) : Activity {
+    val feedServo: Servo = config.servos["feeder"]
+    val heightServo: Servo = config.servos["setter"]
 
     enum class Height(val pos: Double) {
         IN(1.0), POWER(.86), HIGH(.86)
@@ -17,56 +22,60 @@ class Indexer(val bot: Summum) {
         PRE(0.33), POST(.55)
     }
 
-    suspend fun shoot() {
-        feed(Shoot.POST)
-        delay(150)
-        feed(Shoot.PRE)
-    }
+    private var command: Command = Command.idle
 
-    suspend fun burst() {
-        repeat(2) {
-            feed(Shoot.POST)
+    fun shoot() {
+        command = linear {
+            task { feed(Shoot.POST) }
             delay(150)
-            feed(Shoot.PRE)
-            delay(500)
+            task { feed(Shoot.PRE) }
         }
-
-        feed(Shoot.POST)
-        delay(150)
-        feed(Shoot.PRE)
-        delay(150)
-        height(Height.IN)
-        delay(250)
-
-//        bot.out(Shooter.State.OFF)
     }
 
-    suspend fun slowBurst() {
-        repeat(3) {
-            feed(Shoot.POST)
+    fun burst() {
+        command = linear {
+            repeat(2) {
+                task { feed(Shoot.POST) }
+                delay(150)
+                task { feed(Shoot.PRE) }
+                delay(500)
+            }
+
+            task { feed(Shoot.POST) }
             delay(150)
-            feed(Shoot.PRE)
-            delay(1000)
+            task { feed(Shoot.PRE) }
+            delay(150)
+            task { height(Height.IN) }
         }
-
-        feed(Shoot.POST)
-        delay(150)
-        feed(Shoot.PRE)
-        delay(250)
-
-//        bot.out(Shooter.State.OFF)
-        height(Height.IN)
     }
-    suspend fun shake() {
-        GlobalScope.launch {
-            height(Height.POWER)
+
+    fun slowBurst() {
+        command = linear {
+            repeat(2) {
+                task { feed(Shoot.POST) }
+                delay(150)
+                task { feed(Shoot.PRE) }
+                delay(1000)
+            }
+
+            task { feed(Shoot.POST) }
+            delay(150)
+            task { feed(Shoot.PRE) }
             delay(250)
-            height(Height.IN)
+            task { height(Height.IN) }
+        }
+    }
+
+    fun shake() {
+        command = linear {
+            task { height(Height.POWER) }
+            delay(250)
+            task { height(Height.IN) }
             delay(250)
 
-            height(Height.POWER)
+            task { height(Height.POWER) }
             delay(250)
-            height(Height.IN)
+            task { height(Height.IN) }
         }
     }
 
@@ -84,5 +93,14 @@ class Indexer(val bot: Summum) {
                 heightServo.position = value.pos
                 field = value
             }
+    }
+
+    override fun update(frame: Frame) {
+        command.let {
+            if (it.done)
+                command = Command.idle
+            else
+                it.update(frame)
+        }
     }
 }

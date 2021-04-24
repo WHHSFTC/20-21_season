@@ -37,7 +37,7 @@ import kotlin.math.abs
 class CustomMecanumDrive(val bot: Summum, config: Configuration)
     //: MecanumDrive(RotundaConstants.kV, RotundaConstants.kA, RotundaConstants.kStatic, RotundaConstants.TRACK_WIDTH, RotundaConstants.TRACK_WIDTH, LATERAL_MULTIPLIER),
     : MecanumDrive(SummumConstants.kV, SummumConstants.kA, SummumConstants.kStatic, SummumConstants.TRACK_WIDTH, SummumConstants.TRACK_WIDTH, LATERAL_MULTIPLIER),
-Activity {
+        Activity {
     enum class DriveMode {
         IDLE, TURN, FOLLOW_TRAJECTORY
     }

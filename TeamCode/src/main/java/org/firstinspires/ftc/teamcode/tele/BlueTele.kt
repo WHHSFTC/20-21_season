@@ -125,6 +125,7 @@ class BlueTele: OpMode(Mode.TELE) {
         override fun update(frame: Frame) {
             flywheel(frame)
             heights(frame)
+            shooting(frame)
         }
     }
 

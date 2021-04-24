@@ -20,6 +20,9 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
     override fun update(frame: Frame) {
         //logger.out["AIM"] = enc.position
         logger.out["AIM"] = motor.m.currentPosition
+
+        if (!motor.m.isBusy)
+            motor.power = 0.0
     }
 
     fun reset() {
@@ -39,6 +42,7 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
                 field = value
             }
     }
+
     val height = object : Module<HeightController.Height> {
         override var state: Height = Height.ZERO
             set(value) {

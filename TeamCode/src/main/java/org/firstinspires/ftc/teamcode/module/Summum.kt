@@ -31,7 +31,7 @@ class Summum(
             ),
 
             listOf( // on twos
-
+                    feed.feedServo, feed.heightServo
             ),
 
             listOf( // on fours

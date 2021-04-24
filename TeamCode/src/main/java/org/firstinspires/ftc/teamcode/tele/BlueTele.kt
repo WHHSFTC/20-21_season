@@ -25,6 +25,7 @@ class BlueTele: DslOpMode() {
                 var prevShoot = false
                 var prevBurst = false
                 var prevManual = false
+                var prevParker = false
                 //var fieldCentric = false
 
                 infix fun Double.max(other: Double): Double {
@@ -166,11 +167,22 @@ class BlueTele: DslOpMode() {
                         }
                     }
 
+
                     if (prevManual && !manual) {
                         aim.power(0.0)
                     }
 
                     prevManual = manual
+
+                    val parkPower = -gamepad2.left_stick_y
+                    val parker = parkPower.absoluteValue > .1
+
+                    if (parker)
+                        park.motor(-parkPower.toDouble())
+                    else if (prevParker)
+                        park(Parker.Power.OFF)
+
+                    prevParker = parker
 
                     when {
                         gamepad2.a -> {

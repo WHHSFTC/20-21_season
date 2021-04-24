@@ -9,7 +9,7 @@ class Wobble(val bot: Robot) {
     }
 
     enum class ClawState(override val pos: Double): StatefulServo.ServoPosition {
-        OPEN(.73), CLOSED(1.0), WIDE(.4)
+        OPEN(.55), CLOSED(1.0), WIDE(.27)
     }
 
     var elbow = StatefulServo<ElbowState>(bot.hwmap.servo["elbow"], ElbowState.STORE)

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo
 class VeloCR(val cr: CRServo): Module<Double> {
     override var state: Double = 0.0
         set(value) {
-            cr.power = value
+            cr.power = value / 2.0
             field = value
         }
 }

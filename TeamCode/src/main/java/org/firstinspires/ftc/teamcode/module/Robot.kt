@@ -23,6 +23,7 @@ class Robot(
     //    val dt: DriveTrain = DriveTrain(this)
     val dt: CustomMecanumDrive = CustomMecanumDrive(this)
     val ink: Intake = Intake(this)
+    val park: Parker = Parker(this)
     val aim: HeightController = HeightController(this)
     var vis: PipelineRunner?
     var out: Shooter = Shooter(this)

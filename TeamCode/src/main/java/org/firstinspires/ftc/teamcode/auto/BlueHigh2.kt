@@ -135,10 +135,13 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 +go(Pose2d(-37.0, 54.0, PI)) { lineToLinearHeading(Pose2d(12.0, 48.0, PI/2.0)) }
                                 +dropWob
 
-                                +go(Pose2d(12.0, 48.0, PI/2.0)) {
-                                    //lineToLinearHeading(Pose2d(12.0, 24.0, 0.0))
-                                    lineToConstantHeading(Vector2d(12.0, 24.0))
-                                }
+                                //+setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
+                                +setState(bot.wob.claw) {Wobble.ClawState.WIDE}
+                                +setState(bot.wob.elbow) {Wobble.ElbowState.STORE}
+
+//                                +go(Pose2d(12.0, 48.0, PI/2.0)) {
+//                                    lineToConstantHeading(Vector2d(12.0, 24.0))
+//                                }
                             }),
                             case({ StackPipeline.Height.ONE }, CommandContext.seq {
                                 // shoot from line
@@ -265,12 +268,16 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                     }
                                 }
 
+                                +delayC(500)
+
+
                                 +go(Pose2d(-35.0,50.0, PI)) {
                                     addDisplacementMarker {
                                         bot.ink(Intake.Power.OUT)
                                     }
                                     splineTo(Vector2d(-54.0, 40.0), -PI/2.0)
                                     addDisplacementMarker {
+                                        bot.park(Parker.Power.OUT)
                                         bot.wob.elbow(Wobble.ElbowState.CARRY)
                                         bot.ink(Intake.Power.IN)
                                         bot.out(Shooter.State.FULL)
@@ -291,12 +298,12 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                 +setState(bot.ink) { Intake.Power.IN }
                                 +go(linePose + Pose2d(0.0, -8.0)) {
-                                    splineTo(Vector2d(42.0, 36.0), PI/4.0)
+                                    splineTo(Vector2d(45.0, 36.0), PI/4.0)
                                     addDisplacementMarker {
-                                        bot.wob.claw(Wobble.ClawState.OPEN)
-                                        bot.wob.elbow(Wobble.ElbowState.CARRY)
+                                        bot.wob.claw(Wobble.ClawState.WIDE)
+                                        bot.wob.elbow(Wobble.ElbowState.STORE)
                                     }
-                                    splineToConstantHeading(Vector2d(12.0, 36.0), -PI/2.0)
+                                    //splineToConstantHeading(Vector2d(12.0, 36.0), -PI/2.0)
                                 }
                             })
                     ))

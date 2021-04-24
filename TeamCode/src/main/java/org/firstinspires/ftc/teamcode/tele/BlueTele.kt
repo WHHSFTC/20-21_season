@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.module.HeightController
 import org.firstinspires.ftc.teamcode.module.OpMode
 import org.firstinspires.ftc.teamcode.module.Shooter
+import org.firstinspires.ftc.teamcode.module.Wobble
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.core.Frame
 import kotlin.math.absoluteValue
@@ -14,16 +15,16 @@ import kotlin.math.pow
 @TeleOp
 class BlueTele: OpMode(Mode.TELE) {
     override fun startHook() {
-        bot.prependActivity(Andrew())
-        bot.prependActivity(Adham())
+        bot.prependActivity(Andrew(gamepad1))
+        bot.prependActivity(Adham(gamepad2))
     }
 
-    inner class Andrew: Activity {
-        override fun update(frame: Frame) {
-            val turtle = gamepad1.left_trigger > .5 || gamepad1.right_trigger > .5
-            val x = (-gamepad1.left_stick_y).toDouble()
-            val y = (-gamepad1.left_stick_x).toDouble()
-            val omega = (-gamepad1.right_stick_x).toDouble()
+    inner class Andrew(val pad: Gamepad): Activity {
+        fun drivetrain(frame: Frame) {
+            val turtle = pad.left_trigger > .5 || pad.right_trigger > .5
+            val x = (-pad.left_stick_y).toDouble()
+            val y = (-pad.left_stick_x).toDouble()
+            val omega = (-pad.right_stick_x).toDouble()
 
             val linearScalar = (x.absoluteValue max y.absoluteValue).pow(2.0)
             val turtleScalar = if (turtle) 3.0 else 1.0
@@ -36,17 +37,36 @@ class BlueTele: OpMode(Mode.TELE) {
 
             bot.dt.botTwist = twist
         }
+
+        fun wobble(frame: Frame) {
+            when {
+                pad.dpad_up -> bot.wob.elbow(Wobble.ElbowState.CARRY)
+                pad.dpad_down -> bot.wob.elbow(Wobble.ElbowState.INTAKE)
+                pad.dpad_right -> bot.wob.elbow(Wobble.ElbowState.STORE)
+                pad.dpad_left -> bot.wob.quickDrop(frame)
+            }
+
+            when {
+                pad.left_bumper -> bot.wob.claw(Wobble.ClawState.OPEN)
+                pad.right_bumper -> bot.wob.claw(Wobble.ClawState.CLOSED)
+            }
+        }
+
+        override fun update(frame: Frame) {
+            drivetrain(frame)
+            wobble(frame)
+        }
     }
 
-    inner class Adham: Activity {
+    inner class Adham(val pad: Gamepad): Activity {
         var lastA = false
         var lastB = false
         var lastDeadzone = true
 
         override fun update(frame: Frame) {
-            val a = gamepad2.a
-            val b = gamepad2.b
-            val shift = gamepad2.shift()
+            val a = pad.a
+            val b = pad.b
+            val shift = pad.shift()
 
             when {
                 a and !lastA -> {
@@ -58,7 +78,7 @@ class BlueTele: OpMode(Mode.TELE) {
                 }
             }
 
-            val p = -gamepad2.right_stick_y
+            val p = -pad.right_stick_y
             val deadzone = p.absoluteValue < 0.1
 
             if (shift) {
@@ -68,9 +88,9 @@ class BlueTele: OpMode(Mode.TELE) {
                     bot.aim.power(0.0)
                 else
                     when {
-                        gamepad2.dpad_down -> bot.aim.reset()
-                        gamepad2.dpad_up -> bot.aim.height(HeightController.Height.HIGH)
-                        gamepad2.dpad_left || gamepad2.dpad_right -> bot.aim.height(HeightController.Height.POWER)
+                        pad.dpad_down -> bot.aim.reset()
+                        pad.dpad_up -> bot.aim.height(HeightController.Height.HIGH)
+                        pad.dpad_left || pad.dpad_right -> bot.aim.height(HeightController.Height.POWER)
                     }
 
             }

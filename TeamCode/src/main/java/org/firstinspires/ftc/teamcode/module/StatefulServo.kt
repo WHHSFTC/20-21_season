@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.module
 
-import com.qualcomm.robotcore.hardware.Servo
-import com.qualcomm.robotcore.hardware.ServoImplEx
+import org.firstinspires.ftc.teamcode.switchboard.hardware.Servo
 
 class StatefulServo<T: StatefulServo.ServoPosition>(val servo: Servo, initial: T): Module<T> {
 //    constructor(servo: Servo, initial: T): this(servo as ServoImplEx, initial)

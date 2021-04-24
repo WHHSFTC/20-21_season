@@ -241,14 +241,14 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                         bot.feed.height(Indexer.Height.HIGH)
                                         bot.out(Shooter.State.FULL)
                                     }
-                                    splineToConstantHeading(linePose.vec(), PI)
+                                    splineToConstantHeading(linePose.vec() - Vector2d(0.0, 8.0), PI)
                                 }
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +lineBurst
 
-                                +go(linePose) {
+                                +go(Pose2d(linePose.vec() - Vector2d(0.0, 8.0), 0.0)) {
                                     addDisplacementMarker {
                                         bot.ink(Intake.Power.IN)
                                     }
@@ -261,24 +261,21 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                     // get wob
                                     //splineToConstantHeading(Vector2d(-24.0, 52.0), -PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     //splineToConstantHeading(Vector2d(-37.0, 50.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-35.0, 46.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-35.0, 50.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-35.0, 54.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    //splineToConstantHeading(Vector2d(-35.0, 54.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.CLOSED)
                                     }
                                 }
 
-                                +delayC(500)
+                                +delayC(750)
 
+                                +setState(bot.wob.elbow) { Wobble.ElbowState.CARRY }
+                                +setState(bot.ink) { Intake.Power.OUT }
 
-                                +go(Pose2d(-35.0,50.0, PI)) {
-                                    addDisplacementMarker {
-                                        bot.ink(Intake.Power.OUT)
-                                    }
+                                +go(Pose2d(-35.0,54.0, PI)) {
                                     splineTo(Vector2d(-54.0, 40.0), -PI/2.0)
                                     addDisplacementMarker {
-                                        bot.park(Parker.Power.OUT)
-                                        bot.wob.elbow(Wobble.ElbowState.CARRY)
                                         bot.ink(Intake.Power.IN)
                                         bot.out(Shooter.State.FULL)
                                     }
@@ -294,6 +291,8 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 +delayC(200)
 
                                 +lineBurst
+
+                                +setState(bot.park) { Parker.Power.OUT }
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                 +setState(bot.ink) { Intake.Power.IN }

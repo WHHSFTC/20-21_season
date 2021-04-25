@@ -26,8 +26,8 @@ import java.util.*
 */
 class CustomLocalizer(config: Configuration, val logger: Logger) : ThreeTrackingWheelLocalizer(Arrays.asList(
         Pose2d(FRONT_X, LATERAL_DISTANCE / 2, 0.0),  // left
-        Pose2d(FRONT_X, -LATERAL_DISTANCE / 2, Math.toRadians(180.0)),  // right
-        Pose2d(BACK_X, -LATERAL_DISTANCE / 2, Math.toRadians(90.0)) // back
+        Pose2d(FRONT_X, -LATERAL_DISTANCE / 2, 0.0),  // right
+        Pose2d(BACK_X, -LATERAL_DISTANCE / 2, Math.toRadians(-90.0)) // back
 )), Activity {
     private val leftEncoder: Encoder = config.encoders["leftOdo"]
     private val rightEncoder: Encoder = config.encoders["rightOdo"]
@@ -73,14 +73,16 @@ class CustomLocalizer(config: Configuration, val logger: Logger) : ThreeTracking
 //        @JvmField var Y_MULT = .99794
 
         // Summum
+        const val BOT_WIDTH = 17.688
+        const val BOT_LENGTH = 17.4375
         @JvmField var TICKS_PER_REV = 8192.0
         @JvmField var WHEEL_RADIUS = Distance.mm(30.0).inches
         @JvmField var GEAR_RATIO = 1.0 // output (wheel) speed / input (encoder) speed
-        @JvmField var LATERAL_DISTANCE = 14.75 // in; distance between the left and right wheels
-        @JvmField var BACK_X = -2.41 // in; x of the back
-        @JvmField var FRONT_X = 1.71 // in; x of the fronts
-        @JvmField var X_MULT = .98473
-        @JvmField var Y_MULT = .99794
+        @JvmField var LATERAL_DISTANCE = 14.28 // in; distance between the left and right wheels
+        @JvmField var BACK_X = BOT_LENGTH/2.0 - 10.625 // in; x of the back
+        @JvmField var FRONT_X = BOT_LENGTH/2.0 - 7.125 // in; x of the fronts
+        @JvmField var X_MULT = (95-BOT_LENGTH)/75.6
+        @JvmField var Y_MULT = (95-BOT_WIDTH)/76.9
         fun encoderTicksToInches(ticks: Double): Double {
             return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV
         }

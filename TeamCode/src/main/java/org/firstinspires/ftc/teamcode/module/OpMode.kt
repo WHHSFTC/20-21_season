@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.switchboard.core.*
 
+@Config
 abstract class OpMode(val mode: Mode) : LinearOpMode() {
     lateinit var bot: Summum
     lateinit var logger: Logger
@@ -16,7 +17,7 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
         if (DEBUG)
             telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
 
-        logger = Logger(telemetry)
+        logger = Logger(telemetry, DEBUG)
         config = Configuration(hardwareMap, logger)
 
         bot = Summum(logger, config, this)
@@ -44,7 +45,6 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
         NULL, AUTO, TELE,
     }
 
-    @Config
     companion object {
         @JvmField var DEBUG = false
     }

@@ -9,11 +9,11 @@ import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
 class Wobble(config: Configuration, val logger: Logger) : Activity {
     enum class ElbowState(override val pos: Double): StatefulServo.ServoPosition {
-        STORE(.05), DROP(.8), CARRY(.32), INTAKE(.95), WALL(.65)
+        STORE(.1), DROP(.8), CARRY(.32), INTAKE(1.0), WALL(.65)
     }
 
     enum class ClawState(override val pos: Double): StatefulServo.ServoPosition {
-        OPEN(.73), CLOSED(1.0), WIDE(.4)
+        OPEN(.6), CLOSED(.07), WIDE(.99)
     }
 
     var elbow = StatefulServo<ElbowState>(config.servos["elbow"], ElbowState.STORE)

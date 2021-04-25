@@ -15,11 +15,11 @@ class Indexer(config: Configuration) : Activity {
     val heightServo: Servo = config.servos["setter"]
 
     enum class Height(val pos: Double) {
-        IN(1.0), POWER(.86), HIGH(.86)
+        IN(1.0), POWER(.87), HIGH(.87)
     }
 
     enum class Shoot(val pos: Double) {
-        PRE(0.33), POST(.55)
+        PRE(.1), POST(.0)
     }
 
     private var command: Command = Command.idle

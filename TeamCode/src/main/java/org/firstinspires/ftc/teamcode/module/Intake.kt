@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.acmerobotics.dashboard.config.Config
-import com.qualcomm.robotcore.hardware.DcMotor
+import org.firstinspires.ftc.teamcode.switchboard.core.Configuration
 
 @Config
-class Intake(val bot: Summum): Module<Intake.Power> {
+class Intake(val bot: Summum, config: Configuration): Module<Intake.Power> {
     companion object {
         @JvmField var INTAKE_COEF: Double = .8
     }
-    val motor: DcMotor = bot.hwmap.dcMotor["intake"]
-    //val motor: DcMotor = bot.hwmap.dcMotor["intake"].also { it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER; it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
+    val motor = config.motors["intake"]
+
     override var state: Power = Power.OFF
         set(value) {
             when (value) {
@@ -20,8 +20,6 @@ class Intake(val bot: Summum): Module<Intake.Power> {
                     motor.power = value.pow * INTAKE_COEF * 12.0 / bot.dt.batteryVoltageSensor.voltage
                 }
             }
-            //if (value != field)
-                //motor.power = value.pow * INTAKE_COEF
             field = value
         }
     enum class Power(val pow: Double) {

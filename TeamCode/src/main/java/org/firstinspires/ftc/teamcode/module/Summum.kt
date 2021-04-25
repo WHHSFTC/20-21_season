@@ -18,7 +18,7 @@ class Summum(
     val wob: Wobble = Wobble(config, logger)
     val loc: CustomLocalizer = CustomLocalizer(config, logger)
     val dt: CustomMecanumDrive = CustomMecanumDrive(this, config)
-    //val ink: Intake = Intake(this)
+    val ink: Intake = Intake(this, config)
     val aim: HeightController = HeightController(config, logger)
     //var vis: PipelineRunner = PipelineRunner(this, 640, 480)
     val out: Shooter = Shooter(config, logger)
@@ -31,11 +31,12 @@ class Summum(
             ),
 
             listOf( // on twos
-                    feed.feedServo, feed.heightServo
+                    rot(Time.milli(2), feed.feedServo, feed.heightServo),
+                    rot(Time.milli(2), wob.claw.servo, wob.elbow.servo)
             ),
 
             listOf( // on fours
-                    out.motor1, aim.motor, wob.claw.servo, wob.elbow.servo
+                    out.motor1, aim.motor, ink.motor
             ),
 
             listOf( // on eights

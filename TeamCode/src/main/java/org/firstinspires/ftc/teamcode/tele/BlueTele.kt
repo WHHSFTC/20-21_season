@@ -49,6 +49,14 @@ class BlueTele: OpMode(Mode.TELE) {
             }
         }
 
+        fun intake(frame: Frame) {
+            when {
+                pad.a -> bot.ink(Intake.Power.IN)
+                pad.b -> bot.ink(Intake.Power.OFF)
+                pad.y -> bot.ink(Intake.Power.OUT)
+            }
+        }
+
         override fun update(frame: Frame) {
             drivetrain(frame)
             wobble(frame)

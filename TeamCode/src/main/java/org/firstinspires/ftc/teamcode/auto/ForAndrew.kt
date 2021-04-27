@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.module.vision.RingPipeline
 import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import kotlin.math.*
 
+@Disabled
 @Config
 @Autonomous(name = "Blue - High Goal 6 rings :((((")
 class ForAndrew: DslOpMode(mode = Mode.AUTO) {

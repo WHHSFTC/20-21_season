@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.module.vision.RingPipeline
 import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import kotlin.math.*
 
+@Disabled
 @Config
 @Autonomous(name = "Blue - Power Shots")
 class BluePower: DslOpMode(mode = Mode.AUTO) {

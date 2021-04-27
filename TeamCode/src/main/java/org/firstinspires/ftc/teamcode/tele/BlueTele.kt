@@ -18,7 +18,7 @@ class BlueTele: OpMode(Mode.TELE) {
 
     inner class Andrew(val pad: Gamepad): Activity {
         fun drivetrain(frame: Frame) {
-            val turtle = pad.left_trigger > .5 || pad.right_trigger > .5
+            val turtle = pad.shift()
             val x = (-pad.left_stick_y).toDouble()
             val y = (-pad.left_stick_x).toDouble()
             val omega = (-pad.right_stick_x).toDouble()
@@ -60,6 +60,7 @@ class BlueTele: OpMode(Mode.TELE) {
         override fun update(frame: Frame) {
             drivetrain(frame)
             wobble(frame)
+            intake(frame)
         }
     }
 
@@ -88,25 +89,32 @@ class BlueTele: OpMode(Mode.TELE) {
             lastB = b
         }
 
+        var lastLeftShift = false
+
         fun heights(frame: Frame) {
-            val shift = pad.shift()
+            val leftShift = pad.left_trigger > .5
+            val rightShift = pad.right_trigger > .5
 
-            val p = -pad.right_stick_y
-            val deadzone = p.absoluteValue < 0.1
-
-            if (shift) {
-                if (!deadzone)
-                    bot.aim.power(p.toDouble() / 4.0)
-                else if (!lastDeadzone)
-                    bot.aim.power(0.0)
-                else
-                    when {
-                        pad.dpad_down -> bot.aim.reset()
-                        pad.dpad_up -> bot.aim.height(HeightController.Height.HIGH)
-                        pad.dpad_left || pad.dpad_right -> bot.aim.height(HeightController.Height.POWER)
-                    }
+            if (rightShift) {
+                when {
+                    pad.dpad_down -> bot.aim.reset()
+                    pad.dpad_up -> bot.aim.height(HeightController.Height.HIGH)
+                    pad.dpad_left || pad.dpad_right -> bot.aim.height(HeightController.Height.POWER)
+                }
 
             } else {
+                if (leftShift) {
+                    val p = -pad.right_stick_y
+                    val active = p.absoluteValue > 0.1
+
+                    if (active)
+                        bot.aim.power(p.toDouble() / 4.0)
+                    else
+                        bot.aim.power(0.0)
+                } else if (lastLeftShift) {
+                    bot.aim.power(0.0)
+                }
+
                 when {
                     pad.dpad_up -> bot.feed.height(Indexer.Height.HIGH)
                     pad.dpad_down -> bot.feed.height(Indexer.Height.IN)
@@ -114,7 +122,7 @@ class BlueTele: OpMode(Mode.TELE) {
                 }
             }
 
-            lastDeadzone = deadzone
+            lastLeftShift = leftShift
         }
 
         fun shooting(frame: Frame) {

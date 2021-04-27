@@ -15,7 +15,7 @@ class LinearContext {
     }
 
     fun delay(millis: Long) {
-        delay(Time.milli(millis))
+        this.delay(Time.milli(millis))
     }
 
     fun task(f: (Frame) -> Unit) {

@@ -11,7 +11,7 @@ class RotatingScheduler(val duration: Time, val list: List<HardwareScheduler>): 
         val end = start + duration
         val tmp = LinkedList<HardwareScheduler>()
         while (Time.now() < end && queue.isNotEmpty())
-            tmp.add(queue.element().also { it.output() })
+            queue.poll()?.also { it.output(); tmp.add(it) }
         queue.addAll(tmp)
     }
 }

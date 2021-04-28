@@ -174,15 +174,15 @@ class BlueTele: DslOpMode() {
 
                     prevManual = manual
 
-                    val parkPower = -gamepad2.left_stick_y
-                    val parker = parkPower.absoluteValue > .1
+//                    val parkPower = -gamepad2.left_stick_y
+//                    val parker = parkPower.absoluteValue > .1
 
-                    if (parker)
-                        park.motor(-parkPower.toDouble())
-                    else if (prevParker)
-                        park(Parker.Power.OFF)
-
-                    prevParker = parker
+//                    if (parker)
+//                        park.motor(-parkPower.toDouble())
+//                    else if (prevParker)
+//                        park(Parker.Power.OFF)
+//
+//                    prevParker = parker
 
                     when {
                         gamepad2.a -> {

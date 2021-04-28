@@ -51,10 +51,11 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
 
             val singleShotAndPark = CommandContext.seq {
                 +cmd {feed.shoot()}
-                +setState(bot.wob.elbow) {Wobble.ElbowState.INTAKE}
                 +delayC(750)
                 +setState(bot.feed.height) {Indexer.Height.IN}
-                +delayC(500)
+                +delayC(150)
+                +setState(bot.wob.elbow) {Wobble.ElbowState.INTAKE}
+                +delayC(350)
                 +setState(bot.out) {Shooter.State.OFF}
             }
 
@@ -139,9 +140,9 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 +setState(bot.wob.claw) {Wobble.ClawState.WIDE}
                                 +setState(bot.wob.elbow) {Wobble.ElbowState.STORE}
 
-//                                +go(Pose2d(12.0, 48.0, PI/2.0)) {
-//                                    lineToConstantHeading(Vector2d(12.0, 24.0))
-//                                }
+                                +go(Pose2d(12.0, 48.0, PI/2.0)) {
+                                    lineToConstantHeading(Vector2d(12.0, 24.0))
+                                }
                             }),
                             case({ StackPipeline.Height.ONE }, CommandContext.seq {
                                 // shoot from line
@@ -170,15 +171,15 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                         bot.wob.claw(Wobble.ClawState.WIDE)
                                     }
-                                    splineToConstantHeading(Vector2d(-28.0, 48.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-36.0, 59.0), Math.toRadians(90.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-22.0, 57.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-34.0, 57.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +setState(bot.feed.height) { Indexer.Height.HIGH }
                                 +takeWob
 
                                 // drop wobble 2 at B
-                                +go(Pose2d(-37.0, 59.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 28.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS) }
+                                +go(Pose2d(-34.0, 53.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 28.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS) }
                                 +dropWob
                                 //+setState(bot.wob.elbow) {Wobble.ElbowState.DROP}
 
@@ -189,7 +190,6 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 +setState(bot.wob.elbow) {Wobble.ElbowState.STORE}
                                 +delayC(500)
                                 +singleShotAndPark
-                                +setState(bot.wob.elbow) {Wobble.ElbowState.INTAKE}
 
                                 //+go(linePose - Pose2d(8.0)) {
                                     //lineToConstantHeading(Vector2d(12.0, 24.0))
@@ -261,7 +261,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                     // get wob
                                     //splineToConstantHeading(Vector2d(-24.0, 52.0), -PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     //splineToConstantHeading(Vector2d(-37.0, 50.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-35.0, 54.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-35.0, 48.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     //splineToConstantHeading(Vector2d(-35.0, 54.0), PI / 2.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.CLOSED)
@@ -273,7 +273,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.CARRY }
                                 +setState(bot.ink) { Intake.Power.OUT }
 
-                                +go(Pose2d(-35.0,54.0, PI)) {
+                                +go(Pose2d(-35.0,48.0, PI)) {
                                     splineTo(Vector2d(-54.0, 40.0), -PI/2.0)
                                     addDisplacementMarker {
                                         bot.ink(Intake.Power.IN)
@@ -302,7 +302,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                         bot.wob.claw(Wobble.ClawState.WIDE)
                                         bot.wob.elbow(Wobble.ElbowState.STORE)
                                     }
-                                    //splineToConstantHeading(Vector2d(12.0, 36.0), -PI/2.0)
+                                    splineToConstantHeading(Vector2d(12.0, 36.0), -PI/2.0)
                                 }
                             })
                     ))

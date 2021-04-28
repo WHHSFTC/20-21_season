@@ -14,7 +14,7 @@ class Indexer(val bot: Robot) {
     }
 
     enum class Shoot(val pos: Double) {
-        PRE(0.33), POST(.55)
+        PRE(0.29), POST(.55)
     }
 
     suspend fun shoot() {

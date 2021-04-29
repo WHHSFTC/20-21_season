@@ -1,16 +1,14 @@
 package org.firstinspires.ftc.teamcode.module
 
 import org.firstinspires.ftc.teamcode.switchboard.hardware.Servo
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.firstinspires.ftc.teamcode.switchboard.command.Command
 import org.firstinspires.ftc.teamcode.switchboard.command.linear
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.core.Configuration
 import org.firstinspires.ftc.teamcode.switchboard.core.Frame
+import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
-class Indexer(config: Configuration) : Activity {
+class Indexer(config: Configuration, val logger: Logger) : Activity {
     val feedServo: Servo = config.servos["feeder"]
     val heightServo: Servo = config.servos["setter"]
 
@@ -19,7 +17,7 @@ class Indexer(config: Configuration) : Activity {
     }
 
     enum class Shoot(val pos: Double) {
-        PRE(.1), POST(.0)
+        PRE(.13), POST(.0)
     }
 
     private var command: Command = Command.idle
@@ -96,7 +94,7 @@ class Indexer(config: Configuration) : Activity {
     }
 
     override fun update(frame: Frame) {
-        command.let {
+        command.also { logger.out["indexer"] = it }.let {
             if (it.done)
                 command = Command.idle
             else

@@ -14,7 +14,7 @@ class Summum(
 
     val hwmap: HardwareMap = opMode.hardwareMap
 
-    val feed: Indexer = Indexer(config)
+    val feed: Indexer = Indexer(config, logger)
     val wob: Wobble = Wobble(config, logger)
     val loc: CustomLocalizer = CustomLocalizer(config, logger)
     val dt: CustomMecanumDrive = CustomMecanumDrive(this, config)
@@ -24,7 +24,7 @@ class Summum(
     val out: Shooter = Shooter(config, logger)
     val alliance: Alliance = Alliance.BLUE
 
-    override val activities: MutableList<Activity> = mutableListOf(loc, dt, aim, out, wob)
+    override val activities: MutableList<Activity> = mutableListOf(loc, dt, aim, out, wob, feed)
     override val scheduler = bucket(Time.milli(14),
             listOf( // on ones
                     all(*dt.motors.toTypedArray())

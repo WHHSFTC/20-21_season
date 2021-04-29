@@ -132,6 +132,8 @@ class BlueTele: OpMode(Mode.TELE) {
             when {
                 shoot && !lastShoot -> bot.feed.shoot()
                 burst && !lastBurst -> bot.feed.burst()
+//                shoot && !lastShoot -> bot.feed.feed(Indexer.Shoot.PRE)
+//                burst && !lastBurst -> bot.feed.feed(Indexer.Shoot.POST)
             }
 
             lastShoot = shoot

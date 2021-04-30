@@ -1,17 +1,13 @@
 package org.firstinspires.ftc.teamcode.auto
 
-import android.transition.TransitionManager.go
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import kotlinx.coroutines.runBlocking
 import org.firstinspires.ftc.teamcode.cmd.*
 import org.firstinspires.ftc.teamcode.dsl.*
 import org.firstinspires.ftc.teamcode.module.*
-import org.firstinspires.ftc.teamcode.module.vision.PipelineRunner
-import org.firstinspires.ftc.teamcode.module.vision.RingPipeline
 import org.firstinspires.ftc.teamcode.module.vision.StackPipeline
 import kotlin.math.*
 
@@ -108,13 +104,13 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                 // shoot from line
                                 +prepFull
                                 +lineSet
-                                +go(start) { splineTo(linePose.vec() + Vector2d(0.0, 6.0), 0.0) }
+                                +go(start) { splineTo(linePose.vec() + Vector2d(4.0), 0.0) }
                                 +slowBurst
                                 +setState(bot.ink) { Intake.Power.IN }
 
                                 // drop wobble at A
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
-                                +go(linePose + Pose2d(0.0, 6.0)) { splineTo(Vector2d(18.0, 54.0), PI/2.0) }
+                                +go(Pose2d(linePose.vec() + Vector2d(4.0), 0.0)) { splineTo(Vector2d(18.0, 54.0), PI/2.0) }
                                 +dropWob
 
                                 +go(Pose2d(18.0, 4.0, PI/2.0)) { lineToConstantHeading(Vector2d(18.0, 24.0)) }
@@ -171,12 +167,13 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                         bot.wob.elbow(Wobble.ElbowState.INTAKE)
                                         bot.wob.claw(Wobble.ClawState.WIDE)
                                     }
-                                    splineToConstantHeading(Vector2d(-22.0, 57.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(Vector2d(-34.0, 57.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-22.0, 53.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
+                                    splineToConstantHeading(Vector2d(-36.0, 53.0), Math.toRadians(180.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
                                 }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +setState(bot.feed.height) { Indexer.Height.HIGH }
                                 +takeWob
+                                +delayC(500)
 
                                 // drop wobble 2 at B
                                 +go(Pose2d(-34.0, 53.0, 3.0 * PI / 2.0)) { lineToLinearHeading(Pose2d(18.0, 28.0, 0.0), constraintsOverride = DriveConstants.SLOW_CONSTRAINTS) }
@@ -235,20 +232,20 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                         //bot.ink(Intake.Power.IN)
                                         bot.wob.elbow(Wobble.ElbowState.DROP)
                                     }
-                                    splineToConstantHeading(Vector2d(40.0, 44.0), 0.0)
+                                    splineToConstantHeading(Vector2d(40.0, 48.0), 0.0)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.OPEN)
                                         bot.feed.height(Indexer.Height.HIGH)
                                         bot.out(Shooter.State.FULL)
                                     }
-                                    splineToConstantHeading(linePose.vec() - Vector2d(0.0, 8.0), PI)
+                                    splineToConstantHeading(linePose.vec() , PI)
                                 }
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
                                 +setState(bot.ink) { Intake.Power.OFF }
                                 +lineBurst
 
-                                +go(Pose2d(linePose.vec() - Vector2d(0.0, 8.0), 0.0)) {
+                                +go(linePose) {
                                     addDisplacementMarker {
                                         bot.ink(Intake.Power.IN)
                                     }
@@ -282,7 +279,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
                                     splineTo(Vector2d(-36.0, 30.0), 0.0)
                                     // intake rings:
                                     splineToConstantHeading(Vector2d(-12.0,30.0), 0.0, constraintsOverride = DriveConstants.SLOW_CONSTRAINTS)
-                                    splineToConstantHeading(linePose.vec() + Vector2d(0.0, -8.0), -PI/2.0)
+                                    splineToConstantHeading(linePose.vec() + Vector2d(0.0, -10.0), -PI/2.0)
                                 }
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.STORE }
@@ -296,7 +293,7 @@ class BlueHigh2: DslOpMode(mode = Mode.AUTO) {
 
                                 +setState(bot.wob.elbow) { Wobble.ElbowState.DROP }
                                 +setState(bot.ink) { Intake.Power.IN }
-                                +go(linePose + Pose2d(0.0, -8.0)) {
+                                +go(linePose + Pose2d(0.0, -10.0)) {
                                     splineTo(Vector2d(45.0, 36.0), PI/4.0)
                                     addDisplacementMarker {
                                         bot.wob.claw(Wobble.ClawState.WIDE)

@@ -17,7 +17,7 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     }
 
     enum class Shoot(val pos: Double) {
-        PRE(.13), POST(.0)
+        PRE(.28), POST(.13)
     }
 
     private var command: Command = Command.idle

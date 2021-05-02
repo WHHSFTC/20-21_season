@@ -108,7 +108,7 @@ class BlueTele: OpMode(Mode.TELE) {
                     val active = p.absoluteValue > 0.1
 
                     if (active)
-                        bot.aim.power(p.toDouble() / 4.0)
+                        bot.aim.power(p.toDouble() * if (p < 0.0) 1.0 else .25)
                     else
                         bot.aim.power(0.0)
                 } else if (lastLeftShift) {

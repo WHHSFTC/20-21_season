@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.switchboard.hardware.MotorImpl
 class HeightController(config: Configuration, val logger: Logger) : Activity {
     val motor = config.motors["aim"] as MotorImpl
     val enc = config.encoders["aim"]
+    var auto = false
 
     override fun load() {
         motor.zpb = Motor.ZeroPowerBehavior.BRAKE
@@ -21,12 +22,15 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
         //logger.out["AIM"] = enc.position
         logger.out["AIM"] = motor.m.currentPosition
 
-        if (!motor.m.isBusy)
+        if (auto && !motor.m.isBusy) {
             motor.power = 0.0
+            auto = false
+        }
     }
 
     fun reset() {
         enc.stopAndReset()
+        auto = false
     }
 
     enum class Height(val pos: Int, val power: Shooter.State = Shooter.State.FULL) {
@@ -39,6 +43,7 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
             set(value) {
                 motor.m.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
                 motor.power = value
+                auto = false
                 field = value
             }
     }
@@ -49,6 +54,7 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
                 motor.m.targetPosition = value.pos
                 motor.m.mode = DcMotor.RunMode.RUN_TO_POSITION
                 motor.power = 0.5
+                auto = true
                 field = value
             }
     }

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.switchboard.core.*
 
 @Config
-abstract class OpMode(val mode: Mode) : LinearOpMode() {
+abstract class OpMode(val mode: Mode, val al: Alliance = Alliance.BLUE) : LinearOpMode() {
     lateinit var bot: Summum
     lateinit var logger: Logger
     lateinit var config: Configuration
@@ -20,7 +20,7 @@ abstract class OpMode(val mode: Mode) : LinearOpMode() {
         logger = Logger(telemetry, DEBUG)
         config = Configuration(hardwareMap, logger)
 
-        bot = Summum(logger, config, this)
+        bot = Summum(logger, config, this, al)
         logger.update()
 
         initHook()

@@ -9,7 +9,8 @@ import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 class Summum(
         logger: Logger,
         config: Configuration,
-        val opMode: OpMode
+        val opMode: OpMode,
+        val alliance: Alliance
 ) : Robot(logger, config, "Summum") {
 
     val hwmap: HardwareMap = opMode.hardwareMap
@@ -22,7 +23,6 @@ class Summum(
     val aim: HeightController = HeightController(config, logger)
     //var vis: PipelineRunner = PipelineRunner(this, 640, 480)
     val out: Shooter = Shooter(config, logger)
-    val alliance: Alliance = Alliance.BLUE
 
     override val activities: MutableList<Activity> = mutableListOf(loc, dt, aim, out, wob, feed)
     override val scheduler = bucket(Time.milli(14),

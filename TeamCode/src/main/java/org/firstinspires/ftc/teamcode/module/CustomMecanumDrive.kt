@@ -29,6 +29,8 @@ import org.firstinspires.ftc.teamcode.switchboard.hardware.Motor
 import org.firstinspires.ftc.teamcode.switchboard.hardware.MotorImpl
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.absoluteValue
+import kotlin.math.max
 
 /*
 * Simple mecanum drive hardware implementation for REV hardware.
@@ -242,6 +244,7 @@ class CustomMecanumDrive(val bot: Summum, config: Configuration)
     }
 
     override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
+        //val m = maxOf(1.0, frontLeft.absoluteValue, rearLeft.absoluteValue, rearRight.absoluteValue, frontRight.absoluteValue)
         leftFront.power = frontLeft
         leftRear.power = rearLeft
         rightRear.power = rearRight

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.switchboard.hardware.MotorImpl
 class HeightController(config: Configuration, val logger: Logger) : Activity {
     val motor = config.motors["aim"] as MotorImpl
     val enc = config.encoders["aim"]
-    var auto = false
+    var busy = false
 
     override fun load() {
         motor.zpb = Motor.ZeroPowerBehavior.BRAKE
@@ -22,20 +22,21 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
         //logger.out["AIM"] = enc.position
         logger.out["AIM"] = motor.m.currentPosition
 
-        if (auto && !motor.m.isBusy) {
+        if (busy && !motor.m.isBusy) {
             motor.power = 0.0
-            auto = false
+            busy = false
         }
     }
 
     fun reset() {
         enc.stopAndReset()
-        auto = false
+        busy = false
     }
 
     enum class Height(val pos: Int, val power: Shooter.State = Shooter.State.FULL) {
         //POWER(495, Shooter.State.POWER), THIRD_POWER(490, Shooter.State.POWER), HIGH(375), ZERO(0), WALL(292), EDGEPS(188), STACK(274);
-        POWER(495, Shooter.State.POWER), THIRD_POWER(490, Shooter.State.POWER), HIGH(274), ZERO(0), WALL(292), EDGEPS(188), STACK(274);
+        //POWER(350, Shooter.State.POWER),  HIGH(274), ZERO(0), WALL(75), STACK(75);
+        POWER(350, Shooter.State.POWER),  HIGH(197), ZERO(0), WALL(75), STACK(75);
     }
 
     val power = object : Module<Double> {
@@ -43,7 +44,7 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
             set(value) {
                 motor.m.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
                 motor.power = value
-                auto = false
+                busy = false
                 field = value
             }
     }
@@ -54,7 +55,7 @@ class HeightController(config: Configuration, val logger: Logger) : Activity {
                 motor.m.targetPosition = value.pos
                 motor.m.mode = DcMotor.RunMode.RUN_TO_POSITION
                 motor.power = 0.5
-                auto = true
+                busy = true
                 field = value
             }
     }

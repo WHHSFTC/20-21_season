@@ -27,6 +27,8 @@ abstract class Robot(val logger: Logger, val config: Configuration, val name: St
 
     fun setup() {
         activities.forEach { it.load() }
+        scheduler.output(all = true)
+        logger.update()
     }
 
     fun update() {
@@ -40,7 +42,7 @@ abstract class Robot(val logger: Logger, val config: Configuration, val name: St
 
     fun cleanup() {
         activities.forEach { it.cleanup() }
-        scheduler.output(true)
+        scheduler.output(all = true)
         logger.update()
     }
 

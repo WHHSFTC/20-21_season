@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.module
 
 import org.firstinspires.ftc.teamcode.switchboard.hardware.Servo
 import org.firstinspires.ftc.teamcode.switchboard.command.Command
-import org.firstinspires.ftc.teamcode.switchboard.command.linear
+import org.firstinspires.ftc.teamcode.switchboard.command.makeLinear
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.core.Configuration
 import org.firstinspires.ftc.teamcode.switchboard.core.Frame
@@ -13,17 +13,18 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     val heightServo: Servo = config.servos["setter"]
 
     enum class Height(val pos: Double) {
-        IN(1.0), POWER(.87), HIGH(.87)
+        IN(1.0), POWER(.73), HIGH(.87)
     }
 
     enum class Shoot(val pos: Double) {
         PRE(.28), POST(.13)
     }
 
-    private var command: Command = Command.idle
+    var command: Command = Command.idle
+        private set
 
     fun shoot() {
-        command = linear {
+        command = makeLinear {
             task { feed(Shoot.POST) }
             delay(150)
             task { feed(Shoot.PRE) }
@@ -31,7 +32,7 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     }
 
     fun burst() {
-        command = linear {
+        command = makeLinear {
             repeat(2) {
                 task { feed(Shoot.POST) }
                 delay(150)
@@ -48,7 +49,7 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     }
 
     fun slowBurst() {
-        command = linear {
+        command = makeLinear {
             repeat(2) {
                 task { feed(Shoot.POST) }
                 delay(150)
@@ -65,7 +66,7 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     }
 
     fun shake() {
-        command = linear {
+        command = makeLinear {
             task { height(Height.POWER) }
             delay(250)
             task { height(Height.IN) }

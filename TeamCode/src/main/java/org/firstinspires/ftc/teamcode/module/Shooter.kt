@@ -53,5 +53,7 @@ class Shooter(config: Configuration, val logger: Logger): Module<Shooter.State>,
         @JvmField var kD = 0.0
 
         val PID_COEFFICIENTS get() = PIDCoefficients(kP, kI, kD)
+
+        @JvmField var MIN_FULL_RPM = 2000
     }
 }

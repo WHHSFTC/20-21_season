@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.switchboard.core.Configuration
 @Config
 class Intake(val bot: Summum, config: Configuration): Module<Intake.Power> {
     companion object {
-        @JvmField var INTAKE_COEF: Double = .8
+        @JvmField var INTAKE_COEF: Double = 1.0
     }
     val motor = config.motors["intake"]
 
@@ -14,7 +14,7 @@ class Intake(val bot: Summum, config: Configuration): Module<Intake.Power> {
         set(value) {
             when (value) {
                 Power.OUT -> {
-                    motor.power = 1.0
+                    motor.power = value.pow
                 }
                 else -> {
                     motor.power = value.pow * INTAKE_COEF * 12.0 / bot.dt.batteryVoltageSensor.voltage
@@ -23,6 +23,6 @@ class Intake(val bot: Summum, config: Configuration): Module<Intake.Power> {
             field = value
         }
     enum class Power(val pow: Double) {
-        OUT(1.0), IN(-1.0), OFF(.0)
+        OUT(-1.0), IN(1.0), OFF(.0)
     }
 }

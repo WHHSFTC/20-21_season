@@ -23,6 +23,7 @@ class Summum(
     val aim: HeightController = HeightController(config, logger)
     //var vis: PipelineRunner = PipelineRunner(this, 640, 480)
     val out: Shooter = Shooter(config, logger)
+    val wings: Wings = Wings(config, logger)
 
     override val activities: MutableList<Activity> = mutableListOf(loc, dt, aim, out, wob, feed)
     override val scheduler = bucket(Time.milli(14),
@@ -40,7 +41,7 @@ class Summum(
             ),
 
             listOf( // on eights
-
+                    wings.leftWing, wings.rightWing
             )
     )
 

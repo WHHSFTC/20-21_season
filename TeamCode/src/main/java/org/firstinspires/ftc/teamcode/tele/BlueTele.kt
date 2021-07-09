@@ -5,8 +5,14 @@ import org.firstinspires.ftc.teamcode.module.*
 
 @TeleOp
 class BlueTele: OpMode(Mode.TELE, Alliance.BLUE) {
+    override fun initHook() {
+        //bot.wings(Wings.State.UP)
+        bot.feed.height(Indexer.Height.HIGH)
+        bot.feed.feed(Indexer.Shoot.PRE)
+    }
+
     override fun startHook() {
-        bot.prependActivity(Controllers.Andrew(gamepad1, bot))
-        bot.prependActivity(Controllers.Adham(gamepad2, bot))
+        bot.prependActivity(Controllers.Luke(gamepad1, bot))
+        bot.prependActivity(Controllers.Kaylaa(gamepad2, bot))
     }
 }

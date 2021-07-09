@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.tele
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
@@ -14,16 +15,31 @@ fun Gamepad.shift() = right_trigger > .5 || left_trigger > .5
 
 @Config
 class Controllers {
-    class Andrew(val pad: Gamepad, val bot: Summum, /*var fieldCentric: Boolean = false*/): Activity {
-//        var lastXkey = false
+    class Luke(val pad: Gamepad, val bot: Summum, /*var fieldCentric: Boolean = false*/): Activity {
+        var lastXkey = false
+        var rr = false
         fun drivetrain(frame: Frame) {
-//            val xkey = pad.x
-//            if (xkey && !lastXkey) {
-//                fieldCentric = !fieldCentric
-//            }
-//            lastXkey = xkey
+            if (rr) {
+                if (bot.dt.isBusy)
+                    return
+                rr = false
+            }
 
             val shift = pad.shift()
+            val xkey = pad.x
+            val strafe = xkey && !lastXkey
+            lastXkey = xkey
+
+            if (strafe) {
+                val tb = TrajectoryBuilder(startPose = bot.dt.poseEstimate, constraints = SummumConstants.SLOW_CONSTRAINTS)
+                when (bot.alliance to shift) {
+                    Alliance.RED to true, Alliance.BLUE to false -> tb.strafeRight(STRAFE_DISTANCE)
+                    Alliance.RED to false, Alliance.BLUE to true -> tb.strafeLeft(STRAFE_DISTANCE)
+                }
+                bot.dt.followTrajectoryAsync(tb.build())
+                return
+            }
+
             val x = (-pad.left_stick_y).toDouble()
             val y = (-pad.left_stick_x).toDouble()
             var omega = (-pad.right_stick_x).toDouble()
@@ -73,9 +89,9 @@ class Controllers {
 
         fun intake(frame: Frame) {
             when {
-                pad.a -> bot.ink(Intake.Power.IN)
+                pad.a -> bot.ink(Intake.Power.OUT)
                 pad.b -> bot.ink(Intake.Power.OFF)
-                pad.y -> bot.ink(Intake.Power.OUT)
+                pad.y -> bot.ink(Intake.Power.IN)
             }
         }
 
@@ -86,7 +102,7 @@ class Controllers {
         }
     }
 
-    class Adham(val pad: Gamepad, val bot: Summum): Activity {
+    class Kaylaa(val pad: Gamepad, val bot: Summum): Activity {
         var lastA = false
         var lastB = false
         var lastDeadzone = true
@@ -138,9 +154,15 @@ class Controllers {
                 }
 
                 when {
-                    pad.dpad_up -> bot.feed.height(Indexer.Height.HIGH)
                     pad.dpad_down -> bot.feed.height(Indexer.Height.IN)
-                    pad.dpad_right || pad.dpad_left -> bot.feed.height(Indexer.Height.POWER)
+                    pad.dpad_up -> {
+                        bot.feed.height(Indexer.Height.HIGH)
+                        bot.wings(Wings.State.UP)
+                    }
+                    pad.dpad_right || pad.dpad_left -> {
+                        bot.feed.height(Indexer.Height.POWER)
+                        bot.wings(Wings.State.UP)
+                    }
                 }
             }
 
@@ -162,14 +184,23 @@ class Controllers {
             lastBurst = burst
         }
 
+        fun wings(frame: Frame) {
+            when {
+                pad.x -> bot.wings(Wings.State.DOWN)
+                pad.y -> bot.wings(Wings.State.UP)
+            }
+        }
+
         override fun update(frame: Frame) {
             flywheel(frame)
             heights(frame)
             shooting(frame)
+            wings(frame)
         }
     }
 
     companion object {
         @JvmField var FLICK_P: Double = 1.0
+        @JvmField var STRAFE_DISTANCE: Double = 8.5
     }
 }

@@ -26,7 +26,6 @@ abstract class OpMode(val mode: Mode, val al: Alliance = Alliance.BLUE) : Linear
         initHook()
 
         bot.setup()
-        logger.update()
         waitForStart()
 
         startHook()

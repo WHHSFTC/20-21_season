@@ -12,6 +12,9 @@ class MotorImpl(val m: DcMotorEx, val name: String, val log: Logger): Motor {
     //}
     init {
         m.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        m.power = 0.0
+        m.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+        m.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
 
     override var power: Double = 0.0

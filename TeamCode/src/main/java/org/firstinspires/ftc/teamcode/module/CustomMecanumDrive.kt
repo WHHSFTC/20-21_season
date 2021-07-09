@@ -88,6 +88,10 @@ class CustomMecanumDrive(val bot: Summum, config: Configuration)
         mode = DriveMode.TURN
     }
 
+    @Deprecated(
+            message = "Don't use blocking drivetrain calls in Switchboard Scheduler",
+            replaceWith = ReplaceWith("turnAsync")
+    )
     fun turn(angle: Double, constraints: DriveConstraints = this.constraints) {
         turnAsync(angle, constraints)
         waitForIdle()
@@ -98,6 +102,10 @@ class CustomMecanumDrive(val bot: Summum, config: Configuration)
         mode = DriveMode.FOLLOW_TRAJECTORY
     }
 
+    @Deprecated(
+        message = "Don't use blocking drivetrain calls in Switchboard Scheduler",
+        replaceWith = ReplaceWith("followTrajectoryAsync")
+    )
     fun followTrajectory(trajectory: Trajectory?) {
         followTrajectoryAsync(trajectory)
         waitForIdle()

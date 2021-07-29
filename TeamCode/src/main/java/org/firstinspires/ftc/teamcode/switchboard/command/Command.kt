@@ -7,7 +7,13 @@ interface Command {
     fun update(frame: Frame)
     val done: Boolean
 
-    object idle : Command {
+    object stall : Command {
+        override fun load(frame: Frame) { }
+        override fun update(frame: Frame) { }
+        override val done: Boolean = false
+    }
+
+    object nop : Command {
         override fun load(frame: Frame) { }
         override fun update(frame: Frame) { }
         override val done: Boolean = false

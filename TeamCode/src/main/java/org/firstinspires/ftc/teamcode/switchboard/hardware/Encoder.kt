@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.switchboard.hardware
 
 interface Encoder: HardwareInput {
-    val position: Int
+    var position: Int
     val velocity: Double
 
     fun stopAndReset()

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.module
 
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.module.vision.Vision
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.core.*
 import org.firstinspires.ftc.teamcode.switchboard.scheduler.*
@@ -10,7 +11,8 @@ class Summum(
         logger: Logger,
         config: Configuration,
         val opMode: OpMode,
-        val alliance: Alliance
+        val alliance: Alliance,
+        val setup: SetupPosition
 ) : Robot(logger, config, "Summum") {
 
     val hwmap: HardwareMap = opMode.hardwareMap
@@ -21,11 +23,10 @@ class Summum(
     val dt: CustomMecanumDrive = CustomMecanumDrive(this, config)
     val ink: Intake = Intake(this, config)
     val aim: HeightController = HeightController(config, logger)
-    //var vis: PipelineRunner = PipelineRunner(this, 640, 480)
+    val vis: Vision = Vision(this)
     val out: Shooter = Shooter(config, logger)
-    val wings: Wings = Wings(config, logger)
 
-    override val activities: MutableList<Activity> = mutableListOf(loc, dt, aim, out, wob, feed)
+    override val activities: MutableList<Activity> = mutableListOf(loc, dt, aim, out, wob, feed, vis)
     override val scheduler = bucket(Time.milli(14),
             listOf( // on ones
                     all(*dt.motors.toTypedArray())
@@ -41,14 +42,9 @@ class Summum(
             ),
 
             listOf( // on eights
-                    wings.leftWing, wings.rightWing
+                    ink.hook.servo
             )
     )
-
-    init {
-        //vis.load(vis.stack)
-        //vis.start()
-    }
 
     companion object {
         const val TRACK_WIDTH = 14.5 // TODO

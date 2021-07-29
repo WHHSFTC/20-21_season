@@ -20,7 +20,7 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
         PRE(.28), POST(.13)
     }
 
-    var command: Command = Command.idle
+    var command: Command = Command.stall
         private set
 
     fun shoot() {
@@ -97,7 +97,7 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     override fun update(frame: Frame) {
         command.also { logger.out["indexer"] = it }.let {
             if (it.done)
-                command = Command.idle
+                command = Command.stall
             else
                 it.update(frame)
         }

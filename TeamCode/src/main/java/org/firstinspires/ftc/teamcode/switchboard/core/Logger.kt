@@ -20,17 +20,17 @@ class Logger(
     }
 
     fun update() {
+        out.print()
+
+        if (displayErr)
+            err.print()
+
         val now = Time.now()
         messages.removeIf { it.second < now }
 
         telemetry.addLine("messages")
         telemetry.addLine("---")
         messages.forEach { telemetry.addLine(it.first) }
-
-        out.print()
-
-        if (displayErr)
-            err.print()
 
         telemetry.update()
     }

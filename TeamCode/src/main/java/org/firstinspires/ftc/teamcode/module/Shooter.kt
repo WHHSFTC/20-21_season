@@ -46,7 +46,7 @@ class Shooter(config: Configuration, val logger: Logger): Module<Shooter.State>,
 
     companion object {
         @JvmField var coef = 1.0
-        @JvmField var FULL_POWER = 1.0
+        @JvmField var FULL_POWER = 0.9
 
         @JvmField var kP = 4.0
         @JvmField var kI = 0.0

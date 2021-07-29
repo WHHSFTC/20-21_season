@@ -9,6 +9,13 @@ class Intake(val bot: Summum, config: Configuration): Module<Intake.Power> {
         @JvmField var INTAKE_COEF: Double = 1.0
     }
     val motor = config.motors["intake"]
+    val hookServo = config.servos["hook"]
+
+    enum class HookPosition(override val pos: Double): StatefulServo.ServoPosition {
+        LOCKED(1.0), UNLOCKED(0.0)
+    }
+
+    val hook = StatefulServo<Intake.HookPosition>(hookServo, HookPosition.LOCKED)
 
     override var state: Power = Power.OFF
         set(value) {

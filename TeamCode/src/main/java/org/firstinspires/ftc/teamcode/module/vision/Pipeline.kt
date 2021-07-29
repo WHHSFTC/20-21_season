@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.module.vision
 
-import org.openftc.easyopencv.OpenCvPipeline
+import org.opencv.core.Mat
 
-abstract class Pipeline: OpenCvPipeline()
+interface Pipeline {
+    val input: Mat
+    fun processFrame(camera: Camera)
+    fun initialize(camera: Camera) { }
+}
 

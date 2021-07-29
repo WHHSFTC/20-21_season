@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.switchboard.core
 
 import com.qualcomm.hardware.lynx.LynxModule
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.switchboard.hardware.*
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
 
@@ -44,6 +45,18 @@ class Configuration(val hwMap: HardwareMap, val logger: Logger) {
     val digitalInputs = object : DeviceMap<DigitalInput> {
         override operator fun get(key: String): DigitalInput
                 = getInput(::DigitalInputImpl, ::DigitalInputStub, key)
+    }
+
+    val webcamNames = object : DeviceMap<WebcamName?> {
+        override operator fun get(key: String): WebcamName? {
+            val iter = hwMap.iterator()
+            while (iter.hasNext()) {
+                val d = iter.next()
+                if (d is WebcamName && key in hwMap.getNamesOf(d).fold(listOf<String>()) { acc, s -> acc + s.split('+') })
+                    return d
+            }
+            return null
+        }
     }
 
     val revHubs get() = hwMap.getAll(LynxModule::class.java)

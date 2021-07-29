@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.tele
 
 import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.module.*
@@ -127,29 +126,29 @@ class Controllers {
             lastB = b
         }
 
-        var lastLeftShift = false
+        var lastActive = false
 
         fun heights(frame: Frame) {
             val leftShift = pad.left_trigger > .5
+            val p = -pad.right_stick_y
+            val active = leftShift && p.absoluteValue > 0.5
             val rightShift = pad.right_trigger > .5
 
             if (rightShift) {
                 when {
-                    pad.dpad_down -> bot.aim.reset()
-                    pad.dpad_up -> bot.aim.height(HeightController.Height.HIGH)
-                    pad.dpad_left || pad.dpad_right -> bot.aim.height(HeightController.Height.POWER)
+                    //pad.dpad_down -> bot.aim.reset()
+                    pad.dpad_right && bot.alliance == Alliance.RED -> bot.aim.height(HeightController.Height.THREE)
+                    pad.dpad_left && bot.alliance == Alliance.BLUE -> bot.aim.height(HeightController.Height.THREE)
+                    pad.dpad_right && bot.alliance == Alliance.BLUE -> bot.aim.height(HeightController.Height.TWO)
+                    pad.dpad_left && bot.alliance == Alliance.RED -> bot.aim.height(HeightController.Height.TWO)
+                    pad.dpad_up -> bot.aim.height(HeightController.Height.MID)
+                    //pad.dpad_left || pad.dpad_right -> bot.aim.height(HeightController.Height.POWER)
                 }
 
             } else {
-                if (leftShift) {
-                    val p = -pad.right_stick_y
-                    val active = p.absoluteValue > 0.1
-
-                    if (active)
-                        bot.aim.power(p.toDouble() * if (p < 0.0) 1.0 else .25)
-                    else
-                        bot.aim.power(0.0)
-                } else if (lastLeftShift) {
+                if (active) {
+                    bot.aim.power(p.toDouble() * if (p < 0.0) 1.0 else .25)
+                } else if (lastActive) {
                     bot.aim.power(0.0)
                 }
 
@@ -157,16 +156,14 @@ class Controllers {
                     pad.dpad_down -> bot.feed.height(Indexer.Height.IN)
                     pad.dpad_up -> {
                         bot.feed.height(Indexer.Height.HIGH)
-                        bot.wings(Wings.State.UP)
                     }
                     pad.dpad_right || pad.dpad_left -> {
                         bot.feed.height(Indexer.Height.POWER)
-                        bot.wings(Wings.State.UP)
                     }
                 }
             }
 
-            lastLeftShift = leftShift
+            lastActive = active
         }
 
         fun shooting(frame: Frame) {
@@ -184,18 +181,10 @@ class Controllers {
             lastBurst = burst
         }
 
-        fun wings(frame: Frame) {
-            when {
-                pad.x -> bot.wings(Wings.State.DOWN)
-                pad.y -> bot.wings(Wings.State.UP)
-            }
-        }
-
         override fun update(frame: Frame) {
             flywheel(frame)
             heights(frame)
             shooting(frame)
-            wings(frame)
         }
     }
 

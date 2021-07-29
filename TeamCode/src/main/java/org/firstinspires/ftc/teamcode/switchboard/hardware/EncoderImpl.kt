@@ -13,19 +13,28 @@ class EncoderImpl(val m: DcMotorEx, val name: String, val log: Logger): Encoder 
 
     var rawVelocity: Double = 0.0
 
-    override var position: Int = 0
+    var rawPosition: Int = 0
         private set
+    var offset: Int = 0
+        private set
+
+    override var position: Int
+        get() = rawPosition + offset
+        set(value) {
+            offset = value - rawPosition
+        }
+
     override var velocity: Double = 0.0
         private set
 
     override fun input() {
-        position = m.currentPosition
+        rawPosition = m.currentPosition
         rawVelocity = m.velocity
 
         val t = Time.now()
         val step = (t - lastTime).seconds.let { if (it epsilonEquals 0.0) EPSILON else it }
 
-        val derivative = (position - lastPosition)/step
+        val derivative = (rawPosition - lastPosition)/step
 
         var v = rawVelocity
 
@@ -37,10 +46,10 @@ class EncoderImpl(val m: DcMotorEx, val name: String, val log: Logger): Encoder 
 
         velocity = v
 
-        lastPosition = position
+        lastPosition = rawPosition
         lastTime = t
 
-        log.err["$name pos"] = position
+        log.err["$name pos"] = rawPosition
         log.err["$name velocity"] = velocity
     }
 
@@ -48,5 +57,6 @@ class EncoderImpl(val m: DcMotorEx, val name: String, val log: Logger): Encoder 
         val mode = m.mode
         m.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         m.mode = mode
+        offset = 0
     }
 }

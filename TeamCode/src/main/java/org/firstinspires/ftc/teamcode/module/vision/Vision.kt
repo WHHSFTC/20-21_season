@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.module.Summum
 import org.firstinspires.ftc.teamcode.switchboard.core.Activity
 import org.firstinspires.ftc.teamcode.switchboard.core.Frame
 import org.openftc.easyopencv.OpenCvCameraFactory
+import org.openftc.easyopencv.OpenCvCameraRotation
 
 @Config
 class Vision(val bot: Summum) : Activity {
@@ -18,14 +19,16 @@ class Vision(val bot: Summum) : Activity {
         Pose2d(Summum.LENGTH/2.0, 13.125/2.0, 0.0),
         7.0,
         0.0,
-        bot.opMode.gamepad1::left_bumper
+        bot.opMode.gamepad1::left_bumper,
+        OpenCvCameraRotation.UPSIDE_DOWN
     )
     val rightCam = Camera(
         OpenCvCameraFactory.getInstance().createWebcam(bot.config.webcamNames["rightCam"], subIds[1]),
         Pose2d(Summum.LENGTH/2.0, -13.125/2.0, 0.0),
         7.0,
         0.0,
-        bot.opMode.gamepad1::right_bumper
+        bot.opMode.gamepad1::right_bumper,
+        OpenCvCameraRotation.UPRIGHT
     )
 
     val stack = StackProcessor(bot, leftCam, rightCam)

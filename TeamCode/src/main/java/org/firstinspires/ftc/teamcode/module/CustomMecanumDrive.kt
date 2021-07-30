@@ -29,8 +29,6 @@ import org.firstinspires.ftc.teamcode.switchboard.hardware.Motor
 import org.firstinspires.ftc.teamcode.switchboard.hardware.MotorImpl
 import java.util.*
 import kotlin.math.abs
-import kotlin.math.absoluteValue
-import kotlin.math.max
 
 /*
 * Simple mecanum drive hardware implementation for REV hardware.

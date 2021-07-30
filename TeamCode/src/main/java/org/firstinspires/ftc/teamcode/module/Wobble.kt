@@ -9,11 +9,12 @@ import org.firstinspires.ftc.teamcode.switchboard.core.Logger
 
 class Wobble(config: Configuration, val logger: Logger) : Activity {
     enum class ElbowState(override val pos: Double): StatefulServo.ServoPosition {
-        STORE(.1), DROP(.8), CARRY(.32), INTAKE(1.0), WALL(.65)
+        STORE(.1), DROP(.85), CARRY(.32), INTAKE(1.0), WALL(.65)
     }
 
     enum class ClawState(override val pos: Double): StatefulServo.ServoPosition {
-        OPEN(.6), CLOSED(.07), WIDE(.99)
+        //OPEN(.6), CLOSED(.07), WIDE(.99)
+        OPEN(.6), CLOSED(1.0), WIDE(.35)
     }
 
     var elbow = StatefulServo<ElbowState>(config.servos["elbow"], ElbowState.STORE)
@@ -36,7 +37,7 @@ class Wobble(config: Configuration, val logger: Logger) : Activity {
                     }
 
                     2 -> {
-                        wob.claw(ClawState.OPEN)
+                        wob.claw(ClawState.WIDE)
                         step++
                     }
 
@@ -69,12 +70,8 @@ class Wobble(config: Configuration, val logger: Logger) : Activity {
     }
 
     override fun load() {
-        runBlocking {
-            claw(ClawState.CLOSED)
-            delay(1000)
-            elbow(ElbowState.STORE)
-            delay(1000)
-        }
+        claw(ClawState.CLOSED)
+        elbow(ElbowState.STORE)
     }
 
     override fun update(frame: Frame) {

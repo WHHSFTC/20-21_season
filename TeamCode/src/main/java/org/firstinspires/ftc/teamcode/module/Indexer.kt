@@ -13,7 +13,8 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     val heightServo: Servo = config.servos["setter"]
 
     enum class Height(val pos: Double) {
-        IN(1.0), POWER(.73), HIGH(.87)
+        //IN(1.0), POWER(.73), HIGH(.87)
+        IN(.16), POWER(.41), HIGH(.35)
     }
 
     enum class Shoot(val pos: Double) {

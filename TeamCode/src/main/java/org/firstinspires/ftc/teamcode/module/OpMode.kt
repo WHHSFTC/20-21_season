@@ -32,6 +32,7 @@ abstract class OpMode(val mode: Mode, val al: Alliance = Alliance.BLUE, val setu
         initHook()
 
         bot.setup()
+
         waitForStart()
         resetStartTime()
 
@@ -84,10 +85,30 @@ abstract class OpMode(val mode: Mode, val al: Alliance = Alliance.BLUE, val setu
         = this + Vector2d(0.0, -24.0 * bot.alliance.ysign) * tiles
     fun Vector2d.fro(tiles: Double = 1.0)
         = this + Vector2d(0.0, 24.0 * bot.alliance.ysign) * tiles
+    fun Vector2d.left(tiles: Double = 1.0)
+        = this + Vector2d(0.0, 24.0) * tiles
+    fun Vector2d.right(tiles: Double = 1.0)
+        = this + Vector2d(0.0, -24.0) * tiles
     fun Vector2d.aft(tiles: Double = 1.0)
         = this + Vector2d(-24.0, 0.0) * tiles
     fun Vector2d.fore(tiles: Double = 1.0)
         = this + Vector2d(24.0, 0.0) * tiles
+
+    val boffset = .75
+    val woffset = 4.0
+    fun Vector2d.wobAft()
+        = this.aft(boffset) + Vector2d(0.0, -woffset)
+    fun Vector2d.wobFore()
+        = this.fore(boffset) + Vector2d(0.0, woffset)
+    fun Vector2d.wobLeft()
+        = this.left(boffset) + Vector2d(-woffset, 0.0)
+    fun Vector2d.wobRight()
+        = this.right(boffset) + Vector2d(woffset, 0.0)
+    fun Vector2d.wobTo()
+            = if (bot.alliance == Alliance.RED) wobLeft() else wobRight()
+    fun Vector2d.wobFro()
+            = if (bot.alliance == Alliance.RED) wobRight() else wobLeft()
+
     infix fun Vector2d.facing(heading: Double)
         = Pose2d(this, heading)
 }

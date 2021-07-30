@@ -12,7 +12,7 @@ class Intake(val bot: Summum, config: Configuration): Module<Intake.Power> {
     val hookServo = config.servos["hook"]
 
     enum class HookPosition(override val pos: Double): StatefulServo.ServoPosition {
-        LOCKED(1.0), UNLOCKED(0.0)
+        LOCKED(.23), UNLOCKED(.9)
     }
 
     val hook = StatefulServo<Intake.HookPosition>(hookServo, HookPosition.LOCKED)

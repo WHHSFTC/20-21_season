@@ -7,7 +7,7 @@ import org.openftc.easyopencv.OpenCvCamera
 import org.openftc.easyopencv.OpenCvCameraRotation
 import org.openftc.easyopencv.OpenCvPipeline
 
-class Camera(private val cam: OpenCvCamera, val pose: Pose2d, val height: Double, val verticalAngle: Double = 0.0, val trigger: () -> Boolean) {
+class Camera(private val cam: OpenCvCamera, val pose: Pose2d, val height: Double, val verticalAngle: Double = 0.0, val trigger: () -> Boolean, val orientation: OpenCvCameraRotation) {
     private val pipelines: MutableList<Pipeline> = mutableListOf()
     private val views: MutableList<View> = mutableListOf()
     private var i = -1
@@ -76,7 +76,7 @@ class Camera(private val cam: OpenCvCamera, val pose: Pose2d, val height: Double
 
     private fun startStreaming() {
         //cam.openCameraDevice();
-        cam.openCameraDeviceAsync { cam.startStreaming(Vision.FRAME_WIDTH, Vision.FRAME_HEIGHT, OpenCvCameraRotation.UPRIGHT) }
+        cam.openCameraDeviceAsync { cam.startStreaming(Vision.FRAME_WIDTH, Vision.FRAME_HEIGHT, orientation) }
     }
 
     private fun stopStreaming() {

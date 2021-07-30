@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder
-import org.firstinspires.ftc.teamcode.module.Shooter
-import org.firstinspires.ftc.teamcode.module.Summum
-import org.firstinspires.ftc.teamcode.module.Wobble
+import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.switchboard.command.Command
 import org.firstinspires.ftc.teamcode.switchboard.command.makeLinear
 import org.firstinspires.ftc.teamcode.switchboard.shapes.Time
@@ -46,3 +44,4 @@ fun wait2Burst(bot: Summum, off: Boolean = true): Command
     }
 
 fun <T : BaseTrajectoryBuilder<T>> BaseTrajectoryBuilder<T>.splineToPose(pose: Pose2d) = splineTo(pose.vec(), pose.heading)
+

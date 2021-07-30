@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.switchboard.hardware
 
+import com.acmerobotics.roadrunner.util.epsilonEquals
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import org.firstinspires.ftc.teamcode.switchboard.core.Logger
@@ -19,13 +20,20 @@ class MotorImpl(val m: DcMotorEx, val name: String, val log: Logger): Motor {
 
     override var power: Double = 0.0
     override var zpb: Motor.ZeroPowerBehavior = Motor.ZeroPowerBehavior.BRAKE
+    var n = 0
+        private set
     override fun output(all: Boolean) {
-        if (m.power != power)
+        val g = m.power
+        if (!(g epsilonEquals power)) {
             m.power = power
+            n++
+        }
         if (m.zeroPowerBehavior != zpb.mirror)
             m.zeroPowerBehavior = zpb.mirror
 
         log.err["$name power"] = power
+        log.err["$name count"] = n
+        log.err["$name get"] = g
         log.err["$name zpb"] = zpb
     }
 }

@@ -63,7 +63,7 @@ class StackProcessor(val bot: Summum, val leftCam: Camera, val rightCam: Camera)
             @JvmField var uY = 255.0
             @JvmField var uR = 170.0
             @JvmField var uB = 110.0
-            @JvmField var MIN_WIDTH = .05
+            @JvmField var MIN_WIDTH = .15
             @JvmField var FAR_MIN_WIDTH = .05
             @JvmField var BOUND_RATIO = 0.7
             @JvmField var HORIZON = .5

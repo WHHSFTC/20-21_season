@@ -81,7 +81,8 @@ class Controllers {
             }
 
             when {
-                pad.left_bumper -> bot.wob.claw(Wobble.ClawState.OPEN)
+                pad.left_bumper && !pad.shift() -> bot.wob.claw(Wobble.ClawState.WIDE)
+                pad.left_bumper && pad.shift() -> bot.wob.claw(Wobble.ClawState.OPEN)
                 pad.right_bumper -> bot.wob.claw(Wobble.ClawState.CLOSED)
             }
         }

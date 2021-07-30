@@ -92,7 +92,7 @@ class CustomMecanumDrive(val bot: Summum, config: Configuration)
     )
     fun turn(angle: Double, constraints: DriveConstraints = this.constraints) {
         turnAsync(angle, constraints)
-        waitForIdle()
+        //waitForIdle()
     }
 
     fun followTrajectoryAsync(trajectory: Trajectory?) {
@@ -106,7 +106,7 @@ class CustomMecanumDrive(val bot: Summum, config: Configuration)
     )
     fun followTrajectory(trajectory: Trajectory?) {
         followTrajectoryAsync(trajectory)
-        waitForIdle()
+//        waitForIdle()
     }
 
     val lastError: Pose2d

@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto
 
-import org.firstinspires.ftc.teamcode.module.HeightController
-import org.firstinspires.ftc.teamcode.module.Indexer
-import org.firstinspires.ftc.teamcode.module.OpMode
-import org.firstinspires.ftc.teamcode.module.Shooter
+import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.module.vision.StackProcessor
 import org.firstinspires.ftc.teamcode.switchboard.command.Command
 import org.firstinspires.ftc.teamcode.switchboard.command.makeLinear
@@ -39,16 +36,34 @@ fun OpMode.inner(): Command
         value(StackProcessor.StackPipeline.Height.ZERO) {
             turnTo(0.0)
             await { runtime > 15 }
-            go(al.innerShoot3.vec() facing 0.0) {
-                splineToConstantHeading(al.innerShoot3.vec().fore(2.0), 0.0)
-                splineToConstantHeading(al.innerShoot3.vec().fore(2.0).fro(1.0), PI)
-                splineToConstantHeading(al.target0.fro(.25).wobFore(), PI)
-            }
-            sub(dropWobble(bot))
-            go(al.target0.fro(.25).wobFore() facing 0.0) {
-                splineToConstantHeading(al.innerShoot3.vec().fore(2.0).fro(1.0), PI)
-                splineToConstantHeading(al.innerShoot3.vec().fore(2.0), 0.0)
-                splineToConstantHeading(al.innerShoot3.vec().fore(1.0), 0.0)
+            switch({ al }) {
+                value(Alliance.RED) {
+                    go(al.innerShoot3.vec() facing 0.0) {
+                        splineToConstantHeading(al.innerShoot3.vec().fore(2.0), 0.0)
+                        splineToConstantHeading(al.innerShoot3.vec().fore(2.0).fro(1.0), PI)
+                        splineToConstantHeading(al.target0.fro(.25).wobFore(), PI)
+                    }
+                    sub(dropWobble(bot))
+                    go(al.target0.fro(.25).wobFore() facing 0.0) {
+                        splineToConstantHeading(al.innerShoot3.vec().fore(2.0).fro(1.0), PI)
+                        splineToConstantHeading(al.innerShoot3.vec().fore(2.0), 0.0)
+                        splineToConstantHeading(al.innerShoot3.vec().fore(1.0), 0.0)
+                    }
+                }
+
+                value(Alliance.BLUE) {
+                    go(al.innerShoot3.vec() facing 0.0) {
+                        splineToSplineHeading(al.innerShoot3.vec().fore(2.0) facing 0.0, 0.0)
+                        splineToSplineHeading(al.innerShoot3.vec().fore(2.0).fro(1.0) facing 0.0, PI/2.0)
+                        splineToSplineHeading(al.target0.to(.25).fore(.375) facing -PI/2.0, PI)
+                    }
+                    sub(dropWobble(bot))
+                    go(al.target0.to(.25).fore(.375) facing -PI/2.0) {
+                        splineToConstantHeading(al.innerShoot3.vec().fore(2.0).fro(1.0), PI)
+                        splineToConstantHeading(al.innerShoot3.vec().fore(2.0), 0.0)
+                        splineToConstantHeading(al.innerShoot3.vec().fore(1.0), 0.0)
+                    }
+                }
             }
         }
 
@@ -70,7 +85,7 @@ fun OpMode.inner(): Command
             turnTo(al.direction + PI)
             sub(dropWobble(bot))
             go(al.target4.fore(.25).wobTo() facing al.direction + PI) {
-                splineTo(al.target0.to(2.0), PI)
+                splineTo(al.target0.to(2.0).fro(0.25), PI)
             }
         }
     }

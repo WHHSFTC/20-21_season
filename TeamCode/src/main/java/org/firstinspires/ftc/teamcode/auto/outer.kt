@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto
 
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import org.firstinspires.ftc.teamcode.module.*
 import org.firstinspires.ftc.teamcode.module.vision.StackProcessor
 import org.firstinspires.ftc.teamcode.switchboard.command.Command
@@ -24,17 +25,32 @@ fun OpMode.outer(): Command
             sub(wait2Burst(bot))
 
             turnTo(PI)
-            go(al.outerShoot2.vec() facing PI) {
-                strafeTo(al.target0.wobAft())
-            }
-            sub(dropWobble(bot))
-            go(al.target0.wobAft() facing PI, 0.0) {
-                splineToConstantHeading(al.target0.wobAft().aft(), PI)
+
+            switch({ al }) {
+                value(Alliance.BLUE) {
+                    go(al.outerShoot2.vec() facing PI) {
+                        strafeTo(al.target0.wobAft() + Vector2d(6.0))
+                    }
+                    sub(dropWobble(bot))
+                    go(al.target0.wobAft() + Vector2d(6.0) facing PI) {
+                        splineToConstantHeading(al.target0.wobAft().aft(), PI)
+                    }
+                }
+
+                value(Alliance.RED) {
+                    go(al.outerShoot2.vec() facing PI) {
+                        lineToLinearHeading(al.target0 + Vector2d(-9.0, 6.0) facing 3 * PI/4.0)
+                    }
+                    sub(dropWobble(bot))
+                    go(al.target0 + Vector2d(-9.0, 9.0) facing 3 * PI/4.0) {
+                        splineTo(al.target0.wobAft().aft(), PI)
+                    }
+                }
             }
             await { runtime > 26 }
             go(al.target0.wobAft().aft() facing PI, al.direction + PI) {
                 splineToConstantHeading(al.target0.to().aft(), 0.0)
-                splineToConstantHeading(al.target0.to(1.125), 0.0)
+                splineToConstantHeading(al.target0.to(1.5), 0.0)
             }
 
             task {
@@ -131,12 +147,14 @@ fun OpMode.outer(): Command
 
             task {
                 bot.feed.height(Indexer.Height.HIGH)
+                bot.ink(Intake.Power.OUT)
             }
 
             sub(wait2Burst(bot, off = false))
 
             task {
                 bot.aim.height(HeightController.Height.THREE)
+                bot.ink(Intake.Power.IN)
             }
 
             go(al.stack facing al.arc, constraints = SummumConstants.SLOW_CONSTRAINTS) {
@@ -145,20 +163,24 @@ fun OpMode.outer(): Command
 
             task {
                 bot.feed.height(Indexer.Height.HIGH)
-                bot.ink(Intake.Power.OFF)
+                bot.ink(Intake.Power.OUT)
             }
 
             sub(wait2Burst(bot, off = true))
 
             go(al.centerShoot3) {
                 splineTo(al.target0, 0.0)
-                splineTo(al.target4.wobAft(), 0.0)
+                splineTo(al.target4.wobAft().fore(0.5), 0.0)
+            }
+
+            task {
+                bot.ink(Intake.Power.OFF)
             }
 
             turnTo(PI)
             sub(dropWobble(bot))
 
-            go(al.target4.wobAft() facing PI) {
+            go(al.target4.wobAft().fore(0.5) facing PI) {
                 splineToPose(al.target0 facing PI)
             }
         }

@@ -14,7 +14,7 @@ class ServoImpl(val s: com.qualcomm.robotcore.hardware.Servo, val name: String, 
         val g = s.position
         if (all || !touched || !(g epsilonEquals position)) {
             if (!touched) {
-                s.position = position + if (position < .5) +0.01 else -0.01
+                s.position = position + if (position < .5) +0.05 else -0.05
             }
 
             s.position = position

@@ -24,6 +24,11 @@ class Indexer(config: Configuration, val logger: Logger) : Activity {
     var command: Command = Command.stall
         private set
 
+    override fun load() {
+        height(Height.IN)
+        feed(Shoot.PRE)
+    }
+
     fun shoot() {
         command = makeLinear {
             task { feed(Shoot.POST) }

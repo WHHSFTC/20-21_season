@@ -15,13 +15,13 @@ enum class Alliance(val direction: Double, val ysign: Int) {
     val arc = -.1413
     val woffset = 0.125
 
-    val innerShoot3 = Pose2d(-12.0, 12.0 * ysign, r * PI/8.0)
+    val innerShoot3 = Pose2d(-12.0, 12.0 * ysign, r * PI/8.0 + b * -PI/16.0)
     val centerShoot3 = Pose2d(-12.0, 36.0 * ysign, arc)
-    val outerShoot3 = Pose2d(-12.0, 60.0 * ysign, b * PI/8.0)
+    //val outerShoot3 = Pose2d(-12.0, 60.0 * ysign, b * PI/8.0)
 
-    val innerShoot2 = Pose2d(-36.0, 12.0 * ysign, r * PI/8.0)
+    //val innerShoot2 = Pose2d(-36.0, 12.0 * ysign, r * PI/8.0)
     val centerShoot2 = Pose2d(-36.0, 36.0 * ysign, arc)
-    val outerShoot2 = Pose2d(-36.0, 60.0 * ysign, b * PI/8.0)
+    val outerShoot2 = Pose2d(-36.0, 60.0 * ysign, b * PI/8.0 + r * -PI/32.0)
 
     val target0 = Vector2d(12.0, 60.0 * ysign)
     val target1 = Vector2d(36.0, 36.0 * ysign)
